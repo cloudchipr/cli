@@ -5,11 +5,16 @@ import { Command } from 'commander';
 const program = new Command();
 
 const collect = program
-  .option('-c, --cloud-provider <type>', 'Cloud provider', 'aws')
-  .option('-r, --region <type>', 'Region', 'us-east-1')
-  .option('-a, --account-id <type>', 'Account id')
-  .option('-v, --verbose <type>', 'Verbose', '0')
-  .option('-p, --profile <type>', 'Profile')
+  .option('--cloud-provider <type>', 'Cloud provider', 'aws')
+  .option('--region <type>', 'Region', 'us-east-1')
+  .option('--account-id <type>', 'Account id')
+  .option('--verbose <type>', 'Verbose', '0')
+  .option('--profile <type>', 'Profile')
+  .option('--version <type>', 'Version')
+  .option('--dry-run <type>', 'Dry run')
+  .option('--help <type>', 'Help')
+  .option('--output <type>', 'Output')
+  .option('--output-format <type>', 'Output format')
   .command('collect');
 
 collect
