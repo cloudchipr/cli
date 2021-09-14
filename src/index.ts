@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { Command, Option } from 'commander';
+import { OutputService } from './services/output/output-service';
 
 const program = new Command();
 
@@ -21,11 +22,14 @@ collect
   .command('all')
   .option('-f, --filter <type>', 'Filter')
   .action((options) => {
-    console.log('collect all');
-    console.log(program.opts().region);
-    console.log(program.opts().output);
-    console.log(program.opts().outputFormat);
-    console.log(options.filter);
+    // console.log('collect all');
+    // console.log(program.opts().region);
+    // console.log(program.opts().output);
+    // console.log(program.opts().outputFormat);
+    // console.log(options.filter);
+    const output = new OutputService();
+    output.print(program.opts().region, program.opts().outputFormat);
+    // console.log(program.opts().outputFormat);
   });
 collect
   .command('ec2')
