@@ -24,6 +24,7 @@
   "keywords": [],
   "license": "ISC",
   "dependencies": {
+    "aws-sdk": "^2.983.0",
     "commander": "^8.1.0"
   },
   "devDependencies": {
