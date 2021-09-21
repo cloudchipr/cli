@@ -1,13 +1,18 @@
 #!/usr/bin/env node
 
 import { Command, Option } from 'commander';
-import AwsCliManager from "./aws/aws-cli-manager";
+import AwsCliManager from "./cloud-providers/aws/aws-cli-manager";
 import { OutputService } from './services/output/output-service';
+import CredentialProvider from "./credential-provider";
+import {CloudProvider} from "./cloud-providers/cloud-provider";
+import {FilterProvider} from "./filter-provider";
 
 const program = new Command();
+const credentialProvider = new CredentialProvider()
+const filterProvider = new FilterProvider()
 
 const collect = program
-  .addOption(new Option('--cloud-provider <cloud-provider>', 'Cloud provider').default('aws'))
+  .addOption(new Option('--cloud-provider <cloud-provider>', 'Cloud provider').default('aws').choices(['aws']))
   .addOption(new Option('--region <region>', 'Region').default('us-east-1'))
   .addOption(new Option('--account-id <account-id>', 'Account id'))
   .addOption(new Option('--verbose <verbose>', 'Verbose').default(0))
@@ -39,6 +44,15 @@ collect
       const output = new OutputService();
       output.print(program.opts().region, program.opts().outputFormat);
   });
+
+collect
+    .command('ebs')
+    .option('-f, --filter <type>', 'Filter')
+    .action((options) => {
+        let filter = filterProvider.getFilter(options.filter);
+        const credential = credentialProvider.getCredentials(program.opts().cloudProvider as CloudProvider, program.opts())
+    });
+
 collect
   .command('ec2')
   .option('-f, --filter <type>', 'Filter')
