@@ -2,6 +2,7 @@
 
 import { Command, Option } from 'commander';
 import AwsCliManager from "./aws/aws-cli-manager";
+import { OutputService } from './services/output/output-service';
 
 const program = new Command();
 
@@ -35,6 +36,8 @@ collect
             console.error('error: Cannot find AWS credentials with ' + program.opts().profile + ' profile');
         }
     }
+      const output = new OutputService();
+      output.print(program.opts().region, program.opts().outputFormat);
   });
 collect
   .command('ec2')

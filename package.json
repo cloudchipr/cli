@@ -24,8 +24,12 @@
   "keywords": [],
   "license": "ISC",
   "dependencies": {
+    "@types/cli-table": "^0.3.0",
+    "@types/prettyjson": "^0.0.30",
     "aws-sdk": "^2.983.0",
-    "commander": "^8.1.0"
+    "cli-table": "^0.3.6",
+    "commander": "^8.1.0",
+    "prettyjson": "^1.2.1"
   },
   "devDependencies": {
     "@types/node": "^16.7.1",
