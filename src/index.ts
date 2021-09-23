@@ -6,6 +6,7 @@ import {FilterProvider} from "./filter-provider";
 import EngineRequestBuilder from "./engine-request-builder";
 import {Command as CloudChiprCommand} from "cloudchipr-engine/lib/Command";
 import {AWSSubCommand} from "cloudchipr-engine/lib/AWSSubCommand";
+import {AWSShellEngineAdapter} from "cloudchipr-engine/lib/adapters/AWSShellEngineAdapter";
 
 const program = new Command();
 const credentialProvider = new CredentialProvider()
@@ -36,12 +37,16 @@ collect
     .action((options) => {
 
         options = Object.assign(program.opts(), options) as OptionValues;
-        EngineRequestBuilder
+        let er = EngineRequestBuilder
             .builder()
             .setOptions(options)
             .setCommand(CloudChiprCommand.collect())
             .setSubCommand(AWSSubCommand.ebs())
             .build();
+
+        let engineAdapter = new AWSShellEngineAdapter(process.env.C8R_CUSTODIAN as string)
+        engineAdapter.execute(er)
+        console.log(er)
     });
 
 collect

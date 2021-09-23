@@ -29,7 +29,8 @@
     "aws-sdk": "^2.983.0",
     "cli-table": "^0.3.6",
     "commander": "^8.1.0",
-    "prettyjson": "^1.2.1"
+    "prettyjson": "^1.2.1",
+    "yaml": "^1.10.2"
   },
   "devDependencies": {
     "@types/node": "^16.7.1",
