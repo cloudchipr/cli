@@ -1,4 +1,4 @@
 export default interface CredentialInterface {
-    getAccessKey(): String;
-    getSecretKey(): String;
+    getAccessKey(): string;
+    getSecretKey(): string;
 }

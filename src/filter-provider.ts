@@ -1,7 +1,9 @@
-import {readFileSync} from "fs";
+import {readFileSync} from 'fs';
+import yaml from 'yaml'
+
 
 export class FilterProvider {
     getFilter(filename: string) {
-        return readFileSync(filename,'utf8')
+        return yaml.parse(readFileSync(filename,'utf8'));
     }
 }

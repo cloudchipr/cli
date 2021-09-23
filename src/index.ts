@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 
-import { Command, Option } from 'commander';
-import AwsCliManager from "./cloud-providers/aws/aws-cli-manager";
-import { OutputService } from './services/output/output-service';
+import {Command, Option, OptionValues} from 'commander';
 import CredentialProvider from "./credential-provider";
-import {CloudProvider} from "./cloud-providers/cloud-provider";
 import {FilterProvider} from "./filter-provider";
+import EngineRequestBuilder from "./engine-request-builder";
+import {Command as CloudChiprCommand} from "cloudchipr-engine/lib/Command";
+import {AWSSubCommand} from "cloudchipr-engine/lib/AWSSubCommand";
 
 const program = new Command();
 const credentialProvider = new CredentialProvider()
@@ -28,29 +28,20 @@ collect
   .command('all')
   .option('-f, --filter <type>', 'Filter')
   .action((options) => {
-    if (program.opts().cloudProvider === 'aws') {
-        const awsCliManager = new AwsCliManager()
-        try {
-            const awsCredential = awsCliManager.getCredentials(
-                program.opts().profile,
-                program.opts().region,
-                program.opts().accountId,
-            )
-            console.log(awsCredential);
-        } catch (e) {
-            console.error('error: Cannot find AWS credentials with ' + program.opts().profile + ' profile');
-        }
-    }
-      const output = new OutputService();
-      output.print(program.opts().region, program.opts().outputFormat);
   });
 
 collect
     .command('ebs')
     .option('-f, --filter <type>', 'Filter')
     .action((options) => {
-        let filter = filterProvider.getFilter(options.filter);
-        const credential = credentialProvider.getCredentials(program.opts().cloudProvider as CloudProvider, program.opts())
+
+        options = Object.assign(program.opts(), options) as OptionValues;
+        EngineRequestBuilder
+            .builder()
+            .setOptions(options)
+            .setCommand(CloudChiprCommand.collect())
+            .setSubCommand(AWSSubCommand.ebs())
+            .build();
     });
 
 collect

@@ -11,7 +11,7 @@ export default class CredentialProvider {
                 return awsCliManager.getCredentials(
                     options.profile,
                     options.region,
-                    options.accountId,
+                    options.accountId
                 )
         }
     }

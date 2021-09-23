@@ -4,7 +4,7 @@ export default class AwsCredential {
         private readonly secretAccessKey: string
     ) {}
 
-    getAccessKey(): String {
+    getAccessKey(): string {
         return this.accessKeyId;
     }
 
