@@ -4,6 +4,7 @@ import { Command, Option } from 'commander';
 import AwsCliManager from "./aws/aws-cli-manager";
 import { OutputService } from './services/output/output-service';
 import {CloudProvider, Output, OutputFormats, Profile, Region} from "./constants";
+import chalk from 'chalk';
 
 const program = new Command();
 
@@ -47,4 +48,8 @@ collect
     console.log('collect ec2');
   });
 
-program.parse(process.argv);
+try {
+    program.parse(process.argv);
+} catch (e) {
+    console.error(chalk.red(chalk.underline('Error:'), e.message));
+}
