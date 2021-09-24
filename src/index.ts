@@ -6,7 +6,7 @@ import {FilterProvider} from "./filter-provider";
 import EngineRequestBuilder from "./engine-request-builder";
 import {Command as CloudChiprCommand} from "cloudchipr-engine/lib/Command";
 import {AWSSubCommand} from "cloudchipr-engine/lib/AWSSubCommand";
-import {AWSShellEngineAdapter} from "cloudchipr-engine/lib/adapters/AWSShellEngineAdapter";
+import {AWSShellEngineAdapter} from "cloudchipr-engine/lib/adapters/aws-shell-engine-adapter";
 
 const program = new Command();
 const credentialProvider = new CredentialProvider()

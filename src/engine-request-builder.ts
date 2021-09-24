@@ -1,12 +1,12 @@
-import {EngineRequest} from "cloudchipr-engine/lib/EngineRequest";
-import {Command} from "cloudchipr-engine/lib/Command";
-import {SubCommandInterface} from "cloudchipr-engine/lib/SubCommandInterface";
-import {Parameter} from "cloudchipr-engine/lib/Parameter";
-import {Configuration} from "cloudchipr-engine/lib/Configuration";
+import {EngineRequest} from "cloudchipr-engine/lib/engine-request";
+import {Command} from "cloudchipr-engine/lib/command";
+import {SubCommandInterface} from "cloudchipr-engine/lib/sub-commandInterface";
+import {Parameter} from "cloudchipr-engine/lib/parameter";
+import {Configuration} from "cloudchipr-engine/lib/configuration";
 import {OptionValues} from "commander";
 import {CloudProvider} from "./cloud-providers/cloud-provider";
 import CredentialProvider from "./credential-provider";
-import {FilterBuilder} from "cloudchipr-engine/lib/filters/FilterBuilder";
+import {FilterBuilder} from "cloudchipr-engine/lib/filters/filter-builder";
 import {FilterProvider} from "./filter-provider";
 
 export default class EngineRequestBuilder {
