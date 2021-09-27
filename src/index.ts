@@ -1,11 +1,12 @@
 #!/usr/bin/env node
 
+require('dotenv').config();
 import {Command, Option, OptionValues} from 'commander';
 import CredentialProvider from "./credential-provider";
 import {FilterProvider} from "./filter-provider";
 import EngineRequestBuilder from "./engine-request-builder";
 import {Command as CloudChiprCommand} from "cloudchipr-engine/lib/Command";
-import {AWSSubCommand} from "cloudchipr-engine/lib/AWSSubCommand";
+import {AwsSubCommand} from "cloudchipr-engine/lib/aws-sub-command";
 import {AWSShellEngineAdapter} from "cloudchipr-engine/lib/adapters/aws-shell-engine-adapter";
 
 const program = new Command();
@@ -41,7 +42,7 @@ collect
             .builder()
             .setOptions(options)
             .setCommand(CloudChiprCommand.collect())
-            .setSubCommand(AWSSubCommand.ebs())
+            .setSubCommand(AwsSubCommand.ebs())
             .build();
 
         let engineAdapter = new AWSShellEngineAdapter(process.env.C8R_CUSTODIAN as string)
