@@ -2,8 +2,6 @@
 
 require('dotenv').config();
 import {Command, Option, OptionValues} from 'commander';
-import CredentialProvider from "./credential-provider";
-import {FilterProvider} from "./filter-provider";
 import EngineRequestBuilder from "./engine-request-builder";
 import {Command as CloudChiprCommand} from "cloudchipr-engine/lib/Command";
 import {AwsSubCommand} from "cloudchipr-engine/lib/aws-sub-command";
@@ -13,12 +11,9 @@ import {CloudProvider, Output, OutputFormats, Profile, Region} from "./constants
 import chalk from 'chalk';
 
 const program = new Command();
-const credentialProvider = new CredentialProvider()
-const filterProvider = new FilterProvider()
 
 const collect = program
-  .addOption(new Option('--cloud-provider <cloud-provider>', 'Cloud provider').default(CloudProvider.AWS).choices(['aws']))
-  .addOption(new Option('--region <region>', 'Region').default('us-east-1'))
+  .addOption(new Option('--cloud-provider <cloud-provider>', 'Cloud provider').default(CloudProvider.AWS).choices(Object.values(CloudProvider)))
   .addOption(new Option('--region <region>', 'Region').default(Region.US_EAST_1))
   .addOption(new Option('--account-id <account-id>', 'Account id'))
   .addOption(new Option('--verbose <verbose>', 'Verbose').default(0))
@@ -42,7 +37,7 @@ collect
     .action((options) => {
 
         options = Object.assign(program.opts(), options) as OptionValues;
-        let er = EngineRequestBuilder
+        const request = EngineRequestBuilder
             .builder()
             .setOptions(options)
             .setCommand(CloudChiprCommand.collect())
@@ -50,14 +45,16 @@ collect
             .build();
 
         let engineAdapter = new AWSShellEngineAdapter(process.env.C8R_CUSTODIAN as string)
-        engineAdapter.execute(er)
-        console.log(er)
+        engineAdapter.execute(request)
+        console.log(request)
     });
 
 collect
   .command('ec2')
   .option('-f, --filter <type>', 'Filter')
   .action((options) => {
+    const output = new OutputService();
+    output.print(program.opts().region, program.opts().outputFormat);
     console.log('collect ec2');
   });
 
