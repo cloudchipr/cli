@@ -25,8 +25,6 @@ RUN npm install
 # Bundle app source
 COPY . .
 
-COPY /Users/tsardaryan/projects/cloudchipr-engine /src/cr8-cli/node_modules/cloudchipr-engine
-
 RUN npm link
 
 # SET CUSTODIAN envirnomet variable
