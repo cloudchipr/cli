@@ -35,16 +35,13 @@ collect
     .command('ebs')
     .option('-f, --filter <type>', 'Filter')
     .action((options) => {
-
-        options = Object.assign(program.opts(), options) as OptionValues;
         const request = EngineRequestBuilder
             .builder()
-            .setOptions(options)
+            .setOptions(Object.assign(program.opts(), options) as OptionValues)
             .setCommand(CloudChiprCommand.collect())
             .setSubCommand(AwsSubCommand.ebs())
             .build();
-
-        let engineAdapter = new AWSShellEngineAdapter(process.env.C8R_CUSTODIAN as string)
+        const engineAdapter = new AWSShellEngineAdapter(process.env.C8R_CUSTODIAN as string)
         engineAdapter.execute(request)
         console.log(request)
     });

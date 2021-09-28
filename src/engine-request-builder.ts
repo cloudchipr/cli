@@ -4,7 +4,6 @@ import {SubCommandInterface} from "cloudchipr-engine/lib/sub-commandInterface";
 import {Parameter} from "cloudchipr-engine/lib/parameter";
 import {Configuration} from "cloudchipr-engine/lib/configuration";
 import {OptionValues} from "commander";
-import {CloudProvider} from "./cloud-providers/cloud-provider";
 import CredentialProvider from "./credential-provider";
 import {FilterBuilder} from "cloudchipr-engine/lib/filters/filter-builder";
 import {FilterProvider} from "./filter-provider";
@@ -45,7 +44,7 @@ export default class EngineRequestBuilder {
 
     private static buildConfiguration(options: OptionValues): Configuration {
         const credentialProvider = new CredentialProvider()
-        const credentials = credentialProvider.getCredentials(options.cloudProvider as CloudProvider, options);
+        const credentials = credentialProvider.getCredentials(options.cloudProvider, options);
 
         return new Configuration(credentials.getAccessKey(), credentials.getSecretKey(), options.region);
     }

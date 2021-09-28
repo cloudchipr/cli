@@ -1,18 +1,20 @@
-import {CloudProvider} from "./cloud-providers/cloud-provider";
 import CredentialInterface from "./credential-interface";
 import AwsCliManager from "./cloud-providers/aws/aws-cli-manager";
 import {OptionValues} from "commander";
+import {CloudProvider} from "./constants";
 
 export default class CredentialProvider {
-    getCredentials(provider: CloudProvider, options: OptionValues): CredentialInterface {
+    getCredentials(provider: string, options: OptionValues): CredentialInterface {
         switch (provider) {
-            case CloudProvider.aws:
+            case CloudProvider.AWS:
                 const awsCliManager = new AwsCliManager()
                 return awsCliManager.getCredentials(
                     options.profile,
                     options.region,
                     options.accountId
                 )
+            default:
+                throw Error(`Invalid provider ${provider} provided`);
         }
     }
 }
