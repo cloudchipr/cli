@@ -45,3 +45,7 @@ Thumbs.db
 
 # Envirament
 .env
+
+#Custodian uptput
+metadata.json
+resources.json

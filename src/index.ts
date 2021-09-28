@@ -6,6 +6,7 @@ import EngineRequestBuilder from "./engine-request-builder";
 import {Command as CloudChiprCommand} from "cloudchipr-engine/lib/Command";
 import {AwsSubCommand} from "cloudchipr-engine/lib/aws-sub-command";
 import {AWSShellEngineAdapter} from "cloudchipr-engine/lib/adapters/aws-shell-engine-adapter";
+import {EbsResponse} from "cloudchipr-engine/lib/responses/ebs-response";
 import { OutputService } from './services/output/output-service';
 import {CloudProvider, Output, OutputFormats, Profile, Region} from "./constants";
 import chalk from 'chalk';
@@ -35,15 +36,18 @@ collect
     .command('ebs')
     .option('-f, --filter <type>', 'Filter')
     .action((options) => {
+        const output = new OutputService();
         const request = EngineRequestBuilder
             .builder()
             .setOptions(Object.assign(program.opts(), options) as OptionValues)
             .setCommand(CloudChiprCommand.collect())
             .setSubCommand(AwsSubCommand.ebs())
             .build();
+
         const engineAdapter = new AWSShellEngineAdapter(process.env.C8R_CUSTODIAN as string)
-        engineAdapter.execute(request)
-        console.log(request)
+        let response = engineAdapter.execute<EbsResponse>(request)
+
+        output.print(response.items, program.opts().outputFormat)
     });
 
 collect
