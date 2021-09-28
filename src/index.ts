@@ -1,7 +1,12 @@
 #!/usr/bin/env node
 
-import { Command, Option } from 'commander';
-import AwsCliManager from "./aws/aws-cli-manager";
+require('dotenv').config();
+import {Command, Option, OptionValues} from 'commander';
+import EngineRequestBuilder from "./engine-request-builder";
+import {Command as CloudChiprCommand} from "cloudchipr-engine/lib/Command";
+import {AwsSubCommand} from "cloudchipr-engine/lib/aws-sub-command";
+import {AWSShellEngineAdapter} from "cloudchipr-engine/lib/adapters/aws-shell-engine-adapter";
+import {EbsResponse} from "cloudchipr-engine/lib/responses/ebs-response";
 import { OutputService } from './services/output/output-service';
 import {CloudProvider, Output, OutputFormats, Profile, Region} from "./constants";
 import chalk from 'chalk';
@@ -9,7 +14,7 @@ import chalk from 'chalk';
 const program = new Command();
 
 const collect = program
-  .addOption(new Option('--cloud-provider <cloud-provider>', 'Cloud provider').default(CloudProvider.AWS))
+  .addOption(new Option('--cloud-provider <cloud-provider>', 'Cloud provider').default(CloudProvider.AWS).choices(Object.values(CloudProvider)))
   .addOption(new Option('--region <region>', 'Region').default(Region.US_EAST_1))
   .addOption(new Option('--account-id <account-id>', 'Account id'))
   .addOption(new Option('--verbose <verbose>', 'Verbose').default(0))
@@ -25,26 +30,32 @@ collect
   .command('all')
   .option('-f, --filter <type>', 'Filter')
   .action((options) => {
-    if (program.opts().cloudProvider === 'aws') {
-        const awsCliManager = new AwsCliManager()
-        try {
-            const awsCredential = awsCliManager.getCredentials(
-                program.opts().profile,
-                program.opts().region,
-                program.opts().accountId,
-            )
-            console.log(awsCredential);
-        } catch (e) {
-            console.error('error: Cannot find AWS credentials with ' + program.opts().profile + ' profile');
-        }
-    }
-      const output = new OutputService();
-      output.print(program.opts().region, program.opts().outputFormat);
   });
+
+collect
+    .command('ebs')
+    .option('-f, --filter <type>', 'Filter')
+    .action((options) => {
+        const output = new OutputService();
+        const request = EngineRequestBuilder
+            .builder()
+            .setOptions(Object.assign(program.opts(), options) as OptionValues)
+            .setCommand(CloudChiprCommand.collect())
+            .setSubCommand(AwsSubCommand.ebs())
+            .build();
+
+        const engineAdapter = new AWSShellEngineAdapter(process.env.C8R_CUSTODIAN as string)
+        let response = engineAdapter.execute<EbsResponse>(request)
+
+        output.print(response.items, program.opts().outputFormat)
+    });
+
 collect
   .command('ec2')
   .option('-f, --filter <type>', 'Filter')
   .action((options) => {
+    const output = new OutputService();
+    output.print(program.opts().region, program.opts().outputFormat);
     console.log('collect ec2');
   });
 

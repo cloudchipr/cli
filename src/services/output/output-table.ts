@@ -3,13 +3,17 @@ import Table from 'cli-table';
 export class OutputTable implements OutputInterface {
 
     public print(data: any): void {
+        if (data.length == 0)
+            return
+
         const table = new Table({
-            head: ['TH 1 label', 'TH 2 label']
+            head: Object.keys(data[0])
         });
-        table.push(
-            ['First value', 'Second value'],
-            ['First value', 'Second value']
-        );
+
+        data.forEach(x => {
+            table.push(Object.values(x))
+        })
+
         console.log(table.toString());
     }
     
