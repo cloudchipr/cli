@@ -25,7 +25,6 @@ collect
     });
 
 const cloudChiprCli = CloudChiprCliProvider.getProvider(command.opts().cloudProvider);
-
 cloudChiprCli
     .customiseCommand(command)
     .customiseCollectCommand(collect);
