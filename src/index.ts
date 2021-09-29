@@ -3,10 +3,10 @@
 require('dotenv').config();
 import {Command, Option, OptionValues} from 'commander';
 import EngineRequestBuilder from "./engine-request-builder";
-import {Command as CloudChiprCommand} from "cloudchipr-engine/lib/Command";
-import {AwsSubCommand} from "cloudchipr-engine/lib/aws-sub-command";
-import {AWSShellEngineAdapter} from "cloudchipr-engine/lib/adapters/aws-shell-engine-adapter";
-import {EbsResponse} from "cloudchipr-engine/lib/responses/ebs-response";
+import {Command as CloudChiprCommand} from "@cloudchipr/cloudchipr-engine/lib/Command";
+import {AwsSubCommand} from "@cloudchipr/cloudchipr-engine/lib/aws-sub-command";
+import {AWSShellEngineAdapter} from "@cloudchipr/cloudchipr-engine/lib/adapters/aws-shell-engine-adapter";
+import {EbsResponse} from "@cloudchipr/cloudchipr-engine/lib/responses/ebs-response";
 import { OutputService } from './services/output/output-service';
 import {CloudProvider, Output, OutputFormats, Profile, Region} from "./constants";
 import chalk from 'chalk';
