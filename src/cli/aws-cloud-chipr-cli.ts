@@ -1,4 +1,3 @@
-import CloudProviderDecoratorInterface from "./cloud-provider-decorator-interface";
 import {Command, Option, OptionValues} from "commander";
 import {Profile} from "../constants";
 import {OutputService} from "../services/output/output-service";
@@ -7,15 +6,18 @@ import {Command as CloudChiprCommand} from "cloudchipr-engine/lib/Command";
 import {AwsSubCommand} from "cloudchipr-engine/lib/aws-sub-command";
 import {AWSShellEngineAdapter} from "cloudchipr-engine/lib/adapters/aws-shell-engine-adapter";
 import {EbsResponse} from "cloudchipr-engine/lib/responses/ebs-response";
+import CloudChiprCliInterface from "./cloud-chipr-cli-interface";
 
-export default class AwsDecorator implements CloudProviderDecoratorInterface{
-    decorateCommand(command: Command): void {
+export default class AwsCloudChiprCli implements CloudChiprCliInterface {
+     customiseCommand(command: Command): CloudChiprCliInterface {
         command
             .addOption(new Option('--account-id <account-id>', 'Account id'))
             .addOption(new Option('--profile <profile>', 'Profile').default(Profile.DEFAULT))
+
+        return this;
     }
 
-    decorateCollectCommand(command: Command): void {
+    customiseCollectCommand(command: Command): CloudChiprCliInterface {
         const parentOptions = command.parent.opts();
         command
             .command('ebs')
@@ -43,5 +45,14 @@ export default class AwsDecorator implements CloudProviderDecoratorInterface{
                 output.print(parentOptions.region,parentOptions.outputFormat);
                 console.log('collect ec2');
             });
+
+        return this;
+    }
+
+    customiseCleanCommand(command: Command): CloudChiprCliInterface {
+        return this;
+    }
+    customiseNukeCommand(command: Command): CloudChiprCliInterface {
+        return this;
     }
 }
