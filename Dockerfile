@@ -1,4 +1,4 @@
-FROM node:14
+FROM node:16
 
 # Pre-requisite distro deps, and build env setup
 RUN apt-get --yes update

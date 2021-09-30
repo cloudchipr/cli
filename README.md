@@ -27,4 +27,14 @@ $ npm run watch
 ```sh-session
 $ npm run build
 ```
+
+### How to run via Docker
+1. Build the docker image
+```shell
+ docker build . -t c8r/cli
+```
+2. Run you commands
+```shell 
+ docker run -v ~/.aws/credentials:/root/.aws/credentials  c8r/cli c8r collect ebs
+```
 <!-- developmentstop -->
