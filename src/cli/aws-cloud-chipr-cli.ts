@@ -2,10 +2,7 @@ import {Command, Option, OptionValues} from "commander";
 import {Profile} from "../constants";
 import {OutputService} from "../services/output/output-service";
 import EngineRequestBuilder from "../engine-request-builder";
-import {Command as CloudChiprCommand} from "@cloudchipr/cloudchipr-engine/lib/Command";
-import {AwsSubCommand} from "@cloudchipr/cloudchipr-engine/lib/aws-sub-command";
-import {AWSShellEngineAdapter} from "@cloudchipr/cloudchipr-engine/lib/adapters/aws-shell-engine-adapter";
-import {EbsResponse} from "@cloudchipr/cloudchipr-engine/lib/responses/ebs-response";
+import {AwsSubCommand, AWSShellEngineAdapter, EbsResponse, Command as CloudChiprCommand} from "@cloudchipr/cloudchipr-engine";
 import CloudChiprCliInterface from "./cloud-chipr-cli-interface";
 
 export default class AwsCloudChiprCli implements CloudChiprCliInterface {
