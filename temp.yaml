@@ -1,6 +1,0 @@
-policies:
-  - name: ebs-collect-unattached
-    resource: ebs
-    filters:
-      - and:
-          - Attachments: []
