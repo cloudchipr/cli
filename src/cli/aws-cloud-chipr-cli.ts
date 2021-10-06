@@ -2,7 +2,12 @@ import {Command, Option, OptionValues} from "commander";
 import {Profile} from "../constants";
 import {OutputService} from "../services/output/output-service";
 import EngineRequestBuilder from "../engine-request-builder";
-import {AwsSubCommand, AWSShellEngineAdapter, EbsResponse, Command as CloudChiprCommand} from "@cloudchipr/cloudchipr-engine";
+import {
+    AwsSubCommand,
+    AWSShellEngineAdapter,
+    Command as CloudChiprCommand,
+    Ec2, Ebs
+} from "@cloudchipr/cloudchipr-engine";
 import CloudChiprCliInterface from "./cloud-chipr-cli-interface";
 
 export default class AwsCloudChiprCli implements CloudChiprCliInterface {
@@ -28,8 +33,8 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
                     .setSubCommand(AwsSubCommand.ebs())
                     .build();
 
-                const engineAdapter = new AWSShellEngineAdapter(process.env.C8R_CUSTODIAN as string)
-                let response = engineAdapter.execute<EbsResponse>(request)
+                const engineAdapter = new AWSShellEngineAdapter<Ebs>(process.env.C8R_CUSTODIAN as string)
+                let response = engineAdapter.execute(request)
 
                 output.print(response.items, parentOptions.outputFormat)
             });
@@ -39,8 +44,17 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
             .option('-f, --filter <type>', 'Filter')
             .action((options) => {
                 const output = new OutputService();
-                output.print(parentOptions.region,parentOptions.outputFormat);
-                console.log('collect ec2');
+                const request = EngineRequestBuilder
+                    .builder()
+                    .setOptions(Object.assign(parentOptions, options) as OptionValues)
+                    .setCommand(CloudChiprCommand.collect())
+                    .setSubCommand(AwsSubCommand.ec2())
+                    .build();
+
+                const engineAdapter = new AWSShellEngineAdapter<Ec2>(process.env.C8R_CUSTODIAN as string)
+                let response = engineAdapter.execute(request)
+
+                output.print(response.items, parentOptions.outputFormat)
             });
 
         return this;
