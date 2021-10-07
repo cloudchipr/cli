@@ -24,10 +24,18 @@ collect
     .action((options) => {
     });
 
+const clean = command.command('clean');
+clean
+    .command('all')
+    .option('-f, --filter <type>', 'Filter')
+    .action((options) => {
+    });
+
 const cloudChiprCli = CloudChiprCliProvider.getProvider(command.opts().cloudProvider);
 cloudChiprCli
     .customiseCommand(command)
-    .customiseCollectCommand(collect);
+    .customiseCollectCommand(collect)
+    .customiseCleanCommand(clean);
 
 try {
     command.parse(process.argv);
