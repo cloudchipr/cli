@@ -61,6 +61,43 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
     }
 
     customiseCleanCommand(command: Command): CloudChiprCliInterface {
+        const parentOptions = command.parent.opts();
+        command
+            .command('ebs')
+            .option('-f, --filter <type>', 'Filter')
+            .action((options) => {
+                const output = new OutputService();
+                const request = EngineRequestBuilder
+                    .builder()
+                    .setOptions(Object.assign(parentOptions, options) as OptionValues)
+                    .setCommand(CloudChiprCommand.clean())
+                    .setSubCommand(AwsSubCommand.ebs())
+                    .build();
+
+                const engineAdapter = new AWSShellEngineAdapter<Ebs>(process.env.C8R_CUSTODIAN as string)
+                let response = engineAdapter.execute(request)
+
+                output.print(response.items, parentOptions.outputFormat)
+            });
+
+        command
+            .command('ec2')
+            .option('-f, --filter <type>', 'Filter')
+            .action((options) => {
+                const output = new OutputService();
+                const request = EngineRequestBuilder
+                    .builder()
+                    .setOptions(Object.assign(parentOptions, options) as OptionValues)
+                    .setCommand(CloudChiprCommand.clean())
+                    .setSubCommand(AwsSubCommand.ec2())
+                    .build();
+
+                const engineAdapter = new AWSShellEngineAdapter<Ec2>(process.env.C8R_CUSTODIAN as string)
+                let response = engineAdapter.execute(request)
+
+                output.print(response.items, parentOptions.outputFormat)
+            });
+
         return this;
     }
     customiseNukeCommand(command: Command): CloudChiprCliInterface {
