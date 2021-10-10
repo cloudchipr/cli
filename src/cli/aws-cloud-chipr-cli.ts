@@ -6,7 +6,7 @@ import {
     AwsSubCommand,
     AWSShellEngineAdapter,
     Command as CloudChiprCommand,
-    Ec2, Ebs
+    Ec2, Ebs, Elb
 } from "@cloudchipr/cloudchipr-engine";
 import CloudChiprCliInterface from "./cloud-chipr-cli-interface";
 
@@ -52,6 +52,25 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
                     .build();
 
                 const engineAdapter = new AWSShellEngineAdapter<Ec2>(process.env.C8R_CUSTODIAN as string)
+                let response = engineAdapter.execute(request)
+
+                output.print(response.items, parentOptions.outputFormat)
+            });
+
+        command
+            .command('elb')
+            .option('--force <type>', 'Force')
+            .option('-f, --filter <type>', 'Filter')
+            .action((options) => {
+                const output = new OutputService();
+                const request = EngineRequestBuilder
+                    .builder()
+                    .setOptions(Object.assign(parentOptions, options) as OptionValues)
+                    .setCommand(CloudChiprCommand.collect())
+                    .setSubCommand(AwsSubCommand.elb())
+                    .build();
+
+                const engineAdapter = new AWSShellEngineAdapter<Elb>(process.env.C8R_CUSTODIAN as string)
                 let response = engineAdapter.execute(request)
 
                 output.print(response.items, parentOptions.outputFormat)
