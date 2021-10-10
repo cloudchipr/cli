@@ -19,7 +19,7 @@
     "@types/cli-table": "^0.3.0",
     "@types/prettyjson": "^0.0.30",
     "@cloudchipr/cloudchipr-engine": "0.0.7",
-    "aws-sdk": "^2.993.0",
+    "aws-sdk": "^2.1004.0",
     "chalk": "^4.1.2",
     "cli-table": "^0.3.6",
     "commander": "^8.1.0",
