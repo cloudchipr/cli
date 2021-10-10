@@ -18,7 +18,7 @@
   "dependencies": {
     "@types/cli-table": "^0.3.0",
     "@types/prettyjson": "^0.0.30",
-    "@cloudchipr/cloudchipr-engine": "0.0.6",
+    "@cloudchipr/cloudchipr-engine": "0.0.7",
     "aws-sdk": "^2.993.0",
     "chalk": "^4.1.2",
     "cli-table": "^0.3.6",
