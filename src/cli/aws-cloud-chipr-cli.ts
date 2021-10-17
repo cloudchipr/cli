@@ -153,6 +153,63 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
                 output.print(response.items, parentOptions.outputFormat)
             });
 
+      command
+        .command('elb')
+        .option('--force <type>', 'Force')
+        .option('-f, --filter <type>', 'Filter')
+        .action((options) => {
+          const output = new OutputService();
+          const request = EngineRequestBuilder
+            .builder()
+            .setOptions(Object.assign(parentOptions, options) as OptionValues)
+            .setCommand(CloudChiprCommand.clean())
+            .setSubCommand(AwsSubCommand.elb())
+            .build();
+
+          const engineAdapter = new AWSShellEngineAdapter<Ec2>(process.env.C8R_CUSTODIAN as string)
+          let response = engineAdapter.execute(request)
+
+          output.print(response.items, parentOptions.outputFormat)
+        });
+
+      command
+        .command('nlb')
+        .option('--force <type>', 'Force')
+        .option('-f, --filter <type>', 'Filter')
+        .action((options) => {
+          const output = new OutputService();
+          const request = EngineRequestBuilder
+            .builder()
+            .setOptions(Object.assign(parentOptions, options) as OptionValues)
+            .setCommand(CloudChiprCommand.clean())
+            .setSubCommand(AwsSubCommand.nlb())
+            .build();
+
+          const engineAdapter = new AWSShellEngineAdapter<Ec2>(process.env.C8R_CUSTODIAN as string)
+          let response = engineAdapter.execute(request)
+
+          output.print(response.items, parentOptions.outputFormat)
+        });
+
+      command
+        .command('alb')
+        .option('--force <type>', 'Force')
+        .option('-f, --filter <type>', 'Filter')
+        .action((options) => {
+          const output = new OutputService();
+          const request = EngineRequestBuilder
+            .builder()
+            .setOptions(Object.assign(parentOptions, options) as OptionValues)
+            .setCommand(CloudChiprCommand.clean())
+            .setSubCommand(AwsSubCommand.alb())
+            .build();
+
+          const engineAdapter = new AWSShellEngineAdapter<Ec2>(process.env.C8R_CUSTODIAN as string)
+          let response = engineAdapter.execute(request)
+
+          output.print(response.items, parentOptions.outputFormat)
+        });
+
         return this;
     }
     customiseNukeCommand(command: Command): CloudChiprCliInterface {
