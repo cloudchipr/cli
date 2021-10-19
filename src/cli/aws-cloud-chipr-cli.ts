@@ -6,7 +6,7 @@ import {
     AwsSubCommand,
     AWSShellEngineAdapter,
     Command as CloudChiprCommand,
-    Ec2, Ebs, Elb, Nlb, Alb
+    Ec2, Ebs, Elb, Nlb, Alb, Eip
 } from "@cloudchipr/cloudchipr-engine";
 import CloudChiprCliInterface from "./cloud-chipr-cli-interface";
 
@@ -112,6 +112,24 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
                 output.print(response.items, parentOptions.outputFormat)
             });
 
+        command
+            .command('eip')
+            .option('-f, --filter <type>', 'Filter')
+            .action((options) => {
+                const output = new OutputService();
+                const request = EngineRequestBuilder
+                    .builder()
+                    .setOptions(Object.assign(parentOptions, options) as OptionValues)
+                    .setCommand(CloudChiprCommand.collect())
+                    .setSubCommand(AwsSubCommand.eip())
+                    .build();
+
+                const engineAdapter = new AWSShellEngineAdapter<Eip>(process.env.C8R_CUSTODIAN as string)
+                let response = engineAdapter.execute(request)
+
+                output.print(response.items, parentOptions.outputFormat)
+            });
+
         return this;
     }
 
@@ -166,7 +184,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
             .setSubCommand(AwsSubCommand.elb())
             .build();
 
-          const engineAdapter = new AWSShellEngineAdapter<Ec2>(process.env.C8R_CUSTODIAN as string)
+          const engineAdapter = new AWSShellEngineAdapter<Elb>(process.env.C8R_CUSTODIAN as string)
           let response = engineAdapter.execute(request)
 
           output.print(response.items, parentOptions.outputFormat)
@@ -185,7 +203,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
             .setSubCommand(AwsSubCommand.nlb())
             .build();
 
-          const engineAdapter = new AWSShellEngineAdapter<Ec2>(process.env.C8R_CUSTODIAN as string)
+          const engineAdapter = new AWSShellEngineAdapter<Nlb>(process.env.C8R_CUSTODIAN as string)
           let response = engineAdapter.execute(request)
 
           output.print(response.items, parentOptions.outputFormat)
@@ -204,7 +222,26 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
             .setSubCommand(AwsSubCommand.alb())
             .build();
 
-          const engineAdapter = new AWSShellEngineAdapter<Ec2>(process.env.C8R_CUSTODIAN as string)
+          const engineAdapter = new AWSShellEngineAdapter<Alb>(process.env.C8R_CUSTODIAN as string)
+          let response = engineAdapter.execute(request)
+
+          output.print(response.items, parentOptions.outputFormat)
+        });
+
+      command
+        .command('eip')
+        .option('--force <type>', 'Force')
+        .option('-f, --filter <type>', 'Filter')
+        .action((options) => {
+          const output = new OutputService();
+          const request = EngineRequestBuilder
+            .builder()
+            .setOptions(Object.assign(parentOptions, options) as OptionValues)
+            .setCommand(CloudChiprCommand.clean())
+            .setSubCommand(AwsSubCommand.eip())
+            .build();
+
+          const engineAdapter = new AWSShellEngineAdapter<Eip>(process.env.C8R_CUSTODIAN as string)
           let response = engineAdapter.execute(request)
 
           output.print(response.items, parentOptions.outputFormat)
