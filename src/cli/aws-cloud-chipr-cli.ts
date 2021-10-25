@@ -279,7 +279,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
                         {
                             type: 'confirm',
                             name: 'proceed',
-                            message: 'All Instance will be cleaned, Are you sure you want to proceed? ',
+                            message: 'All Instances will be deleted, Are you sure you want to proceed? ',
                             when: function () {
                                 return parentOptions.force !== true
                             }
