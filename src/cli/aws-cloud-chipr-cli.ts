@@ -6,12 +6,13 @@ import {
     AwsSubCommand,
     AWSShellEngineAdapter,
     Command as CloudChiprCommand,
-    Ec2, Ebs, Elb, Nlb, Alb, Eip
+    Ec2, Ebs, Elb, Nlb, Alb, Eip, Rds, EngineRequest
 } from "@cloudchipr/cloudchipr-engine";
 import CloudChiprCliInterface from "./cloud-chipr-cli-interface";
+import inquirer from "inquirer";
 
 export default class AwsCloudChiprCli implements CloudChiprCliInterface {
-     customiseCommand(command: Command): CloudChiprCliInterface {
+    customiseCommand(command: Command): CloudChiprCliInterface {
         command
             .addOption(new Option('--account-id <account-id>', 'Account id'))
             .addOption(new Option('--profile <profile>', 'Profile').default(Profile.DEFAULT))
@@ -130,6 +131,19 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
                 output.print(response.items, parentOptions.outputFormat)
             });
 
+        command
+            .command('rds')
+            .option('-f, --filter <type>', 'Filter')
+            .action((options) => {
+                const output = new OutputService();
+                const request = AwsCloudChiprCli.getRdsCollectEngineRequest(Object.assign(parentOptions, options) as OptionValues)
+
+                const engineAdapter = new AWSShellEngineAdapter<Rds>(process.env.C8R_CUSTODIAN as string)
+                let response = engineAdapter.execute(request)
+
+                output.print(response.items, parentOptions.outputFormat)
+            });
+
         return this;
     }
 
@@ -171,85 +185,141 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
                 output.print(response.items, parentOptions.outputFormat)
             });
 
-      command
-        .command('elb')
-        .option('--force <type>', 'Force')
-        .option('-f, --filter <type>', 'Filter')
-        .action((options) => {
-          const output = new OutputService();
-          const request = EngineRequestBuilder
-            .builder()
-            .setOptions(Object.assign(parentOptions, options) as OptionValues)
-            .setCommand(CloudChiprCommand.clean())
-            .setSubCommand(AwsSubCommand.elb())
-            .build();
+        command
+            .command('elb')
+            .option('--force <type>', 'Force')
+            .option('-f, --filter <type>', 'Filter')
+            .action((options) => {
+                const output = new OutputService();
+                const request = EngineRequestBuilder
+                    .builder()
+                    .setOptions(Object.assign(parentOptions, options) as OptionValues)
+                    .setCommand(CloudChiprCommand.clean())
+                    .setSubCommand(AwsSubCommand.elb())
+                    .build();
 
-          const engineAdapter = new AWSShellEngineAdapter<Elb>(process.env.C8R_CUSTODIAN as string)
-          let response = engineAdapter.execute(request)
+                const engineAdapter = new AWSShellEngineAdapter<Elb>(process.env.C8R_CUSTODIAN as string)
+                let response = engineAdapter.execute(request)
 
-          output.print(response.items, parentOptions.outputFormat)
-        });
+                output.print(response.items, parentOptions.outputFormat)
+            });
 
-      command
-        .command('nlb')
-        .option('--force <type>', 'Force')
-        .option('-f, --filter <type>', 'Filter')
-        .action((options) => {
-          const output = new OutputService();
-          const request = EngineRequestBuilder
-            .builder()
-            .setOptions(Object.assign(parentOptions, options) as OptionValues)
-            .setCommand(CloudChiprCommand.clean())
-            .setSubCommand(AwsSubCommand.nlb())
-            .build();
+        command
+            .command('nlb')
+            .option('--force <type>', 'Force')
+            .option('-f, --filter <type>', 'Filter')
+            .action((options) => {
+                const output = new OutputService();
+                const request = EngineRequestBuilder
+                    .builder()
+                    .setOptions(Object.assign(parentOptions, options) as OptionValues)
+                    .setCommand(CloudChiprCommand.clean())
+                    .setSubCommand(AwsSubCommand.nlb())
+                    .build();
 
-          const engineAdapter = new AWSShellEngineAdapter<Nlb>(process.env.C8R_CUSTODIAN as string)
-          let response = engineAdapter.execute(request)
+                const engineAdapter = new AWSShellEngineAdapter<Nlb>(process.env.C8R_CUSTODIAN as string)
+                let response = engineAdapter.execute(request)
 
-          output.print(response.items, parentOptions.outputFormat)
-        });
+                output.print(response.items, parentOptions.outputFormat)
+            });
 
-      command
-        .command('alb')
-        .option('--force <type>', 'Force')
-        .option('-f, --filter <type>', 'Filter')
-        .action((options) => {
-          const output = new OutputService();
-          const request = EngineRequestBuilder
-            .builder()
-            .setOptions(Object.assign(parentOptions, options) as OptionValues)
-            .setCommand(CloudChiprCommand.clean())
-            .setSubCommand(AwsSubCommand.alb())
-            .build();
+        command
+            .command('alb')
+            .option('--force <type>', 'Force')
+            .option('-f, --filter <type>', 'Filter')
+            .action((options) => {
+                const output = new OutputService();
+                const request = EngineRequestBuilder
+                    .builder()
+                    .setOptions(Object.assign(parentOptions, options) as OptionValues)
+                    .setCommand(CloudChiprCommand.clean())
+                    .setSubCommand(AwsSubCommand.alb())
+                    .build();
 
-          const engineAdapter = new AWSShellEngineAdapter<Alb>(process.env.C8R_CUSTODIAN as string)
-          let response = engineAdapter.execute(request)
+                const engineAdapter = new AWSShellEngineAdapter<Alb>(process.env.C8R_CUSTODIAN as string)
+                let response = engineAdapter.execute(request)
 
-          output.print(response.items, parentOptions.outputFormat)
-        });
+                output.print(response.items, parentOptions.outputFormat)
+            });
 
-      command
-        .command('eip')
-        .option('--force <type>', 'Force')
-        .option('-f, --filter <type>', 'Filter')
-        .action((options) => {
-          const output = new OutputService();
-          const request = EngineRequestBuilder
-            .builder()
-            .setOptions(Object.assign(parentOptions, options) as OptionValues)
-            .setCommand(CloudChiprCommand.clean())
-            .setSubCommand(AwsSubCommand.eip())
-            .build();
+        command
+            .command('eip')
+            .option('--force <type>', 'Force')
+            .option('-f, --filter <type>', 'Filter')
+            .action((options) => {
+                const output = new OutputService();
+                const request = EngineRequestBuilder
+                    .builder()
+                    .setOptions(Object.assign(parentOptions, options) as OptionValues)
+                    .setCommand(CloudChiprCommand.clean())
+                    .setSubCommand(AwsSubCommand.eip())
+                    .build();
 
-          const engineAdapter = new AWSShellEngineAdapter<Eip>(process.env.C8R_CUSTODIAN as string)
-          let response = engineAdapter.execute(request)
+                const engineAdapter = new AWSShellEngineAdapter<Eip>(process.env.C8R_CUSTODIAN as string)
+                let response = engineAdapter.execute(request)
 
-          output.print(response.items, parentOptions.outputFormat)
-        });
+                output.print(response.items, parentOptions.outputFormat)
+            });
+
+        command
+            .command('rds')
+            .option('--force', 'Force')
+            .option('-f, --filter <type>', 'Filter')
+            .action((options) => {
+                const output = new OutputService();
+                const engineAdapter = new AWSShellEngineAdapter<Rds>(process.env.C8R_CUSTODIAN as string)
+
+                const request = AwsCloudChiprCli.getRdsCollectEngineRequest(Object.assign(parentOptions, options) as OptionValues)
+                let response = engineAdapter.execute(request)
+
+                output.print(response.items, parentOptions.outputFormat)
+
+                inquirer
+                    .prompt([
+                        {
+                            type: 'confirm',
+                            name: 'proceed',
+                            message: 'All Instances will be deleted, Are you sure you want to proceed? ',
+                            when: function () {
+                                return parentOptions.force !== true
+                            }
+                        }
+                    ])
+                    .then((answers) => {
+                        if (answers.proceed || parentOptions.force) {
+                            const request = AwsCloudChiprCli.getRdsCleanEngineRequest(Object.assign(parentOptions, options) as OptionValues)
+                            let response = engineAdapter.execute(request)
+
+                            output.print(response.items, parentOptions.outputFormat)
+                        }
+                    })
+                    .catch((error) => {
+                        console.log(error)
+                    });
+            });
 
         return this;
     }
+
     customiseNukeCommand(command: Command): CloudChiprCliInterface {
         return this;
+    }
+
+    private static getRdsCollectEngineRequest(optionValues: OptionValues): EngineRequest {
+        return EngineRequestBuilder
+            .builder()
+            .setOptions(optionValues)
+            .setCommand(CloudChiprCommand.collect())
+            .setSubCommand(AwsSubCommand.rds())
+            .build();
+    }
+
+    private static getRdsCleanEngineRequest(optionValues: OptionValues): EngineRequest {
+        return EngineRequestBuilder
+            .builder()
+            .setOptions(optionValues)
+            .setCommand(CloudChiprCommand.clean())
+            .setSubCommand(AwsSubCommand.rds())
+            .build();
     }
 }
