@@ -1,3 +1,3 @@
-interface OutputInterface {
+export interface OutputInterface {
     print(data: any): void;
 }
