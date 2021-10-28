@@ -1,14 +1,14 @@
 export default class AwsCredential {
-    constructor(
+  constructor (
         private readonly accessKeyId: string,
         private readonly secretAccessKey: string
-    ) {}
+  ) {}
 
-    getAccessKey(): string {
-        return this.accessKeyId;
-    }
+  getAccessKey (): string {
+    return this.accessKeyId
+  }
 
-    getSecretKey(): string {
-        return this.secretAccessKey;
-    }
+  getSecretKey (): string {
+    return this.secretAccessKey
+  }
 }
