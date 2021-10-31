@@ -10,7 +10,7 @@ import {
 } from '@cloudchipr/cloudchipr-engine'
 import CloudChiprCliInterface from './cloud-chipr-cli-interface'
 import inquirer from 'inquirer'
-import CollectResponseDecorator from "../responses/collect-response-decorator"
+import CollectResponseDecorator from '../responses/collect-response-decorator'
 export default class AwsCloudChiprCli implements CloudChiprCliInterface {
   customiseCommand (command: Command): CloudChiprCliInterface {
     command
@@ -202,14 +202,14 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
   //   return this
   // }
 
-  private static async executeCollectCommand<T extends ProviderResource>(subcommand: SubCommandInterface, options: OptionValues, outputFormat: string) {
-      const response = await AwsCloudChiprCli.executeCommand<T>(CloudChiprCommand.collect(), subcommand, options)
-      AwsCloudChiprCli.output((new CollectResponseDecorator).decorate(response.items), outputFormat)
+  private static async executeCollectCommand<T extends ProviderResource> (subcommand: SubCommandInterface, options: OptionValues, outputFormat: string) {
+    const response = await AwsCloudChiprCli.executeCommand<T>(CloudChiprCommand.collect(), subcommand, options)
+    AwsCloudChiprCli.output((new CollectResponseDecorator()).decorate(response.items), outputFormat)
   }
 
-  private static async executeCleanCommand<T>(subcommand: SubCommandInterface, options: OptionValues, outputFormat: string) {
-      const response = await AwsCloudChiprCli.executeCommand<T>(CloudChiprCommand.clean(), subcommand, options)
-      AwsCloudChiprCli.output(response.items, outputFormat)
+  private static async executeCleanCommand<T> (subcommand: SubCommandInterface, options: OptionValues, outputFormat: string) {
+    const response = await AwsCloudChiprCli.executeCommand<T>(CloudChiprCommand.clean(), subcommand, options)
+    AwsCloudChiprCli.output(response.items, outputFormat)
   }
 
   private executeCleanCommandWithPrompt<T extends ProviderResource> (subcommand: SubCommandInterface, options: OptionValues, outputFormat: string, force: boolean) {
