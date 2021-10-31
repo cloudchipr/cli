@@ -1,4 +1,10 @@
-import { EngineRequest, FilterBuilder, Command, SubCommandInterface, Parameter, Configuration } from '@cloudchipr/cloudchipr-engine'
+import {
+  EngineRequest,
+  Command,
+  SubCommandInterface,
+  Parameter,
+  Configuration
+} from '@cloudchipr/cloudchipr-engine'
 import { OptionValues } from 'commander'
 import CredentialProvider from './credential-provider'
 import { FilterProvider } from './filter-provider'
@@ -28,7 +34,7 @@ export default class EngineRequestBuilder {
         EngineRequestBuilder.buildConfiguration(this.options),
         this.command,
         this.subCommand,
-        EngineRequestBuilder.buildParameter(this.options)
+        EngineRequestBuilder.buildParameter(this.options, this.subCommand)
       )
     }
 
@@ -43,10 +49,9 @@ export default class EngineRequestBuilder {
       return new Configuration(credentials.getAccessKey(), credentials.getSecretKey(), options.region)
     }
 
-    private static buildParameter (options: OptionValues): Parameter {
-      const builder = new FilterBuilder()
+    private static buildParameter (options: OptionValues, subCommand: SubCommandInterface): Parameter {
       const filterProvider = new FilterProvider()
-      const filter = builder.load(filterProvider.getFilter(options.filter)).toList()
+      const filter = filterProvider.getFilter(options, subCommand)
 
       return new Parameter(filter, false)
     }
