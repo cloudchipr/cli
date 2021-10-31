@@ -15,14 +15,14 @@ export class FilterProvider {
     } else {
       switch (subCommand.getValue()) {
         case AwsSubCommand.EC2_SUBCOMMAND:
-          filter = FilterProvider.GetEc2DefaultFilter()
+          filter = FilterProvider.getEc2DefaultFilter()
       }
     }
 
     return filter
   }
 
-  private static GetEc2DefaultFilter (): FilterInterface {
+  private static getEc2DefaultFilter (): FilterInterface {
     const builder = new FilterBuilder()
 
     return builder
