@@ -1,5 +1,6 @@
-import ProviderResource from '../../../cloudchipr-engine/lib/domain/types/provider-resource'
-import { Ebs, Ec2, Eip, Rds } from '../../../cloudchipr-engine'
+import {
+  Ec2, Ebs, Elb, Nlb, Alb, Eip, Rds, ProviderResource
+} from '@cloudchipr/cloudchipr-engine'
 
 export default class CollectResponseDecorator {
   decorate (resources: ProviderResource[]) {
@@ -49,6 +50,18 @@ export default class CollectResponseDecorator {
       'Price per month': CollectResponseDecorator.formatPrice(eip.pricePerMonth),
       'Name Tag': eip.nameTag
     }
+  }
+
+  elb (elb: Elb) {
+    return elb
+  }
+
+  nlb (nlb: Nlb) {
+    return nlb
+  }
+
+  alb (alb: Alb) {
+    return alb
   }
 
   private static formatPrice (price: number): string {
