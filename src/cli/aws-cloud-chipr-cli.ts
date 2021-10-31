@@ -6,11 +6,11 @@ import {
   AwsSubCommand,
   AWSShellEngineAdapter,
   Command as CloudChiprCommand,
-  Ec2, Ebs, Elb, Nlb, Alb, Eip, Rds, SubCommandInterface
+  Ec2, Ebs, Elb, Nlb, Alb, Eip, Rds, SubCommandInterface, ProviderResource
 } from '@cloudchipr/cloudchipr-engine'
 import CloudChiprCliInterface from './cloud-chipr-cli-interface'
 import inquirer from 'inquirer'
-
+import CollectResponseDecorator from '../responses/collect-response-decorator'
 export default class AwsCloudChiprCli implements CloudChiprCliInterface {
   customiseCommand (command: Command): CloudChiprCliInterface {
     command
@@ -202,17 +202,17 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
   //   return this
   // }
 
-  private static executeCollectCommand<T> (subcommand: SubCommandInterface, options: OptionValues, outputFormat: string) {
-    const response = AwsCloudChiprCli.executeCommand<T>(CloudChiprCommand.collect(), subcommand, options)
+  private static async executeCollectCommand<T extends ProviderResource> (subcommand: SubCommandInterface, options: OptionValues, outputFormat: string) {
+    const response = await AwsCloudChiprCli.executeCommand<T>(CloudChiprCommand.collect(), subcommand, options)
+    AwsCloudChiprCli.output((new CollectResponseDecorator()).decorate(response.items), outputFormat)
+  }
+
+  private static async executeCleanCommand<T> (subcommand: SubCommandInterface, options: OptionValues, outputFormat: string) {
+    const response = await AwsCloudChiprCli.executeCommand<T>(CloudChiprCommand.clean(), subcommand, options)
     AwsCloudChiprCli.output(response.items, outputFormat)
   }
 
-  private static executeCleanCommand<T> (subcommand: SubCommandInterface, options: OptionValues, outputFormat: string) {
-    const response = AwsCloudChiprCli.executeCommand<T>(CloudChiprCommand.clean(), subcommand, options)
-    AwsCloudChiprCli.output(response.items, outputFormat)
-  }
-
-  private executeCleanCommandWithPrompt<T> (subcommand: SubCommandInterface, options: OptionValues, outputFormat: string, force: boolean) {
+  private executeCleanCommandWithPrompt<T extends ProviderResource> (subcommand: SubCommandInterface, options: OptionValues, outputFormat: string, force: boolean) {
     if (force) {
       AwsCloudChiprCli.executeCleanCommand<T>(subcommand, options, outputFormat)
       return
@@ -232,7 +232,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
       .setCommand(command)
       .setSubCommand(subcommand)
       .build()
-    const engineAdapter = new AWSShellEngineAdapter<T>(process.env.C8R_CUSTODIAN as string)
+    const engineAdapter = new AWSShellEngineAdapter<T>(request.configuration, process.env.C8R_CUSTODIAN as string)
     return engineAdapter.execute(request)
   }
 
