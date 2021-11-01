@@ -29,13 +29,18 @@ export default class CollectResponseDecorator {
   }
 
   ec2Clean (succeededResources: Ec2[], requestedResources: Ec2[]) {
-    return succeededResources
+    const data = succeededResources
       .map(r => this.clean('ec2', r.id.toString(), true))
       .concat(
         requestedResources
           .filter(r => succeededResources.findIndex(sr => sr.id === r.id) === -1)
           .map(r => this.clean('ec2', r.id.toString(), false))
       )
+    const price = succeededResources.map(r => r.pricePerMonth).reduce((a, b) => a + b, 0)
+    return {
+      data: data,
+      price: CollectResponseDecorator.formatPrice(price)
+    }
   }
 
   ebs (ebs: Ebs) {
@@ -50,13 +55,18 @@ export default class CollectResponseDecorator {
   }
 
   ebsClean (succeededResources: Ebs[], requestedResources: Ebs[]) {
-    return succeededResources
+    const data = succeededResources
       .map(r => this.clean('ebs', r.id.toString(), true))
       .concat(
         requestedResources
           .filter(r => succeededResources.findIndex(sr => sr.id === r.id) === -1)
           .map(r => this.clean('ebs', r.id.toString(), false))
       )
+    const price = succeededResources.map(r => r.pricePerMonth).reduce((a, b) => a + b, 0)
+    return {
+      data: data,
+      price: CollectResponseDecorator.formatPrice(price)
+    }
   }
 
   rds (rds: Rds) {
@@ -71,13 +81,18 @@ export default class CollectResponseDecorator {
   }
 
   rdsClean (succeededResources: Rds[], requestedResources: Rds[]) {
-    return succeededResources
+    const data = succeededResources
       .map(r => this.clean('rds', r.id.toString(), true))
       .concat(
         requestedResources
           .filter(r => succeededResources.findIndex(sr => sr.id === r.id) === -1)
           .map(r => this.clean('rds', r.id.toString(), false))
       )
+    const price = succeededResources.map(r => r.pricePerMonthGB).reduce((a, b) => a + b, 0)
+    return {
+      data: data,
+      price: CollectResponseDecorator.formatPrice(price)
+    }
   }
 
   eip (eip: Eip) {
@@ -89,13 +104,18 @@ export default class CollectResponseDecorator {
   }
 
   eipClean (succeededResources: Eip[], requestedResources: Eip[]) {
-    return succeededResources
+    const data = succeededResources
       .map(r => this.clean('eip', r.ip.toString(), true))
       .concat(
         requestedResources
           .filter(r => succeededResources.findIndex(sr => sr.ip === r.ip) === -1)
           .map(r => this.clean('eip', r.ip.toString(), false))
       )
+    const price = succeededResources.map(r => r.pricePerMonth).reduce((a, b) => a + b, 0)
+    return {
+      data: data,
+      price: CollectResponseDecorator.formatPrice(price)
+    }
   }
 
   elb (elb: Elb) {
@@ -108,13 +128,18 @@ export default class CollectResponseDecorator {
   }
 
   elbClean (succeededResources: Elb[], requestedResources: Elb[]) {
-    return succeededResources
+    const data = succeededResources
       .map(r => this.clean('elb', r.dnsName.toString(), true))
       .concat(
         requestedResources
           .filter(r => succeededResources.findIndex(sr => sr.dnsName === r.dnsName) === -1)
           .map(r => this.clean('elb', r.dnsName.toString(), false))
       )
+    const price = succeededResources.map(r => r.pricePerMonth).reduce((a, b) => a + b, 0)
+    return {
+      data: data,
+      price: CollectResponseDecorator.formatPrice(price)
+    }
   }
 
   nlb (nlb: Nlb) {
@@ -127,13 +152,18 @@ export default class CollectResponseDecorator {
   }
 
   nlbClean (succeededResources: Nlb[], requestedResources: Nlb[]) {
-    return succeededResources
+    const data = succeededResources
       .map(r => this.clean('nlb', r.dnsName.toString(), true))
       .concat(
         requestedResources
           .filter(r => succeededResources.findIndex(sr => sr.dnsName === r.dnsName) === -1)
           .map(r => this.clean('nlb', r.dnsName.toString(), false))
       )
+    const price = succeededResources.map(r => r.pricePerMonth).reduce((a, b) => a + b, 0)
+    return {
+      data: data,
+      price: CollectResponseDecorator.formatPrice(price)
+    }
   }
 
   alb (alb: Alb) {
@@ -146,13 +176,18 @@ export default class CollectResponseDecorator {
   }
 
   albClean (succeededResources: Alb[], requestedResources: Alb[]) {
-    return succeededResources
+    const data = succeededResources
       .map(r => this.clean('alb', r.dnsName.toString(), true))
       .concat(
         requestedResources
           .filter(r => succeededResources.findIndex(sr => sr.dnsName === r.dnsName) === -1)
           .map(r => this.clean('alb', r.dnsName.toString(), false))
       )
+    const price = succeededResources.map(r => r.pricePerMonth).reduce((a, b) => a + b, 0)
+    return {
+      data: data,
+      price: CollectResponseDecorator.formatPrice(price)
+    }
   }
 
   clean (subcommand: string, id: string, success: boolean) {
