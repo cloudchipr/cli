@@ -4,6 +4,7 @@ import { OutputYaml } from './output-yaml'
 import { OutputTable } from './output-table'
 import { OutputText } from './output-text'
 import { OutputInterface } from './output-interface'
+import { OutputRowDelete } from './output-row-delete';
 
 export class OutputService {
   public print (data: any, format: string = 'text'): void {
@@ -19,6 +20,10 @@ export class OutputService {
       }
       case OutputFormats.TABLE: {
         output = new OutputTable()
+        break
+      }
+      case OutputFormats.ROW_DELETE: {
+        output = new OutputRowDelete()
         break
       }
       default: {

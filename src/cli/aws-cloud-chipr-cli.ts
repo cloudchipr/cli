@@ -1,5 +1,5 @@
 import { Command, Option, OptionValues } from 'commander'
-import { Profile } from '../constants'
+import { OutputFormats, Profile } from '../constants'
 import { OutputService } from '../services/output/output-service'
 import EngineRequestBuilder from '../engine-request-builder'
 import {
@@ -11,6 +11,8 @@ import {
 import CloudChiprCliInterface from './cloud-chipr-cli-interface'
 import inquirer from 'inquirer'
 import CollectResponseDecorator from '../responses/collect-response-decorator'
+import chalk from 'chalk'
+
 export default class AwsCloudChiprCli implements CloudChiprCliInterface {
   customiseCommand (command: Command): CloudChiprCliInterface {
     command
@@ -207,20 +209,26 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
     AwsCloudChiprCli.output((new CollectResponseDecorator()).decorate(response.items), outputFormat)
   }
 
-  private static async executeCleanCommand<T> (subcommand: SubCommandInterface, options: OptionValues, outputFormat: string) {
+  private static async executeCleanCommand<T extends ProviderResource> (subcommand: SubCommandInterface, options: OptionValues, collect: any[]) {
     const response = await AwsCloudChiprCli.executeCommand<T>(CloudChiprCommand.clean(), subcommand, options)
-    AwsCloudChiprCli.output(response.items, outputFormat)
+    AwsCloudChiprCli.output((new CollectResponseDecorator()).decorateClean(response.items, collect, subcommand.getValue()), OutputFormats.ROW_DELETE)
+    AwsCloudChiprCli.output(`All done, you just saved ${chalk.hex('#00FF00')('xxx')} per month!!!`)
   }
 
-  private executeCleanCommandWithPrompt<T extends ProviderResource> (subcommand: SubCommandInterface, options: OptionValues, outputFormat: string, force: boolean) {
-    if (force) {
-      AwsCloudChiprCli.executeCleanCommand<T>(subcommand, options, outputFormat)
+  private async executeCleanCommandWithPrompt<T extends ProviderResource> (subcommand: SubCommandInterface, options: OptionValues, outputFormat: string, force: boolean) {
+    const collect = await AwsCloudChiprCli.executeCommand<T>(CloudChiprCommand.collect(), subcommand, options)
+    if (collect.count === 0) {
+      AwsCloudChiprCli.output('Nothing to clean now, please try again later!', OutputFormats.TEXT)
       return
     }
-    AwsCloudChiprCli.executeCollectCommand<T>(subcommand, options, outputFormat)
+    if (force) {
+      await AwsCloudChiprCli.executeCleanCommand<T>(subcommand, options, collect.items)
+      return
+    }
+    AwsCloudChiprCli.output((new CollectResponseDecorator()).decorate(collect.items), outputFormat)
     AwsCloudChiprCli.prompt().then((confirm) => {
       if (confirm) {
-        AwsCloudChiprCli.executeCleanCommand<T>(subcommand, options, outputFormat)
+        AwsCloudChiprCli.executeCleanCommand<T>(subcommand, options, collect.items)
       }
     })
   }
@@ -247,7 +255,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
     return !!confirm.proceed
   }
 
-  private static output (items: any[], format: string): void {
+  private static output (items: any, format?: string): void {
     (new OutputService()).print(items, format)
   }
 }

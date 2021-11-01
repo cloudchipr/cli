@@ -7,61 +7,160 @@ export default class CollectResponseDecorator {
     return resources.map(resource => this.eachItem(resource))
   }
 
+  decorateClean (succeededResources: ProviderResource[], requestedResources: ProviderResource[], subcommand: string) {
+    return this[`${subcommand}Clean`](succeededResources, requestedResources)
+  }
+
   eachItem (resource: ProviderResource) {
     return this[resource.constructor.name.toLowerCase()](resource)
   }
 
   ec2 (ec2: Ec2) {
     return {
-      InstanceID: ec2.id,
+      'Instance ID': ec2.id,
       'Instance type': ec2.type,
-      'Price per month': CollectResponseDecorator.formatPrice(ec2.pricePerMonth),
-      Age: ec2.age,
+      'CPU %': ec2.cpu,
+      'NetIn': ec2.networkIn,
+      'NetOut': ec2.networkOut,
+      'Price Per Month': CollectResponseDecorator.formatPrice(ec2.pricePerMonth),
+      'Age': ec2.age,
       'Name Tag': ec2.nameTag
     }
   }
 
+  ec2Clean (succeededResources: Ec2[], requestedResources: Ec2[]) {
+    return succeededResources
+      .map(r => this.clean('ec2', r.id.toString(), true))
+      .concat(
+        requestedResources
+          .filter(r => succeededResources.findIndex(sr => sr.id === r.id) === -1)
+          .map(r => this.clean('ec2', r.id.toString(), false))
+      )
+  }
+
   ebs (ebs: Ebs) {
     return {
-      ID: ebs.id,
-      Type: ebs.type,
-      Size: ebs.size,
-      Age: ebs.size,
-      'Price per month': CollectResponseDecorator.formatPrice(ebs.pricePerMonth),
+      'Instance ID': ebs.id,
+      'Instance Type': ebs.type,
+      'Size': ebs.size,
+      'Age': ebs.size,
+      'Price Per Month': CollectResponseDecorator.formatPrice(ebs.pricePerMonth),
       'Name Tag': ebs.nameTag
     }
   }
 
+  ebsClean (succeededResources: Ebs[], requestedResources: Ebs[]) {
+    return succeededResources
+      .map(r => this.clean('ebs', r.id.toString(), true))
+      .concat(
+        requestedResources
+          .filter(r => succeededResources.findIndex(sr => sr.id === r.id) === -1)
+          .map(r => this.clean('ebs', r.id.toString(), false))
+      )
+  }
+
   rds (rds: Rds) {
     return {
-      ID: rds.id,
-      Type: rds.instanceType,
-      'Average connection': rds.averageConnections,
-      Age: rds.age,
-      'Price per month GB': CollectResponseDecorator.formatPrice(rds.pricePerMonthGB),
-      'DB Tag': rds.dbType,
+      'DB ID': rds.id,
+      'Instance Type': rds.instanceType,
+      'Average Connection': rds.averageConnections,
+      'Price Per Month GB': CollectResponseDecorator.formatPrice(rds.pricePerMonthGB),
+      'DB Type': rds.dbType,
       'Name Tag': rds.nameTag
     }
   }
 
+  rdsClean (succeededResources: Rds[], requestedResources: Rds[]) {
+    return succeededResources
+      .map(r => this.clean('rds', r.id.toString(), true))
+      .concat(
+        requestedResources
+          .filter(r => succeededResources.findIndex(sr => sr.id === r.id) === -1)
+          .map(r => this.clean('rds', r.id.toString(), false))
+      )
+  }
+
   eip (eip: Eip) {
     return {
-      'IP address': eip.ip,
-      'Price per month': CollectResponseDecorator.formatPrice(eip.pricePerMonth),
+      'IP Address': eip.ip,
+      'Price Per Month': CollectResponseDecorator.formatPrice(eip.pricePerMonth),
       'Name Tag': eip.nameTag
     }
   }
 
+  eipClean (succeededResources: Eip[], requestedResources: Eip[]) {
+    return succeededResources
+      .map(r => this.clean('eip', r.ip.toString(), true))
+      .concat(
+        requestedResources
+          .filter(r => succeededResources.findIndex(sr => sr.ip === r.ip) === -1)
+          .map(r => this.clean('eip', r.ip.toString(), false))
+      )
+  }
+
   elb (elb: Elb) {
-    return elb
+    return {
+      'DNS Name': elb.dnsName,
+      'Age': elb.age,
+      'Price Per Month': CollectResponseDecorator.formatPrice(elb.pricePerMonth),
+      'Name Tag': elb.nameTag
+    }
+  }
+
+  elbClean (succeededResources: Elb[], requestedResources: Elb[]) {
+    return succeededResources
+      .map(r => this.clean('elb', r.dnsName.toString(), true))
+      .concat(
+        requestedResources
+          .filter(r => succeededResources.findIndex(sr => sr.dnsName === r.dnsName) === -1)
+          .map(r => this.clean('elb', r.dnsName.toString(), false))
+      )
   }
 
   nlb (nlb: Nlb) {
-    return nlb
+    return {
+      'DNS Name': nlb.dnsName,
+      'Age': nlb.age,
+      'Price Per Month': CollectResponseDecorator.formatPrice(nlb.pricePerMonth),
+      'Name Tag': nlb.nameTag
+    }
+  }
+
+  nlbClean (succeededResources: Nlb[], requestedResources: Nlb[]) {
+    return succeededResources
+      .map(r => this.clean('nlb', r.dnsName.toString(), true))
+      .concat(
+        requestedResources
+          .filter(r => succeededResources.findIndex(sr => sr.dnsName === r.dnsName) === -1)
+          .map(r => this.clean('nlb', r.dnsName.toString(), false))
+      )
   }
 
   alb (alb: Alb) {
-    return alb
+    return {
+      'DNS Name': alb.dnsName,
+      'Age': alb.age,
+      'Price Per Month': CollectResponseDecorator.formatPrice(alb.pricePerMonth),
+      'Name Tag': alb.nameTag
+    }
+  }
+
+  albClean (succeededResources: Alb[], requestedResources: Alb[]) {
+    return succeededResources
+      .map(r => this.clean('alb', r.dnsName.toString(), true))
+      .concat(
+        requestedResources
+          .filter(r => succeededResources.findIndex(sr => sr.dnsName === r.dnsName) === -1)
+          .map(r => this.clean('alb', r.dnsName.toString(), false))
+      )
+  }
+
+  clean (subcommand: string, id: string, success: boolean) {
+    return {
+      'subcommand': subcommand,
+      'id': id,
+      'success': success
+    }
   }
 
   private static formatPrice (price: number): string {
