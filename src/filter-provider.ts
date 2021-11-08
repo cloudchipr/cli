@@ -1,6 +1,6 @@
 import { readFileSync } from 'fs'
 import yaml from 'yaml'
-import { AwsSubCommand, FilterBuilder, FilterInterface, SubCommandInterface } from '../../cloudchipr-engine'
+import { AwsSubCommand, FilterBuilder, FilterInterface, SubCommandInterface } from '@cloudchipr/cloudchipr-engine'
 import { OptionValues } from 'commander'
 
 export class FilterProvider {
