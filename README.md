@@ -12,9 +12,17 @@ $ cd cloudchipr-cli
 ```sh-session
 $ npm install
 ```
+* Build application
+```sh-session
+$ npm run build
+```
 * In order to use commands like `c8r [command]` or `cloudchipr [command]` run
 ```sh-session
 $ npm link
+```
+If command is `not found` try
+```shell
+chmod +x lib/index.js
 ```
 <!-- setupstop -->
 # Development
@@ -35,6 +43,6 @@ $ npm run build
 ```
 2. Run you commands
 ```shell 
- docker run -v ~/.aws/credentials:/root/.aws/credentials  c8r/cli c8r collect ebs
+ docker run -v ~/.aws/credentials:/root/.aws/credentials -it c8r/cli c8r collect ebs
 ```
 <!-- developmentstop -->
