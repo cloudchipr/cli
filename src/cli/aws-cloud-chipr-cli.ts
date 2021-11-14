@@ -12,6 +12,8 @@ import CloudChiprCliInterface from './cloud-chipr-cli-interface'
 import inquirer from 'inquirer'
 import CollectResponseDecorator from '../responses/collect-response-decorator'
 import chalk from 'chalk'
+import prettyjson from 'prettyjson'
+import { FilterExampleHelper } from '../helpers/filter-example-helper'
 
 export default class AwsCloudChiprCli implements CloudChiprCliInterface {
   customiseCommand (command: Command): CloudChiprCliInterface {
@@ -26,6 +28,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
     const parentOptions = command.parent.opts()
     command
       .command('ebs')
+      .description('A good description for Collect EBS command')
       .option('-f, --filter <type>', 'Filter')
       .action((options) => {
         AwsCloudChiprCli.executeCollectCommand<Ebs>(
@@ -34,9 +37,11 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
           parentOptions.outputFormat
         )
       })
+      .addHelpText('after', AwsCloudChiprCli.getFilterExample('ebs'))
 
     command
       .command('ec2')
+      .description('A good description for Collect EC2 command')
       .option('-f, --filter <type>', 'Filter')
       .action((options) => {
         AwsCloudChiprCli.executeCollectCommand<Ec2>(
@@ -45,9 +50,11 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
           parentOptions.outputFormat
         )
       })
+      .addHelpText('after', AwsCloudChiprCli.getFilterExample('ec2'))
 
     command
       .command('elb')
+      .description('A good description for Collect ELB command')
       .option('-f, --filter <type>', 'Filter')
       .action((options) => {
         AwsCloudChiprCli.executeCollectCommand<Elb>(
@@ -56,9 +63,11 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
           parentOptions.outputFormat
         )
       })
+      .addHelpText('after', AwsCloudChiprCli.getFilterExample('elb'))
 
     command
       .command('nlb')
+      .description('A good description for Collect NLB command')
       .option('-f, --filter <type>', 'Filter')
       .action((options) => {
         AwsCloudChiprCli.executeCollectCommand<Nlb>(
@@ -67,9 +76,11 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
           parentOptions.outputFormat
         )
       })
+      .addHelpText('after', AwsCloudChiprCli.getFilterExample('nlb'))
 
     command
       .command('alb')
+      .description('A good description for Collect ALB command')
       .option('-f, --filter <type>', 'Filter')
       .action((options) => {
         AwsCloudChiprCli.executeCollectCommand<Alb>(
@@ -78,9 +89,11 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
           parentOptions.outputFormat
         )
       })
+      .addHelpText('after', AwsCloudChiprCli.getFilterExample('alb'))
 
     command
       .command('eip')
+      .description('A good description for Collect EIP command')
       .option('-f, --filter <type>', 'Filter')
       .action((options) => {
         AwsCloudChiprCli.executeCollectCommand<Eip>(
@@ -89,9 +102,11 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
           parentOptions.outputFormat
         )
       })
+      .addHelpText('after', AwsCloudChiprCli.getFilterExample('eip'))
 
     command
       .command('rds')
+      .description('A good description for Collect RDS command')
       .option('-f, --filter <type>', 'Filter')
       .action((options) => {
         AwsCloudChiprCli.executeCollectCommand<Rds>(
@@ -100,6 +115,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
           parentOptions.outputFormat
         )
       })
+      .addHelpText('after', AwsCloudChiprCli.getFilterExample('rds'))
 
     return this
   }
@@ -108,6 +124,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
     const parentOptions = command.parent.opts()
     command
       .command('ebs')
+      .description('A good description for Clean EBS command')
       .option('--force', 'Force')
       .option('-f, --filter <type>', 'Filter')
       .action((options) => {
@@ -118,9 +135,11 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
           options.force
         )
       })
+      .addHelpText('after', AwsCloudChiprCli.getFilterExample('ebs'))
 
     command
       .command('ec2')
+      .description('A good description for Clean EC2 command')
       .option('--force', 'Force')
       .option('-f, --filter <type>', 'Filter')
       .action((options) => {
@@ -131,9 +150,11 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
           options.force
         )
       })
+      .addHelpText('after', AwsCloudChiprCli.getFilterExample('ec2'))
 
     command
       .command('elb')
+      .description('A good description for Clean ELB command')
       .option('--force', 'Force')
       .option('-f, --filter <type>', 'Filter')
       .action((options) => {
@@ -144,9 +165,11 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
           options.force
         )
       })
+      .addHelpText('after', AwsCloudChiprCli.getFilterExample('elb'))
 
     command
       .command('nlb')
+      .description('A good description for Clean NLB command')
       .option('--force', 'Force')
       .option('-f, --filter <type>', 'Filter')
       .action((options) => {
@@ -157,9 +180,11 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
           options.force
         )
       })
+      .addHelpText('after', AwsCloudChiprCli.getFilterExample('nlb'))
 
     command
       .command('alb')
+      .description('A good description for Clean ALB command')
       .option('--force', 'Force')
       .option('-f, --filter <type>', 'Filter')
       .action((options) => {
@@ -170,9 +195,11 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
           options.force
         )
       })
+      .addHelpText('after', AwsCloudChiprCli.getFilterExample('alb'))
 
     command
       .command('eip')
+      .description('A good description for Clean EIP command')
       .option('--force', 'Force')
       .option('-f, --filter <type>', 'Filter')
       .action((options) => {
@@ -183,9 +210,11 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
           options.force
         )
       })
+      .addHelpText('after', AwsCloudChiprCli.getFilterExample('eip'))
 
     command
       .command('rds')
+      .description('A good description for Clean RDS command')
       .option('--force', 'Force')
       .option('-f, --filter <type>', 'Filter')
       .action((options) => {
@@ -196,6 +225,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
           options.force
         )
       })
+      .addHelpText('after', AwsCloudChiprCli.getFilterExample('rds'))
 
     return this
   }
@@ -258,5 +288,9 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
 
   private static output (items: any, format?: string): void {
     (new OutputService()).print(items, format)
+  }
+
+  private static getFilterExample (subcommand: string): string {
+    return `\n${ chalk.yellow('Filter example (filter.yaml)') }:\n${ prettyjson.render(FilterExampleHelper.getFilter(subcommand), {dashColor: 'yellow'}) }`
   }
 }
