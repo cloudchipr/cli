@@ -1,6 +1,6 @@
 import Table from 'cli-table'
 import { OutputInterface } from './output-interface'
-import chalk from "chalk";
+import chalk from 'chalk'
 
 const COLORS = [
   '#999999',
@@ -9,7 +9,7 @@ const COLORS = [
   '#FFD966',
   '#CB3837',
   '#6D9EEB',
-  '#76A5AF',
+  '#76A5AF'
 ]
 
 export class OutputTable implements OutputInterface {
@@ -17,12 +17,25 @@ export class OutputTable implements OutputInterface {
     if (data.length === 0) { return }
 
     const table = new Table({
-      chars: { 'top': '' , 'top-mid': '' , 'top-left': '' , 'top-right': ''
-        , 'bottom': '' , 'bottom-mid': '' , 'bottom-left': '' , 'bottom-right': ''
-        , 'left': '' , 'left-mid': '' , 'mid': '' , 'mid-mid': ''
-        , 'right': '' , 'right-mid': '' , 'middle': ' ' },
+      chars: {
+        top: '',
+        'top-mid': '',
+        'top-left': '',
+        'top-right': '',
+        bottom: '',
+        'bottom-mid': '',
+        'bottom-left': '',
+        'bottom-right': '',
+        left: '',
+        'left-mid': '',
+        mid: '',
+        'mid-mid': '',
+        right: '',
+        'right-mid': '',
+        middle: ' '
+      },
       head: Object.keys(data[0]).map((header, index) => chalk.hex(COLORS[index % COLORS.length]).bold(header))
-    });
+    })
 
     data.forEach(x => {
       table.push(Object.values(x).map((x, index) => chalk.hex(COLORS[index % COLORS.length])(x)))

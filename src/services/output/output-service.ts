@@ -4,7 +4,7 @@ import { OutputYaml } from './output-yaml'
 import { OutputTable } from './output-table'
 import { OutputText } from './output-text'
 import { OutputInterface } from './output-interface'
-import { OutputRowDelete } from './output-row-delete';
+import { OutputRowDelete } from './output-row-delete'
 
 export class OutputService {
   public print (data: any, format: string = 'text'): void {

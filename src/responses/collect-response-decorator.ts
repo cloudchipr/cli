@@ -4,7 +4,9 @@ import {
 
 export default class CollectResponseDecorator {
   decorate (resources: ProviderResource[]) {
-    return resources.map(resource => this.eachItem(resource))
+    return resources
+      .sort((a:ProviderResource, b:ProviderResource) => b.pricePerHour - a.pricePerHour)
+      .map(resource => this.eachItem(resource))
   }
 
   decorateClean (succeededResources: ProviderResource[], requestedResources: ProviderResource[], subcommand: string) {
@@ -20,10 +22,10 @@ export default class CollectResponseDecorator {
       'Instance ID': ec2.id,
       'Instance type': ec2.type,
       'CPU %': ec2.cpu,
-      'NetIn': ec2.networkIn,
-      'NetOut': ec2.networkOut,
+      NetIn: ec2.networkIn,
+      NetOut: ec2.networkOut,
       'Price Per Month': CollectResponseDecorator.formatPrice(ec2.pricePerMonth),
-      'Age': ec2.age,
+      Age: ec2.age,
       'Name Tag': ec2.nameTag
     }
   }
@@ -47,8 +49,8 @@ export default class CollectResponseDecorator {
     return {
       'Instance ID': ebs.id,
       'Instance Type': ebs.type,
-      'Size': ebs.size,
-      'Age': ebs.size,
+      Size: ebs.size,
+      Age: ebs.size,
       'Price Per Month': CollectResponseDecorator.formatPrice(ebs.pricePerMonth),
       'Name Tag': ebs.nameTag
     }
@@ -121,7 +123,7 @@ export default class CollectResponseDecorator {
   elb (elb: Elb) {
     return {
       'DNS Name': elb.dnsName,
-      'Age': elb.age,
+      Age: elb.age,
       'Price Per Month': CollectResponseDecorator.formatPrice(elb.pricePerMonth),
       'Name Tag': elb.nameTag
     }
@@ -145,7 +147,7 @@ export default class CollectResponseDecorator {
   nlb (nlb: Nlb) {
     return {
       'DNS Name': nlb.dnsName,
-      'Age': nlb.age,
+      Age: nlb.age,
       'Price Per Month': CollectResponseDecorator.formatPrice(nlb.pricePerMonth),
       'Name Tag': nlb.nameTag
     }
@@ -169,7 +171,7 @@ export default class CollectResponseDecorator {
   alb (alb: Alb) {
     return {
       'DNS Name': alb.dnsName,
-      'Age': alb.age,
+      Age: alb.age,
       'Price Per Month': CollectResponseDecorator.formatPrice(alb.pricePerMonth),
       'Name Tag': alb.nameTag
     }
@@ -192,9 +194,9 @@ export default class CollectResponseDecorator {
 
   clean (subcommand: string, id: string, success: boolean) {
     return {
-      'subcommand': subcommand,
-      'id': id,
-      'success': success
+      subcommand: subcommand,
+      id: id,
+      success: success
     }
   }
 
