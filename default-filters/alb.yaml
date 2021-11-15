@@ -1,0 +1,3 @@
+and:
+  - resource: "instances"
+    op: "IsEmpty"

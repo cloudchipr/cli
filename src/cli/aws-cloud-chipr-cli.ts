@@ -12,8 +12,8 @@ import CloudChiprCliInterface from './cloud-chipr-cli-interface'
 import inquirer from 'inquirer'
 import CollectResponseDecorator from '../responses/collect-response-decorator'
 import chalk from 'chalk'
-import prettyjson from 'prettyjson'
-import { FilterExampleHelper } from '../helpers/filter-example-helper'
+import { FilterHelper } from '../helpers/filter-helper'
+import {FilterProvider} from "../filter-provider";
 
 export default class AwsCloudChiprCli implements CloudChiprCliInterface {
   customiseCommand (command: Command): CloudChiprCliInterface {
@@ -33,7 +33,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
       .action((options) => {
         AwsCloudChiprCli.executeCollectCommand<Ebs>(
           AwsSubCommand.ebs(),
-          Object.assign(parentOptions, { filter: options.filter }) as OptionValues,
+          Object.assign(parentOptions, { filter: options.filter || './default-filters/ebs.yaml' }) as OptionValues,
           parentOptions.outputFormat
         )
       })
@@ -46,7 +46,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
       .action((options) => {
         AwsCloudChiprCli.executeCollectCommand<Ec2>(
           AwsSubCommand.ec2(),
-          Object.assign(parentOptions, { filter: options.filter }) as OptionValues,
+          Object.assign(parentOptions, { filter: options.filter || './default-filters/ec2.yaml' }) as OptionValues,
           parentOptions.outputFormat
         )
       })
@@ -59,7 +59,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
       .action((options) => {
         AwsCloudChiprCli.executeCollectCommand<Elb>(
           AwsSubCommand.elb(),
-          Object.assign(parentOptions, { filter: options.filter }) as OptionValues,
+          Object.assign(parentOptions, { filter: options.filter || './default-filters/elb.yaml' }) as OptionValues,
           parentOptions.outputFormat
         )
       })
@@ -72,7 +72,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
       .action((options) => {
         AwsCloudChiprCli.executeCollectCommand<Nlb>(
           AwsSubCommand.nlb(),
-          Object.assign(parentOptions, { filter: options.filter }) as OptionValues,
+          Object.assign(parentOptions, { filter: options.filter || './default-filters/nlb.yaml' }) as OptionValues,
           parentOptions.outputFormat
         )
       })
@@ -85,7 +85,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
       .action((options) => {
         AwsCloudChiprCli.executeCollectCommand<Alb>(
           AwsSubCommand.alb(),
-          Object.assign(parentOptions, { filter: options.filter }) as OptionValues,
+          Object.assign(parentOptions, { filter: options.filter || './default-filters/alb.yaml' }) as OptionValues,
           parentOptions.outputFormat
         )
       })
@@ -98,7 +98,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
       .action((options) => {
         AwsCloudChiprCli.executeCollectCommand<Eip>(
           AwsSubCommand.eip(),
-          Object.assign(parentOptions, { filter: options.filter }) as OptionValues,
+          Object.assign(parentOptions, { filter: options.filter || './default-filters/eip.yaml' }) as OptionValues,
           parentOptions.outputFormat
         )
       })
@@ -111,7 +111,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
       .action((options) => {
         AwsCloudChiprCli.executeCollectCommand<Rds>(
           AwsSubCommand.rds(),
-          Object.assign(parentOptions, { filter: options.filter }) as OptionValues,
+          Object.assign(parentOptions, { filter: options.filter || './default-filters/rds.yaml' }) as OptionValues,
           parentOptions.outputFormat
         )
       })
@@ -130,7 +130,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
       .action((options) => {
         this.executeCleanCommandWithPrompt<Ebs>(
           AwsSubCommand.ebs(),
-          Object.assign(parentOptions, { filter: options.filter }) as OptionValues,
+          Object.assign(parentOptions, { filter: options.filter || './default-filters/ebs.yaml' }) as OptionValues,
           parentOptions.outputFormat,
           options.force
         )
@@ -145,7 +145,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
       .action((options) => {
         this.executeCleanCommandWithPrompt<Ec2>(
           AwsSubCommand.ec2(),
-          Object.assign(parentOptions, { filter: options.filter }) as OptionValues,
+          Object.assign(parentOptions, { filter: options.filter || './default-filters/ec2.yaml' }) as OptionValues,
           parentOptions.outputFormat,
           options.force
         )
@@ -160,7 +160,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
       .action((options) => {
         this.executeCleanCommandWithPrompt<Elb>(
           AwsSubCommand.elb(),
-          Object.assign(parentOptions, { filter: options.filter }) as OptionValues,
+          Object.assign(parentOptions, { filter: options.filter || './default-filters/elb.yaml' }) as OptionValues,
           parentOptions.outputFormat,
           options.force
         )
@@ -175,7 +175,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
       .action((options) => {
         this.executeCleanCommandWithPrompt<Nlb>(
           AwsSubCommand.nlb(),
-          Object.assign(parentOptions, { filter: options.filter }) as OptionValues,
+          Object.assign(parentOptions, { filter: options.filter || './default-filters/nlb.yaml' }) as OptionValues,
           parentOptions.outputFormat,
           options.force
         )
@@ -190,7 +190,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
       .action((options) => {
         this.executeCleanCommandWithPrompt<Alb>(
           AwsSubCommand.alb(),
-          Object.assign(parentOptions, { filter: options.filter }) as OptionValues,
+          Object.assign(parentOptions, { filter: options.filter || './default-filters/alb.yaml' }) as OptionValues,
           parentOptions.outputFormat,
           options.force
         )
@@ -205,7 +205,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
       .action((options) => {
         this.executeCleanCommandWithPrompt<Eip>(
           AwsSubCommand.eip(),
-          Object.assign(parentOptions, { filter: options.filter }) as OptionValues,
+          Object.assign(parentOptions, { filter: options.filter || './default-filters/eip.yaml' }) as OptionValues,
           parentOptions.outputFormat,
           options.force
         )
@@ -220,7 +220,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
       .action((options) => {
         this.executeCleanCommandWithPrompt<Rds>(
           AwsSubCommand.rds(),
-          Object.assign(parentOptions, { filter: options.filter }) as OptionValues,
+          Object.assign(parentOptions, { filter: options.filter || './default-filters/rds.yaml' }) as OptionValues,
           parentOptions.outputFormat,
           options.force
         )
@@ -292,6 +292,6 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
   }
 
   private static getFilterExample (subcommand: string): string {
-    return `\n${ chalk.yellow('Filter example (filter.yaml)') }:\n${ prettyjson.render(FilterExampleHelper.getFilter(subcommand), {dashColor: 'yellow'}) }`
+    return `\n${ chalk.yellow('Filter example (filter.yaml)') }:\n${ FilterHelper.getDefaultFilter(subcommand) }`
   }
 }

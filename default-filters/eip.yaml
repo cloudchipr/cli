@@ -1,0 +1,5 @@
+and:
+  - resource: "instance-ids"
+    op: "IsAbsent"
+  - resource: "association-ids"
+    op: "IsAbsent"

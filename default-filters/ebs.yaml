@@ -1,0 +1,6 @@
+and:
+  - resource: "attachments"
+    op: "IsEmpty"
+  - resource: "volume-age"
+    op: "GreaterThanEqualTo"
+    value: 0
