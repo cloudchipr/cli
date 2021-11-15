@@ -34,7 +34,7 @@ export default class EngineRequestBuilder {
         EngineRequestBuilder.buildConfiguration(this.options),
         this.command,
         this.subCommand,
-        EngineRequestBuilder.buildParameter(this.options, this.subCommand)
+        EngineRequestBuilder.buildParameter(this.options)
       )
     }
 
@@ -49,9 +49,9 @@ export default class EngineRequestBuilder {
       return new Configuration(credentials.getAccessKey(), credentials.getSecretKey(), options.region)
     }
 
-    private static buildParameter (options: OptionValues, subCommand: SubCommandInterface): Parameter {
+    private static buildParameter (options: OptionValues): Parameter {
       const filterProvider = new FilterProvider()
-      const filter = filterProvider.getFilter(options, subCommand)
+      const filter = filterProvider.getFilter(options)
 
       return new Parameter(filter, false)
     }
