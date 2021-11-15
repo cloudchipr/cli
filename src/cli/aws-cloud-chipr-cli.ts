@@ -13,7 +13,6 @@ import inquirer from 'inquirer'
 import CollectResponseDecorator from '../responses/collect-response-decorator'
 import chalk from 'chalk'
 import { FilterHelper } from '../helpers/filter-helper'
-import {FilterProvider} from "../filter-provider";
 const fs = require('fs')
 
 export default class AwsCloudChiprCli implements CloudChiprCliInterface {
@@ -238,7 +237,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
 
   private static async executeCollectCommand<T extends ProviderResource> (subcommand: SubCommandInterface, options: OptionValues, outputFormat: string) {
     const response = await AwsCloudChiprCli.executeCommand<T>(CloudChiprCommand.collect(), subcommand, options)
-      
+
     AwsCloudChiprCli.output((new CollectResponseDecorator()).decorate(response.items), outputFormat)
   }
 
@@ -303,7 +302,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
   }
 
   private static getFilterExample (subcommand: string): string {
-    return `\n${ chalk.yellow('Filter example (filter.yaml)') }:\n${ FilterHelper.getDefaultFilter(subcommand) }`
+    return `\n${chalk.yellow('Filter example (filter.yaml)')}:\n${FilterHelper.getDefaultFilter(subcommand)}`
   }
 
   // check if C8R_CUSTODIAN is provided and executable
