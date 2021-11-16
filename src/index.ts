@@ -2,7 +2,7 @@
 
 import chalk from 'chalk'
 import { Command, Option } from 'commander'
-import { CloudProvider, Output, OutputFormats, Region } from './constants'
+import { CloudProvider, Output, OutputFormats } from './constants'
 import CloudChiprCliProvider from './cli/cloud-chipr-cli-provider'
 require('dotenv').config()
 
@@ -10,7 +10,6 @@ const command = new Command()
 command
   .description('CloudChipr CLI')
   .addOption(new Option('--cloud-provider <cloud-provider>', 'Cloud provider').default(CloudProvider.AWS).choices(Object.values(CloudProvider)))
-  .addOption(new Option('--region <region>', 'Region').default(Region.US_EAST_1))
   .addOption(new Option('--verbose <verbose>', 'Verbose').default(0))
   .addOption(new Option('--version <version>', 'Version'))
   .addOption(new Option('--dry-run <dry-run>', 'Dry run'))

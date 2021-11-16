@@ -1,5 +1,5 @@
 import { Command, Option, OptionValues } from 'commander'
-import { OutputFormats, Profile } from '../constants'
+import { OutputFormats } from '../constants'
 import { OutputService } from '../services/output/output-service'
 import EngineRequestBuilder from '../engine-request-builder'
 import {
@@ -13,13 +13,14 @@ import inquirer from 'inquirer'
 import CollectResponseDecorator from '../responses/collect-response-decorator'
 import chalk from 'chalk'
 import { FilterHelper } from '../helpers/filter-helper'
-import {FilterProvider} from "../filter-provider";
+const fs = require('fs')
 
 export default class AwsCloudChiprCli implements CloudChiprCliInterface {
   customiseCommand (command: Command): CloudChiprCliInterface {
     command
+      .addOption(new Option('--region <region>', 'Region, default uses value of AWS_REGION env variable'))
       .addOption(new Option('--account-id <account-id>', 'Account id'))
-      .addOption(new Option('--profile <profile>', 'Profile').default(Profile.DEFAULT))
+      .addOption(new Option('--profile <profile>', 'Profile, default uses value of AWS_PROFILE env variable'))
 
     return this
   }
@@ -236,7 +237,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
 
   private static async executeCollectCommand<T extends ProviderResource> (subcommand: SubCommandInterface, options: OptionValues, outputFormat: string) {
     const response = await AwsCloudChiprCli.executeCommand<T>(CloudChiprCommand.collect(), subcommand, options)
-      
+
     AwsCloudChiprCli.output((new CollectResponseDecorator()).decorate(response.items), outputFormat)
   }
 
@@ -265,14 +266,23 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
     })
   }
 
-  private static executeCommand<T> (command: CloudChiprCommand, subcommand: SubCommandInterface, options: OptionValues) {
+  private static async executeCommand<T> (command: CloudChiprCommand, subcommand: SubCommandInterface, options: OptionValues) {
     const request = EngineRequestBuilder
       .builder()
       .setOptions(options)
       .setCommand(command)
       .setSubCommand(subcommand)
       .build()
-    const engineAdapter = new AWSShellEngineAdapter<T>(request.configuration, process.env.C8R_CUSTODIAN as string)
+
+    if (options.profile !== undefined) {
+      process.env.AWS_PROFILE = options.profile
+    }
+
+    if (options.region !== undefined) {
+      process.env.AWS_REGION = options.region
+    }
+
+    const engineAdapter = new AWSShellEngineAdapter<T>(this.getCustodian())
     return engineAdapter.execute(request)
   }
 
@@ -292,6 +302,22 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
   }
 
   private static getFilterExample (subcommand: string): string {
-    return `\n${ chalk.yellow('Filter example (filter.yaml)') }:\n${ FilterHelper.getDefaultFilter(subcommand) }`
+    return `\n${chalk.yellow('Filter example (filter.yaml)')}:\n${FilterHelper.getDefaultFilter(subcommand)}`
+  }
+
+  // check if C8R_CUSTODIAN is provided and executable
+  private static getCustodian (): string {
+    const custodian: string = process.env.C8R_CUSTODIAN
+    if (custodian === undefined) {
+      throw new Error('C8R_CUSTODIAN is not provided')
+    }
+
+    try {
+      fs.accessSync(custodian)
+    } catch (err) {
+      throw new Error('C8R_CUSTODIAN is not provided or it not executable')
+    }
+
+    return custodian
   }
 }
