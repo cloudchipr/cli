@@ -279,7 +279,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
     }
 
     if (options.region !== undefined) {
-      process.env.AWS_REGION = options.region
+      process.env.AWS_DEFAULT_REGION = options.region
     }
 
     const engineAdapter = new AWSShellEngineAdapter<T>(this.getCustodian())
