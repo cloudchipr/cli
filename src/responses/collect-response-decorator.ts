@@ -49,6 +49,7 @@ export default class CollectResponseDecorator {
     return {
       'Instance ID': ebs.id,
       'Instance Type': ebs.type,
+      State: ebs.state,
       Size: ebs.size,
       Age: ebs.age,
       'Price Per Month': CollectResponseDecorator.formatPrice(ebs.pricePerMonth),
