@@ -1,17 +1,27 @@
+const HOURS_IN_A_DAY = 24
+const HOURS_IN_A_WEEK = 168
+
 export class DateTimeHelper {
-  static getAge (datetime: string): string {
+  static convertToWeeksDaysHours (datetime?: string): string {
+    if (datetime === undefined) {
+      return 'N/A'
+    }
     const now = new Date()
     const date = new Date(datetime)
-    const diffHours = Math.round(((Math.abs(now.valueOf() - date.valueOf()) / 3600000) + Number.EPSILON) * 100) / 100
-    const diffDays = Math.round(((Math.abs(now.valueOf() - date.valueOf()) / (3600000 * 24)) + Number.EPSILON) * 100) / 100
-    if (diffHours <= 1) {
-      return `1 h`
-    } else if (diffHours <= 24) {
-      return `${diffHours} h`
-    } else if (diffHours <= 24 * 7) {
-      return `${diffDays} d`
+    const totalHours = Math.ceil(Math.abs(now.valueOf() - date.valueOf()) / 36e5)
+
+    if (totalHours < HOURS_IN_A_DAY) {
+      return `${totalHours}h`
+    } else if (totalHours < HOURS_IN_A_WEEK) {
+      const days = Math.floor(totalHours / HOURS_IN_A_DAY)
+      const hours = totalHours % HOURS_IN_A_DAY
+      return `${days}d` + (hours > 0 ? ` ${hours}h` : '')
     } else {
-      return `${Math.round(((diffDays / 7) + Number.EPSILON) * 100) / 100} w`
+      const weeks = Math.floor(totalHours / HOURS_IN_A_WEEK)
+      const tempHours = totalHours % HOURS_IN_A_WEEK
+      const days = Math.floor(tempHours / HOURS_IN_A_DAY)
+      const hours = tempHours % HOURS_IN_A_DAY
+      return `${weeks}w` + (tempHours == 0 ? '' : ` ${days}d` + (hours > 0 ? ` ${hours}h` : ''))
     }
   }
 }
