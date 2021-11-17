@@ -28,7 +28,7 @@ export default class CollectResponseDecorator {
       NetIn: SizeConvertHelper.fromBytes(ec2.networkIn),
       NetOut: SizeConvertHelper.fromBytes(ec2.networkOut),
       'Price Per Month': CollectResponseDecorator.formatPrice(ec2.pricePerMonth),
-      Age: DateTimeHelper.getAge(ec2.age),
+      Age: DateTimeHelper.convertToWeeksDaysHours(ec2.age),
       'Name Tag': ec2.nameTag
     }
   }
@@ -54,7 +54,7 @@ export default class CollectResponseDecorator {
       'Instance Type': ebs.type,
       State: ebs.state,
       Size: ebs.size,
-      Age: DateTimeHelper.getAge(ebs.age),
+      Age: DateTimeHelper.convertToWeeksDaysHours(ebs.age),
       'Price Per Month': CollectResponseDecorator.formatPrice(ebs.pricePerMonth),
       'Name Tag': ebs.nameTag
     }
@@ -127,7 +127,7 @@ export default class CollectResponseDecorator {
   elb (elb: Elb) {
     return {
       'DNS Name': elb.dnsName,
-      Age: DateTimeHelper.getAge(elb.age),
+      Age: DateTimeHelper.convertToWeeksDaysHours(elb.age),
       'Price Per Month': CollectResponseDecorator.formatPrice(elb.pricePerMonth),
       'Name Tag': elb.nameTag
     }
@@ -151,7 +151,7 @@ export default class CollectResponseDecorator {
   nlb (nlb: Nlb) {
     return {
       'DNS Name': nlb.dnsName,
-      Age: DateTimeHelper.getAge(nlb.age),
+      Age: DateTimeHelper.convertToWeeksDaysHours(nlb.age),
       'Price Per Month': CollectResponseDecorator.formatPrice(nlb.pricePerMonth),
       'Name Tag': nlb.nameTag
     }
@@ -175,7 +175,7 @@ export default class CollectResponseDecorator {
   alb (alb: Alb) {
     return {
       'DNS Name': alb.dnsName,
-      Age: DateTimeHelper.getAge(alb.age),
+      Age: DateTimeHelper.convertToWeeksDaysHours(alb.age),
       'Price Per Month': CollectResponseDecorator.formatPrice(alb.pricePerMonth),
       'Name Tag': alb.nameTag
     }
