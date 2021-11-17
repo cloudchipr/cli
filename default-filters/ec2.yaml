@@ -1,7 +1,7 @@
 and:
   - resource: "launch-time"
     op: "GreaterThanEqualTo"
-    value: 0
+    value: 14
   - resource: "cpu"
     op: "LessThanEqualTo"
     since: 1
