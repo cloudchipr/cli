@@ -14,7 +14,7 @@ command
   .addOption(new Option('--version <version>', 'Version'))
   .addOption(new Option('--dry-run <dry-run>', 'Dry run'))
   .addOption(new Option('--output <output>', 'Output').default(Output.DETAILED).choices(Object.values(Output)))
-  .addOption(new Option('--output-format <output-format>', 'Output format').default(OutputFormats.TEXT).choices(Object.values(OutputFormats)))
+  .addOption(new Option('--output-format <output-format>', 'Output format').default(OutputFormats.TABLE).choices(Object.values(OutputFormats)))
   .showSuggestionAfterError()
 
 const collect = command.command('collect').description('Display resources based on the specified subcommand and options')
