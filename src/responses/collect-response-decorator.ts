@@ -1,6 +1,9 @@
 import {
   Ec2, Ebs, Elb, Nlb, Alb, Eip, Rds, ProviderResource
 } from '@cloudchipr/cloudchipr-engine'
+import { DateTimeHelper } from '../helpers/date-time-helper'
+import { SizeConvertHelper } from '../helpers/size-convert-helper'
+import {NumberConvertHelper} from "../helpers/number-convert-helper";
 
 export default class CollectResponseDecorator {
   decorate (resources: ProviderResource[]) {
@@ -21,11 +24,11 @@ export default class CollectResponseDecorator {
     return {
       'Instance ID': ec2.id,
       'Instance type': ec2.type,
-      'CPU %': ec2.cpu,
-      NetIn: ec2.networkIn,
-      NetOut: ec2.networkOut,
+      'CPU %': NumberConvertHelper.toFixed(ec2.cpu),
+      NetIn: SizeConvertHelper.fromBytes(ec2.networkIn),
+      NetOut: SizeConvertHelper.fromBytes(ec2.networkOut),
       'Price Per Month': CollectResponseDecorator.formatPrice(ec2.pricePerMonth),
-      Age: ec2.age,
+      Age: DateTimeHelper.getAge(ec2.age),
       'Name Tag': ec2.nameTag
     }
   }
@@ -51,7 +54,7 @@ export default class CollectResponseDecorator {
       'Instance Type': ebs.type,
       State: ebs.state,
       Size: ebs.size,
-      Age: ebs.age,
+      Age: DateTimeHelper.getAge(ebs.age),
       'Price Per Month': CollectResponseDecorator.formatPrice(ebs.pricePerMonth),
       'Name Tag': ebs.nameTag
     }
@@ -124,7 +127,7 @@ export default class CollectResponseDecorator {
   elb (elb: Elb) {
     return {
       'DNS Name': elb.dnsName,
-      Age: elb.age,
+      Age: DateTimeHelper.getAge(elb.age),
       'Price Per Month': CollectResponseDecorator.formatPrice(elb.pricePerMonth),
       'Name Tag': elb.nameTag
     }
@@ -148,7 +151,7 @@ export default class CollectResponseDecorator {
   nlb (nlb: Nlb) {
     return {
       'DNS Name': nlb.dnsName,
-      Age: nlb.age,
+      Age: DateTimeHelper.getAge(nlb.age),
       'Price Per Month': CollectResponseDecorator.formatPrice(nlb.pricePerMonth),
       'Name Tag': nlb.nameTag
     }
@@ -172,7 +175,7 @@ export default class CollectResponseDecorator {
   alb (alb: Alb) {
     return {
       'DNS Name': alb.dnsName,
-      Age: alb.age,
+      Age: DateTimeHelper.getAge(alb.age),
       'Price Per Month': CollectResponseDecorator.formatPrice(alb.pricePerMonth),
       'Name Tag': alb.nameTag
     }
