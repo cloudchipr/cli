@@ -132,7 +132,6 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
         this.executeCleanCommandWithPrompt<Ebs>(
           AwsSubCommand.ebs(),
           Object.assign(parentOptions, { filter: options.filter || './default-filters/ebs.yaml' }) as OptionValues,
-          parentOptions.outputFormat,
           options.force
         )
       })
@@ -147,7 +146,6 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
         this.executeCleanCommandWithPrompt<Ec2>(
           AwsSubCommand.ec2(),
           Object.assign(parentOptions, { filter: options.filter || './default-filters/ec2.yaml' }) as OptionValues,
-          parentOptions.outputFormat,
           options.force
         )
       })
@@ -162,7 +160,6 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
         this.executeCleanCommandWithPrompt<Elb>(
           AwsSubCommand.elb(),
           Object.assign(parentOptions, { filter: options.filter || './default-filters/elb.yaml' }) as OptionValues,
-          parentOptions.outputFormat,
           options.force
         )
       })
@@ -177,7 +174,6 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
         this.executeCleanCommandWithPrompt<Nlb>(
           AwsSubCommand.nlb(),
           Object.assign(parentOptions, { filter: options.filter || './default-filters/nlb.yaml' }) as OptionValues,
-          parentOptions.outputFormat,
           options.force
         )
       })
@@ -192,7 +188,6 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
         this.executeCleanCommandWithPrompt<Alb>(
           AwsSubCommand.alb(),
           Object.assign(parentOptions, { filter: options.filter || './default-filters/alb.yaml' }) as OptionValues,
-          parentOptions.outputFormat,
           options.force
         )
       })
@@ -207,7 +202,6 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
         this.executeCleanCommandWithPrompt<Eip>(
           AwsSubCommand.eip(),
           Object.assign(parentOptions, { filter: options.filter || './default-filters/eip.yaml' }) as OptionValues,
-          parentOptions.outputFormat,
           options.force
         )
       })
@@ -222,7 +216,6 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
         this.executeCleanCommandWithPrompt<Rds>(
           AwsSubCommand.rds(),
           Object.assign(parentOptions, { filter: options.filter || './default-filters/rds.yaml' }) as OptionValues,
-          parentOptions.outputFormat,
           options.force
         )
       })
@@ -245,10 +238,10 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
     const response = await AwsCloudChiprCli.executeCommand<T>(CloudChiprCommand.clean(), subcommand, options)
     const decoratedData = (new CollectResponseDecorator()).decorateClean(response.items, collect, subcommand.getValue())
     AwsCloudChiprCli.output(decoratedData.data, OutputFormats.ROW_DELETE)
-    AwsCloudChiprCli.output(`All done, you just saved ${chalk.hex('#00FF00')(decoratedData.price)} per month!!!`)
+    AwsCloudChiprCli.output(`All done, you just saved ${String(chalk.hex('#00FF00')(decoratedData.price))} per month!!!`)
   }
 
-  private async executeCleanCommandWithPrompt<T extends ProviderResource> (subcommand: SubCommandInterface, options: OptionValues, outputFormat: string, force: boolean) {
+  private async executeCleanCommandWithPrompt<T extends ProviderResource> (subcommand: SubCommandInterface, options: OptionValues, force: boolean) {
     const collect = await AwsCloudChiprCli.executeCommand<T>(CloudChiprCommand.collect(), subcommand, options)
     if (collect.count === 0) {
       AwsCloudChiprCli.output('Nothing to clean now, please try again later!', OutputFormats.TEXT)
@@ -258,8 +251,8 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
       await AwsCloudChiprCli.executeCleanCommand<T>(subcommand, options, collect.items)
       return
     }
-    AwsCloudChiprCli.output((new CollectResponseDecorator()).decorate(collect.items), outputFormat)
-    AwsCloudChiprCli.prompt().then((confirm) => {
+    AwsCloudChiprCli.output((new CollectResponseDecorator()).decorate(collect.items), OutputFormats.TABLE)
+    AwsCloudChiprCli.prompt(subcommand.getValue()).then((confirm) => {
       if (confirm) {
         AwsCloudChiprCli.executeCleanCommand<T>(subcommand, options, collect.items)
       }
@@ -286,12 +279,13 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
     return engineAdapter.execute(request)
   }
 
-  private static async prompt (): Promise<boolean> {
+  private static async prompt (subcommand: string): Promise<boolean> {
     const confirm = await inquirer.prompt([
       {
         type: 'confirm',
         name: 'proceed',
-        message: 'All Instances will be deleted, Are you sure you want to proceed? '
+        prefix: '',
+        message: `All ${subcommand.toUpperCase()} volumes listed above will be deleted. Are you sure you want to proceed? `
       }
     ])
     return !!confirm.proceed
