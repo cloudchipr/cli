@@ -3,7 +3,7 @@ import {
 } from '@cloudchipr/cloudchipr-engine'
 import { DateTimeHelper } from '../helpers/date-time-helper'
 import { SizeConvertHelper } from '../helpers/size-convert-helper'
-import {NumberConvertHelper} from "../helpers/number-convert-helper";
+import { NumberConvertHelper } from '../helpers/number-convert-helper'
 
 export default class CollectResponseDecorator {
   decorate (resources: ProviderResource[]) {

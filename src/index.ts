@@ -18,10 +18,6 @@ command
   .showSuggestionAfterError()
 
 const collect = command.command('collect').description('Display resources based on the specified subcommand and options')
-collect
-  .command('all')
-  .description('Display app resources based on the specified filters')
-  .option('-f, --filter <type>', 'Filter')
 
 const clean = command.command('clean').description('Remove resources from a cloud provider based on the specified subcommand and options')
 clean
