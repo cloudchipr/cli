@@ -31,7 +31,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
     const parentOptions = command.parent.opts()
     command
       .command('ebs')
-      .description('Display AWS Elastic Block Store (EBS) based on the specified filters')
+      .description('Collect EBS volumes specific information based on provided filters.')
       .option('-f, --filter <type>', 'Filter')
       .action(async (options) => {
         await AwsCloudChiprCli.executeAndOutputCollectCommand<Ebs>(
@@ -44,7 +44,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
 
     command
       .command('ec2')
-      .description('Display AWS Elastic Computing (EC2) resources based on the specified filters')
+      .description('Collect EC2 instance specific information based on provided filters.')
       .option('-f, --filter <type>', 'Filter')
       .action(async (options) => {
         await AwsCloudChiprCli.executeAndOutputCollectCommand<Ec2>(
@@ -57,7 +57,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
 
     command
       .command('elb')
-      .description('Display AWS Elastic Load Balancing (ELB) resources based on the specified filters')
+      .description('Collect ELB specific information based on provided filters.')
       .option('-f, --filter <type>', 'Filter')
       .action(async (options) => {
         await AwsCloudChiprCli.executeAndOutputCollectCommand<Elb>(
@@ -70,7 +70,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
 
     command
       .command('nlb')
-      .description('Display AWS Network Load Balancing (NLB) resources based on the specified filters')
+      .description('Collect NLB specific information based on provided filters.')
       .option('-f, --filter <type>', 'Filter')
       .action(async (options) => {
         await AwsCloudChiprCli.executeAndOutputCollectCommand<Nlb>(
@@ -83,7 +83,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
 
     command
       .command('alb')
-      .description('Display AWS Application Load Balancing (ALB) resources based on the specified filters')
+      .description('Collect ALB specific information based on provided filters.')
       .option('-f, --filter <type>', 'Filter')
       .action(async (options) => {
         await AwsCloudChiprCli.executeAndOutputCollectCommand<Alb>(
@@ -96,7 +96,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
 
     command
       .command('eip')
-      .description('Display AWS Elastic IP addresses (EIP) resources based on the specified filters')
+      .description('Collect EIP specific information based on provided filters.')
       .option('-f, --filter <type>', 'Filter')
       .action(async (options) => {
         await AwsCloudChiprCli.executeAndOutputCollectCommand<Eip>(
@@ -109,7 +109,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
 
     command
       .command('rds')
-      .description('Display AWS Relational Database Service (RDS) resources based on the specified filters')
+      .description('Collect RDS database specific information based on provided filters.')
       .option('-f, --filter <type>', 'Filter')
       .action(async (options) => {
         await AwsCloudChiprCli.executeAndOutputCollectCommand<Rds>(
@@ -122,7 +122,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
 
     command
       .command('all')
-      .description('Display app resources based on the specified filters')
+      .description('Collect app resources based on the specified filters')
       .option('-f, --filter <type>', 'Filter')
       .action(() => {
         Promise.all([
@@ -173,7 +173,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
     const parentOptions = command.parent.opts()
     command
       .command('ebs')
-      .description('Remove AWS Elastic Block Store (EBS) resources based on the specified filters')
+      .description('Terminate EBS volumes specific information based on provided filters.')
       .option('--force', 'Force')
       .option('-f, --filter <type>', 'Filter')
       .action(async (options) => {
@@ -187,7 +187,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
 
     command
       .command('ec2')
-      .description('Remove AWS Elastic Computing (EC2) resources based on the specified filters')
+      .description('Terminate EC2 instance specific information based on provided filters.')
       .option('--force', 'Force')
       .option('-f, --filter <type>', 'Filter')
       .action(async (options) => {
@@ -201,7 +201,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
 
     command
       .command('elb')
-      .description('Remove AWS Elastic Load Balancing (ELB) resources based on the specified filters')
+      .description('Terminate ELB specific information based on provided filters.')
       .option('--force', 'Force')
       .option('-f, --filter <type>', 'Filter')
       .action(async (options) => {
@@ -215,7 +215,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
 
     command
       .command('nlb')
-      .description('Remove AWS Network Load Balancing (NLB) resources based on the specified filters')
+      .description('Terminate NLB specific information based on provided filters.')
       .option('--force', 'Force')
       .option('-f, --filter <type>', 'Filter')
       .action(async (options) => {
@@ -229,7 +229,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
 
     command
       .command('alb')
-      .description('Remove AWS Application Load Balancing (ALB) resources based on the specified filters')
+      .description('Terminate ALB specific information based on provided filters.')
       .option('--force', 'Force')
       .option('-f, --filter <type>', 'Filter')
       .action(async (options) => {
@@ -243,7 +243,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
 
     command
       .command('eip')
-      .description('Remove AWS Elastic IP addresses (EIP) resources based on the specified filters')
+      .description('Terminate EIP specific information based on provided filters.')
       .option('--force', 'Force')
       .option('-f, --filter <type>', 'Filter')
       .action(async (options) => {
@@ -257,7 +257,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
 
     command
       .command('rds')
-      .description('Remove AWS Relational Database Service (RDS) resources based on the specified filters')
+      .description('Terminate RDS database specific information based on provided filters.')
       .option('--force', 'Force')
       .option('-f, --filter <type>', 'Filter')
       .action(async (options) => {
