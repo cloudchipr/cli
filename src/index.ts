@@ -16,9 +16,9 @@ command
   .addOption(new Option('--output <output>', 'Output').default(Output.DETAILED).choices(Object.values(Output)))
   .addOption(new Option('--output-format <output-format>', 'Output format').default(OutputFormats.TABLE).choices(Object.values(OutputFormats)))
   .showSuggestionAfterError()
-  .hook('preAction', () => {
+  .hook('preAction', (thisCommand) => {
     // here we need to start the spinner
-    console.log('Command starts *******')
+    console.log('Command starts *******', thisCommand.args)
   })
   .hook('postAction', () => {
     // here we need to stop and remove the spinner
