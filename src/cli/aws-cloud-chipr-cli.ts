@@ -27,7 +27,6 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
 
   customiseCollectCommand (command: Command): CloudChiprCliInterface {
     const parentOptions = command.parent.opts()
-    const timeLabel = 'command duration'
     command
       .command('ebs')
       .description('Display AWS Elastic Block Store (EBS) based on the specified filters')
