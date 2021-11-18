@@ -16,6 +16,14 @@ command
   .addOption(new Option('--output <output>', 'Output').default(Output.DETAILED).choices(Object.values(Output)))
   .addOption(new Option('--output-format <output-format>', 'Output format').default(OutputFormats.TABLE).choices(Object.values(OutputFormats)))
   .showSuggestionAfterError()
+  .hook('preAction', () => {
+    // here we need to start the spinner
+    console.log('Command starts *******')
+  })
+  .hook('postAction', () => {
+    // here we need to stop and remove the spinner
+    console.log('Command ends *******')
+  })
 
 const collect = command.command('collect').description('Display resources based on the specified subcommand and options')
 collect
