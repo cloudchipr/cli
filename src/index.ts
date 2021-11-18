@@ -4,7 +4,9 @@ import chalk from 'chalk'
 import { Command, Option } from 'commander'
 import { CloudProvider, Output, OutputFormats } from './constants'
 import CloudChiprCliProvider from './cli/cloud-chipr-cli-provider'
+import {LoadingMessageHelper} from "./helpers/loading-message-helper";
 require('dotenv').config()
+import * as readline from 'readline'
 
 const command = new Command()
 command
@@ -18,7 +20,10 @@ command
   .showSuggestionAfterError()
   .hook('preAction', (thisCommand) => {
     // here we need to start the spinner
-    console.log('Command starts *******', thisCommand.args)
+    const message = LoadingMessageHelper.getLoadingMessage(thisCommand.args[0] ?? '', thisCommand.args[1] ?? '')
+    if (message !== '') {
+      console.log(chalk.green(message))
+    }
   })
   .hook('postAction', () => {
     // here we need to stop and remove the spinner
