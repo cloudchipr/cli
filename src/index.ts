@@ -36,7 +36,9 @@ cloudChiprCli
   .customiseCleanCommand(clean)
 
 try {
-  command.parse(process.argv)
+  command.parseAsync(process.argv).catch(e => {
+    console.error(chalk.red(chalk.underline('Error:'), e.message))
+  })
 } catch (e) {
   console.error(chalk.red(chalk.underline('Error:'), e.message))
 }

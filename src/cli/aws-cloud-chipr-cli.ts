@@ -31,8 +31,8 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
       .command('ebs')
       .description('Display AWS Elastic Block Store (EBS) based on the specified filters')
       .option('-f, --filter <type>', 'Filter')
-      .action((options) => {
-        AwsCloudChiprCli.executeCollectCommand<Ebs>(
+      .action(async (options) => {
+        await AwsCloudChiprCli.executeCollectCommand<Ebs>(
           AwsSubCommand.ebs(),
           Object.assign(parentOptions, { filter: options.filter || './default-filters/ebs.yaml' }) as OptionValues,
           parentOptions.outputFormat
@@ -44,8 +44,8 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
       .command('ec2')
       .description('Display AWS Elastic Computing (EC2) resources based on the specified filters')
       .option('-f, --filter <type>', 'Filter')
-      .action((options) => {
-        AwsCloudChiprCli.executeCollectCommand<Ec2>(
+      .action(async (options) => {
+        await AwsCloudChiprCli.executeCollectCommand<Ec2>(
           AwsSubCommand.ec2(),
           Object.assign(parentOptions, { filter: options.filter || './default-filters/ec2.yaml' }) as OptionValues,
           parentOptions.outputFormat
@@ -57,8 +57,8 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
       .command('elb')
       .description('Display AWS Elastic Load Balancing (ELB) resources based on the specified filters')
       .option('-f, --filter <type>', 'Filter')
-      .action((options) => {
-        AwsCloudChiprCli.executeCollectCommand<Elb>(
+      .action(async (options) => {
+        await AwsCloudChiprCli.executeCollectCommand<Elb>(
           AwsSubCommand.elb(),
           Object.assign(parentOptions, { filter: options.filter || './default-filters/elb.yaml' }) as OptionValues,
           parentOptions.outputFormat
@@ -70,8 +70,8 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
       .command('nlb')
       .description('Display AWS Network Load Balancing (NLB) resources based on the specified filters')
       .option('-f, --filter <type>', 'Filter')
-      .action((options) => {
-        AwsCloudChiprCli.executeCollectCommand<Nlb>(
+      .action(async (options) => {
+        await AwsCloudChiprCli.executeCollectCommand<Nlb>(
           AwsSubCommand.nlb(),
           Object.assign(parentOptions, { filter: options.filter || './default-filters/nlb.yaml' }) as OptionValues,
           parentOptions.outputFormat
@@ -83,8 +83,8 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
       .command('alb')
       .description('Display AWS Application Load Balancing (ALB) resources based on the specified filters')
       .option('-f, --filter <type>', 'Filter')
-      .action((options) => {
-        AwsCloudChiprCli.executeCollectCommand<Alb>(
+      .action(async (options) => {
+        await AwsCloudChiprCli.executeCollectCommand<Alb>(
           AwsSubCommand.alb(),
           Object.assign(parentOptions, { filter: options.filter || './default-filters/alb.yaml' }) as OptionValues,
           parentOptions.outputFormat
@@ -96,8 +96,8 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
       .command('eip')
       .description('Display AWS Elastic IP addresses (EIP) resources based on the specified filters')
       .option('-f, --filter <type>', 'Filter')
-      .action((options) => {
-        AwsCloudChiprCli.executeCollectCommand<Eip>(
+      .action(async (options) => {
+        await AwsCloudChiprCli.executeCollectCommand<Eip>(
           AwsSubCommand.eip(),
           Object.assign(parentOptions, { filter: options.filter || './default-filters/eip.yaml' }) as OptionValues,
           parentOptions.outputFormat
@@ -109,8 +109,8 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
       .command('rds')
       .description('Display AWS Relational Database Service (RDS) resources based on the specified filters')
       .option('-f, --filter <type>', 'Filter')
-      .action((options) => {
-        AwsCloudChiprCli.executeCollectCommand<Rds>(
+      .action(async (options) => {
+        await AwsCloudChiprCli.executeCollectCommand<Rds>(
           AwsSubCommand.rds(),
           Object.assign(parentOptions, { filter: options.filter || './default-filters/rds.yaml' }) as OptionValues,
           parentOptions.outputFormat
@@ -128,8 +128,8 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
       .description('Remove AWS Elastic Block Store (EBS) resources based on the specified filters')
       .option('--force', 'Force')
       .option('-f, --filter <type>', 'Filter')
-      .action((options) => {
-        this.executeCleanCommandWithPrompt<Ebs>(
+      .action(async (options) => {
+        await this.executeCleanCommandWithPrompt<Ebs>(
           AwsSubCommand.ebs(),
           Object.assign(parentOptions, { filter: options.filter || './default-filters/ebs.yaml' }) as OptionValues,
           options.force
@@ -142,8 +142,8 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
       .description('Remove AWS Elastic Computing (EC2) resources based on the specified filters')
       .option('--force', 'Force')
       .option('-f, --filter <type>', 'Filter')
-      .action((options) => {
-        this.executeCleanCommandWithPrompt<Ec2>(
+      .action(async (options) => {
+        await this.executeCleanCommandWithPrompt<Ec2>(
           AwsSubCommand.ec2(),
           Object.assign(parentOptions, { filter: options.filter || './default-filters/ec2.yaml' }) as OptionValues,
           options.force
@@ -156,8 +156,8 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
       .description('Remove AWS Elastic Load Balancing (ELB) resources based on the specified filters')
       .option('--force', 'Force')
       .option('-f, --filter <type>', 'Filter')
-      .action((options) => {
-        this.executeCleanCommandWithPrompt<Elb>(
+      .action(async (options) => {
+        await this.executeCleanCommandWithPrompt<Elb>(
           AwsSubCommand.elb(),
           Object.assign(parentOptions, { filter: options.filter || './default-filters/elb.yaml' }) as OptionValues,
           options.force
@@ -170,8 +170,8 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
       .description('Remove AWS Network Load Balancing (NLB) resources based on the specified filters')
       .option('--force', 'Force')
       .option('-f, --filter <type>', 'Filter')
-      .action((options) => {
-        this.executeCleanCommandWithPrompt<Nlb>(
+      .action(async (options) => {
+        await this.executeCleanCommandWithPrompt<Nlb>(
           AwsSubCommand.nlb(),
           Object.assign(parentOptions, { filter: options.filter || './default-filters/nlb.yaml' }) as OptionValues,
           options.force
@@ -184,8 +184,8 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
       .description('Remove AWS Application Load Balancing (ALB) resources based on the specified filters')
       .option('--force', 'Force')
       .option('-f, --filter <type>', 'Filter')
-      .action((options) => {
-        this.executeCleanCommandWithPrompt<Alb>(
+      .action(async (options) => {
+        await this.executeCleanCommandWithPrompt<Alb>(
           AwsSubCommand.alb(),
           Object.assign(parentOptions, { filter: options.filter || './default-filters/alb.yaml' }) as OptionValues,
           options.force
@@ -198,8 +198,8 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
       .description('Remove AWS Elastic IP addresses (EIP) resources based on the specified filters')
       .option('--force', 'Force')
       .option('-f, --filter <type>', 'Filter')
-      .action((options) => {
-        this.executeCleanCommandWithPrompt<Eip>(
+      .action(async (options) => {
+        await this.executeCleanCommandWithPrompt<Eip>(
           AwsSubCommand.eip(),
           Object.assign(parentOptions, { filter: options.filter || './default-filters/eip.yaml' }) as OptionValues,
           options.force
@@ -212,8 +212,8 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
       .description('Remove AWS Relational Database Service (RDS) resources based on the specified filters')
       .option('--force', 'Force')
       .option('-f, --filter <type>', 'Filter')
-      .action((options) => {
-        this.executeCleanCommandWithPrompt<Rds>(
+      .action(async (options) => {
+        await this.executeCleanCommandWithPrompt<Rds>(
           AwsSubCommand.rds(),
           Object.assign(parentOptions, { filter: options.filter || './default-filters/rds.yaml' }) as OptionValues,
           options.force
