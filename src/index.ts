@@ -20,10 +20,6 @@ command
 const collect = command
   .command('collect')
   .description('Connects to the users\' cloud account(s) and collects resource information including a big variety of attributes and metadata about a given resource.\nThis data is meant to be filtered based on different criteria focused around identifying usage and reducing cloud cost by eliminating unused resources.')
-collect
-  .command('all')
-  .description('Collect app resources based on the specified filters')
-  .option('-f, --filter <type>', 'Filter')
 
 const clean = command
   .command('clean')

@@ -1,18 +1,20 @@
 import { Command, Option, OptionValues } from 'commander'
-import { OutputFormats } from '../constants'
+import { Output, OutputFormats } from '../constants'
 import { OutputService } from '../services/output/output-service'
 import EngineRequestBuilder from '../engine-request-builder'
 import {
   AwsSubCommand,
   AWSShellEngineAdapter,
   Command as CloudChiprCommand,
-  Ec2, Ebs, Elb, Nlb, Alb, Eip, Rds, SubCommandInterface, ProviderResource
+  Ec2, Ebs, Elb, Nlb, Alb, Eip, Rds, SubCommandInterface, ProviderResource,
+  Response
 } from '@cloudchipr/cloudchipr-engine'
 import CloudChiprCliInterface from './cloud-chipr-cli-interface'
 import inquirer from 'inquirer'
 import CollectResponseDecorator from '../responses/collect-response-decorator'
 import chalk from 'chalk'
 import { FilterHelper } from '../helpers/filter-helper'
+import CollectAllSummaryDecorator from '../responses/collect-all-summary-decorator'
 const fs = require('fs')
 
 export default class AwsCloudChiprCli implements CloudChiprCliInterface {
@@ -32,7 +34,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
       .description('Collect EBS volumes specific information based on provided filters.')
       .option('-f, --filter <type>', 'Filter')
       .action(async (options) => {
-        await AwsCloudChiprCli.executeCollectCommand<Ebs>(
+        await AwsCloudChiprCli.executeAndOutputCollectCommand<Ebs>(
           AwsSubCommand.ebs(),
           Object.assign(parentOptions, { filter: options.filter || './default-filters/ebs.yaml' }) as OptionValues,
           parentOptions.outputFormat
@@ -45,7 +47,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
       .description('Collect EC2 instance specific information based on provided filters.')
       .option('-f, --filter <type>', 'Filter')
       .action(async (options) => {
-        await AwsCloudChiprCli.executeCollectCommand<Ec2>(
+        await AwsCloudChiprCli.executeAndOutputCollectCommand<Ec2>(
           AwsSubCommand.ec2(),
           Object.assign(parentOptions, { filter: options.filter || './default-filters/ec2.yaml' }) as OptionValues,
           parentOptions.outputFormat
@@ -58,7 +60,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
       .description('Collect ELB specific information based on provided filters.')
       .option('-f, --filter <type>', 'Filter')
       .action(async (options) => {
-        await AwsCloudChiprCli.executeCollectCommand<Elb>(
+        await AwsCloudChiprCli.executeAndOutputCollectCommand<Elb>(
           AwsSubCommand.elb(),
           Object.assign(parentOptions, { filter: options.filter || './default-filters/elb.yaml' }) as OptionValues,
           parentOptions.outputFormat
@@ -71,7 +73,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
       .description('Collect NLB specific information based on provided filters.')
       .option('-f, --filter <type>', 'Filter')
       .action(async (options) => {
-        await AwsCloudChiprCli.executeCollectCommand<Nlb>(
+        await AwsCloudChiprCli.executeAndOutputCollectCommand<Nlb>(
           AwsSubCommand.nlb(),
           Object.assign(parentOptions, { filter: options.filter || './default-filters/nlb.yaml' }) as OptionValues,
           parentOptions.outputFormat
@@ -84,7 +86,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
       .description('Collect ALB specific information based on provided filters.')
       .option('-f, --filter <type>', 'Filter')
       .action(async (options) => {
-        await AwsCloudChiprCli.executeCollectCommand<Alb>(
+        await AwsCloudChiprCli.executeAndOutputCollectCommand<Alb>(
           AwsSubCommand.alb(),
           Object.assign(parentOptions, { filter: options.filter || './default-filters/alb.yaml' }) as OptionValues,
           parentOptions.outputFormat
@@ -97,7 +99,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
       .description('Collect EIP specific information based on provided filters.')
       .option('-f, --filter <type>', 'Filter')
       .action(async (options) => {
-        await AwsCloudChiprCli.executeCollectCommand<Eip>(
+        await AwsCloudChiprCli.executeAndOutputCollectCommand<Eip>(
           AwsSubCommand.eip(),
           Object.assign(parentOptions, { filter: options.filter || './default-filters/eip.yaml' }) as OptionValues,
           parentOptions.outputFormat
@@ -110,13 +112,59 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
       .description('Collect RDS database specific information based on provided filters.')
       .option('-f, --filter <type>', 'Filter')
       .action(async (options) => {
-        await AwsCloudChiprCli.executeCollectCommand<Rds>(
+        await AwsCloudChiprCli.executeAndOutputCollectCommand<Rds>(
           AwsSubCommand.rds(),
           Object.assign(parentOptions, { filter: options.filter || './default-filters/rds.yaml' }) as OptionValues,
           parentOptions.outputFormat
         )
       })
       .addHelpText('after', AwsCloudChiprCli.getFilterExample('rds'))
+
+    command
+      .command('all')
+      .description('Collect app resources based on the specified filters')
+      .option('-f, --filter <type>', 'Filter')
+      .action(() => {
+        Promise.all([
+          AwsCloudChiprCli.executeCollectCommand<Ebs>(
+            AwsSubCommand.ebs(),
+          Object.assign(parentOptions, { filter: './default-filters/ebs.yaml' }) as OptionValues
+          ),
+          AwsCloudChiprCli.executeCollectCommand<Ec2>(
+            AwsSubCommand.ec2(),
+          Object.assign(parentOptions, { filter: './default-filters/ec2.yaml' }) as OptionValues
+          ),
+          AwsCloudChiprCli.executeCollectCommand<Eip>(
+            AwsSubCommand.eip(),
+          Object.assign(parentOptions, { filter: './default-filters/eip.yaml' }) as OptionValues
+          ),
+          AwsCloudChiprCli.executeCollectCommand<Alb>(
+            AwsSubCommand.alb(),
+          Object.assign(parentOptions, { filter: './default-filters/alb.yaml' }) as OptionValues
+          ),
+          AwsCloudChiprCli.executeCollectCommand<Elb>(
+            AwsSubCommand.elb(),
+          Object.assign(parentOptions, { filter: './default-filters/elb.yaml' }) as OptionValues
+          ),
+          AwsCloudChiprCli.executeCollectCommand<Nlb>(
+            AwsSubCommand.nlb(),
+          Object.assign(parentOptions, { filter: './default-filters/nlb.yaml' }) as OptionValues
+          ),
+          AwsCloudChiprCli.executeCollectCommand<Rds>(
+            AwsSubCommand.rds(),
+          Object.assign(parentOptions, { filter: './default-filters/rds.yaml' }) as OptionValues
+          )]
+        ).then(result => {
+          const responses: Array<Response<ProviderResource>> = result
+          if (parentOptions.output === Output.SUMMARIZED) {
+            AwsCloudChiprCli.outputCollectCommandSummary(responses, parentOptions.outputFormat)
+          } else {
+            responses.forEach(response => {
+              AwsCloudChiprCli.outputCollectCommand(response, parentOptions.outputFormat)
+            })
+          }
+        })
+      })
 
     return this
   }
@@ -228,10 +276,21 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
   //   return this
   // }
 
-  private static async executeCollectCommand<T extends ProviderResource> (subcommand: SubCommandInterface, options: OptionValues, outputFormat: string) {
-    const response = await AwsCloudChiprCli.executeCommand<T>(CloudChiprCommand.collect(), subcommand, options)
+  private static executeCollectCommand<T extends ProviderResource> (subcommand: SubCommandInterface, options: OptionValues): Promise<Response<T>> {
+    return AwsCloudChiprCli.executeCommand<T>(CloudChiprCommand.collect(), subcommand, options)
+  }
 
+  private static outputCollectCommand<T extends ProviderResource> (response: Response<T>, outputFormat: string) {
     AwsCloudChiprCli.output((new CollectResponseDecorator()).decorate(response.items), outputFormat)
+  }
+
+  private static outputCollectCommandSummary (response: Array<Response<ProviderResource>>, outputFormat: string) {
+    AwsCloudChiprCli.output((new CollectAllSummaryDecorator()).decorate(response), outputFormat)
+  }
+
+  private static async executeAndOutputCollectCommand<T extends ProviderResource> (subcommand: SubCommandInterface, options: OptionValues, outputFormat: string) {
+    const response = await AwsCloudChiprCli.executeCollectCommand<T>(subcommand, options)
+    await AwsCloudChiprCli.outputCollectCommand<T>(response, outputFormat)
   }
 
   private static async executeCleanCommand<T extends ProviderResource> (subcommand: SubCommandInterface, options: OptionValues, collect: any[]) {
@@ -259,7 +318,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
     })
   }
 
-  private static async executeCommand<T> (command: CloudChiprCommand, subcommand: SubCommandInterface, options: OptionValues) {
+  private static async executeCommand<T> (command: CloudChiprCommand, subcommand: SubCommandInterface, options: OptionValues): Promise<Response<T>> {
     const request = EngineRequestBuilder
       .builder()
       .setOptions(options)

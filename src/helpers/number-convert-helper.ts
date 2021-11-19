@@ -3,6 +3,6 @@ export class NumberConvertHelper {
     if (decimals < 0) {
       return value
     }
-    return Math.trunc(value *  Math.pow(10, decimals)) / Math.pow(10, decimals)
+    return Math.trunc(value * Math.pow(10, decimals)) / Math.pow(10, decimals)
   }
 }
