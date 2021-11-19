@@ -21,7 +21,7 @@ export class DateTimeHelper {
       const tempHours = totalHours % HOURS_IN_A_WEEK
       const days = Math.floor(tempHours / HOURS_IN_A_DAY)
       const hours = tempHours % HOURS_IN_A_DAY
-      return `${weeks}w` + (tempHours == 0 ? '' : ` ${days}d` + (hours > 0 ? ` ${hours}h` : ''))
+      return `${weeks}w` + (tempHours === 0 ? '' : ` ${days}d` + (hours > 0 ? ` ${hours}h` : ''))
     }
   }
 }
