@@ -31,7 +31,8 @@ export default class EngineRequestBuilder {
       return new EngineRequest(
         this.command,
         this.subCommand,
-        EngineRequestBuilder.buildParameter(this.options)
+        EngineRequestBuilder.buildParameter(this.options),
+        this.options.verbose === "1"
       )
     }
 
