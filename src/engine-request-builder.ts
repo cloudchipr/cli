@@ -43,6 +43,6 @@ export default class EngineRequestBuilder {
       const filterProvider = new FilterProvider()
       const filter = filterProvider.getFilter(options)
 
-      return new Parameter(filter, false)
+      return new Parameter(filter, false, options.region as string[])
     }
 }

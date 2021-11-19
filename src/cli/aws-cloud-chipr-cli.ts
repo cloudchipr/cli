@@ -20,7 +20,7 @@ const fs = require('fs')
 export default class AwsCloudChiprCli implements CloudChiprCliInterface {
   customiseCommand (command: Command): CloudChiprCliInterface {
     command
-      .addOption(new Option('--region <region>', 'Region, default uses value of AWS_REGION env variable'))
+      .addOption(new Option('--region <string...>', 'Region, default uses value of AWS_REGION env variable'))
       .addOption(new Option('--account-id <account-id>', 'Account id'))
       .addOption(new Option('--profile <profile>', 'Profile, default uses value of AWS_PROFILE env variable'))
 
@@ -328,10 +328,6 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
 
     if (options.profile !== undefined) {
       process.env.AWS_PROFILE = options.profile
-    }
-
-    if (options.region !== undefined) {
-      process.env.AWS_DEFAULT_REGION = options.region
     }
 
     const engineAdapter = new AWSShellEngineAdapter<T>(this.getCustodian())
