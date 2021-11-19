@@ -6,7 +6,6 @@ import { CloudProvider, Output, OutputFormats } from './constants'
 import CloudChiprCliProvider from './cli/cloud-chipr-cli-provider'
 import {LoadingMessageHelper} from "./helpers/loading-message-helper";
 require('dotenv').config()
-import * as readline from 'readline'
 
 const command = new Command()
 command
