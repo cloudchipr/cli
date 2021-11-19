@@ -18,7 +18,6 @@ export default class CollectResponseDecorator {
 
   eachItem (resource: ProviderResource) {
     const item = this[resource.constructor.name.toLowerCase()](resource)
-    console.log(resource)
     if (resource.c8rRegion) {
       item.Region = resource.c8rRegion
     }
