@@ -304,7 +304,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
     const response = await AwsCloudChiprCli.executeCommand<T>(CloudChiprCommand.clean(), subcommand, options)
     const decoratedData = (new CollectResponseDecorator()).decorateClean(response.items, collect, subcommand.getValue())
     AwsCloudChiprCli.output(decoratedData.data, OutputFormats.ROW_DELETE)
-    AwsCloudChiprCli.output(`All done, you just saved ${String(chalk.hex('#00FF00')(decoratedData.price))} per month!!!`)
+    AwsCloudChiprCli.output(`🎉🎉🎉 All done, you just saved ${String(chalk.hex('#00FF00')(decoratedData.price))} per month!!!`)
   }
 
   private async executeCleanCommandWithPrompt<T extends ProviderResource> (subcommand: SubCommandInterface, options: OptionValues, force: boolean) {
