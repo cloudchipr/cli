@@ -17,7 +17,11 @@ export default class CollectResponseDecorator {
   }
 
   eachItem (resource: ProviderResource) {
-    return this[resource.constructor.name.toLowerCase()](resource)
+    const item = this[resource.constructor.name.toLowerCase()](resource)
+    if (resource.c8rRegion) {
+      item.Region = resource.c8rRegion
+    }
+    return item
   }
 
   ec2 (ec2: Ec2) {
