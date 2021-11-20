@@ -285,7 +285,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
       if (showTitle) {
         AwsCloudChiprCli.output(`✅️ ${response.items[0].constructor.name.toUpperCase()} ⬇️`, OutputFormats.TEXT)
       }
-      AwsCloudChiprCli.output((new CollectResponseDecorator()).decorate(response.items), outputFormat)
+      AwsCloudChiprCli.output((new CollectResponseDecorator()).decorate(response.items), outputFormat, showTitle ? {showTopBorder: true, showBottomBorder: true} : {})
     } else if (showNotFoundMessage) {
       AwsCloudChiprCli.output('🟡 ' + chalk.hex('#FFD800')('We found no resources matching provided filters, please modify and try again!'), OutputFormats.TEXT)
     }
@@ -353,8 +353,8 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
     return !!confirm.proceed
   }
 
-  private static output (items: any, format?: string): void {
-    (new OutputService()).print(items, format)
+  private static output (items: any, format?: string, context: object = {}): void {
+    (new OutputService()).print(items, format, context)
   }
 
   private static getFilterExample (subcommand: string): string {

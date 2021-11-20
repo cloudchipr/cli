@@ -7,7 +7,7 @@ import { OutputInterface } from './output-interface'
 import { OutputRowDelete } from './output-row-delete'
 
 export class OutputService {
-  public print (data: any, format: string = 'text'): void {
+  public print (data: any, format: string = 'text', context: object = {}): void {
     let output: OutputInterface
     switch (format) {
       case OutputFormats.JSON: {
@@ -30,6 +30,6 @@ export class OutputService {
         output = new OutputText()
       }
     }
-    output.print(data)
+    output.print(data, context)
   }
 }
