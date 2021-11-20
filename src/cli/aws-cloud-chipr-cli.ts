@@ -160,7 +160,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
             AwsCloudChiprCli.outputCollectCommandSummary(responses, parentOptions.outputFormat)
           } else {
             responses.forEach(response => {
-              AwsCloudChiprCli.outputCollectCommand(response, parentOptions.outputFormat)
+              AwsCloudChiprCli.outputCollectCommand(response, parentOptions.outputFormat, false, true)
             })
           }
         })
@@ -280,8 +280,15 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
     return AwsCloudChiprCli.executeCommand<T>(CloudChiprCommand.collect(), subcommand, options)
   }
 
-  private static outputCollectCommand<T extends ProviderResource> (response: Response<T>, outputFormat: string) {
-    AwsCloudChiprCli.output((new CollectResponseDecorator()).decorate(response.items), outputFormat)
+  private static outputCollectCommand<T extends ProviderResource> (response: Response<T>, outputFormat: string, showNotFoundMessage: boolean = true, showTitle: boolean = false) {
+    if (response.count > 0) {
+      if (showTitle) {
+        AwsCloudChiprCli.output(`✅️ ${response.items[0].constructor.name.toUpperCase()} ⬇️`, OutputFormats.TEXT)
+      }
+      AwsCloudChiprCli.output((new CollectResponseDecorator()).decorate(response.items), outputFormat)
+    } else if (showNotFoundMessage) {
+      AwsCloudChiprCli.output('🟡 ' + chalk.hex('#FFD800')('We found no resources matching provided filters, please modify and try again!'), OutputFormats.TEXT)
+    }
   }
 
   private static outputCollectCommandSummary (response: Array<Response<ProviderResource>>, outputFormat: string) {
@@ -303,7 +310,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
   private async executeCleanCommandWithPrompt<T extends ProviderResource> (subcommand: SubCommandInterface, options: OptionValues, force: boolean) {
     const collect = await AwsCloudChiprCli.executeCommand<T>(CloudChiprCommand.collect(), subcommand, options)
     if (collect.count === 0) {
-      AwsCloudChiprCli.output('Nothing to clean now, please try again later!', OutputFormats.TEXT)
+      AwsCloudChiprCli.output('🟡 ' + chalk.hex('#FFD800')('We found no resources matching provided filters, please modify and try again!'), OutputFormats.TEXT)
       return
     }
     if (force) {

@@ -18,11 +18,11 @@ export class OutputTable implements OutputInterface {
 
     const table = new Table({
       chars: {
-        top: '',
+        top: '-',
         'top-mid': '',
         'top-left': '',
         'top-right': '',
-        bottom: '',
+        bottom: '-',
         'bottom-mid': '',
         'bottom-left': '',
         'bottom-right': '',
