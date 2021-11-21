@@ -1,27 +1,62 @@
 import {
-  Ec2, Ebs, Elb, Nlb, Alb, Eip, Rds, ProviderResource
+  Ec2, Ebs, Elb, Nlb, Alb, Eip, Rds, ProviderResource, Response
 } from '@cloudchipr/cloudchipr-engine'
 import { DateTimeHelper } from '../helpers/date-time-helper'
 import { SizeConvertHelper } from '../helpers/size-convert-helper'
 import { NumberConvertHelper } from '../helpers/number-convert-helper'
+import { Output } from '../constants'
 
-export default class CollectResponseDecorator {
-  decorate (resources: ProviderResource[]) {
-    return resources
-      .sort((a:ProviderResource, b:ProviderResource) => b.pricePerHour - a.pricePerHour)
-      .map(resource => this.eachItem(resource))
+export default class ResponseDecorator {
+  decorate (resources: Response<ProviderResource>[], output: string): any[] {
+    resources = this.removeEmptyResourcesAndSortByPrice(resources)
+    let data = []
+    resources.forEach((resource: Response<ProviderResource>) => {
+      data = [...data, ...this.eachItem(resource, output)]
+    })
+    return data
   }
 
   decorateClean (succeededResources: ProviderResource[], requestedResources: ProviderResource[], subcommand: string) {
     return this[`${subcommand}Clean`](succeededResources, requestedResources)
   }
 
-  eachItem (resource: ProviderResource) {
-    const item = this[resource.constructor.name.toLowerCase()](resource)
-    if (resource.c8rRegion) {
-      item.Region = resource.c8rRegion
+  removeEmptyResourcesAndSortByPrice(resources: Array<Response<ProviderResource>>): Response<ProviderResource>[] {
+    return resources.reduce((accumulator: Array<Response<ProviderResource>>, pilot: Response<ProviderResource>) => {
+      if (pilot.count > 0) {
+        pilot.items.sort((a: ProviderResource, b: ProviderResource) => b.pricePerHour - a.pricePerHour);
+        accumulator.push(pilot);
+      }
+      return accumulator;
+    }, []);
+  }
+
+  eachItem (resource: Response<ProviderResource>, output: string) {
+    switch (output) {
+      case Output.DETAILED:
+        return this.eachItemDetail(resource)
+      case Output.SUMMARIZED:
+        return this.eachItemSummary(resource)
     }
-    return item
+  }
+
+  eachItemDetail (resource: Response<ProviderResource>) {
+    return resource.items.map((item: ProviderResource) => {
+      const data = this[item.constructor.name.toLowerCase()](item)
+      if (item.c8rRegion) {
+        data.Region = item.c8rRegion
+      }
+      return data
+    })
+  }
+
+  eachItemSummary (resource: Response<ProviderResource>) {
+    const totalPrice = resource.items.map(o => o.pricePerMonth).reduce((a, b) => a + b, 0)
+    return [
+      {
+        Service: resource.items[0].constructor.name.toUpperCase(),
+        'Cost per month': ResponseDecorator.formatPrice(totalPrice)
+      }
+    ]
   }
 
   ec2 (ec2: Ec2) {
@@ -31,7 +66,7 @@ export default class CollectResponseDecorator {
       'CPU %': NumberConvertHelper.toFixed(ec2.cpu),
       NetIn: SizeConvertHelper.fromBytes(ec2.networkIn),
       NetOut: SizeConvertHelper.fromBytes(ec2.networkOut),
-      'Price Per Month': CollectResponseDecorator.formatPrice(ec2.pricePerMonth),
+      'Price Per Month': ResponseDecorator.formatPrice(ec2.pricePerMonth),
       Age: DateTimeHelper.convertToWeeksDaysHours(ec2.age),
       'Name Tag': ec2.nameTag
     }
@@ -48,7 +83,7 @@ export default class CollectResponseDecorator {
     const price = succeededResources.map(r => r.pricePerMonth).reduce((a, b) => a + b, 0)
     return {
       data: data,
-      price: CollectResponseDecorator.formatPrice(price)
+      price: ResponseDecorator.formatPrice(price)
     }
   }
 
@@ -59,7 +94,7 @@ export default class CollectResponseDecorator {
       State: ebs.state,
       Size: ebs.size,
       Age: DateTimeHelper.convertToWeeksDaysHours(ebs.age),
-      'Price Per Month': CollectResponseDecorator.formatPrice(ebs.pricePerMonth),
+      'Price Per Month': ResponseDecorator.formatPrice(ebs.pricePerMonth),
       'Name Tag': ebs.nameTag
     }
   }
@@ -75,7 +110,7 @@ export default class CollectResponseDecorator {
     const price = succeededResources.map(r => r.pricePerMonth).reduce((a, b) => a + b, 0)
     return {
       data: data,
-      price: CollectResponseDecorator.formatPrice(price)
+      price: ResponseDecorator.formatPrice(price)
     }
   }
 
@@ -84,7 +119,7 @@ export default class CollectResponseDecorator {
       'DB ID': rds.id,
       'Instance Type': rds.instanceType,
       'Average Connection': rds.averageConnections,
-      'Price Per Month GB': CollectResponseDecorator.formatPrice(rds.pricePerMonthGB),
+      'Price Per Month GB': ResponseDecorator.formatPrice(rds.pricePerMonthGB),
       'DB Type': rds.dbType,
       'Name Tag': rds.nameTag
     }
@@ -101,14 +136,14 @@ export default class CollectResponseDecorator {
     const price = succeededResources.map(r => r.pricePerMonthGB).reduce((a, b) => a + b, 0)
     return {
       data: data,
-      price: CollectResponseDecorator.formatPrice(price)
+      price: ResponseDecorator.formatPrice(price)
     }
   }
 
   eip (eip: Eip) {
     return {
       'IP Address': eip.ip,
-      'Price Per Month': CollectResponseDecorator.formatPrice(eip.pricePerMonth),
+      'Price Per Month': ResponseDecorator.formatPrice(eip.pricePerMonth),
       'Name Tag': eip.nameTag
     }
   }
@@ -124,7 +159,7 @@ export default class CollectResponseDecorator {
     const price = succeededResources.map(r => r.pricePerMonth).reduce((a, b) => a + b, 0)
     return {
       data: data,
-      price: CollectResponseDecorator.formatPrice(price)
+      price: ResponseDecorator.formatPrice(price)
     }
   }
 
@@ -132,7 +167,7 @@ export default class CollectResponseDecorator {
     return {
       'DNS Name': elb.dnsName,
       Age: DateTimeHelper.convertToWeeksDaysHours(elb.age),
-      'Price Per Month': CollectResponseDecorator.formatPrice(elb.pricePerMonth),
+      'Price Per Month': ResponseDecorator.formatPrice(elb.pricePerMonth),
       'Name Tag': elb.nameTag
     }
   }
@@ -148,7 +183,7 @@ export default class CollectResponseDecorator {
     const price = succeededResources.map(r => r.pricePerMonth).reduce((a, b) => a + b, 0)
     return {
       data: data,
-      price: CollectResponseDecorator.formatPrice(price)
+      price: ResponseDecorator.formatPrice(price)
     }
   }
 
@@ -156,7 +191,7 @@ export default class CollectResponseDecorator {
     return {
       'DNS Name': nlb.dnsName,
       Age: DateTimeHelper.convertToWeeksDaysHours(nlb.age),
-      'Price Per Month': CollectResponseDecorator.formatPrice(nlb.pricePerMonth),
+      'Price Per Month': ResponseDecorator.formatPrice(nlb.pricePerMonth),
       'Name Tag': nlb.nameTag
     }
   }
@@ -172,7 +207,7 @@ export default class CollectResponseDecorator {
     const price = succeededResources.map(r => r.pricePerMonth).reduce((a, b) => a + b, 0)
     return {
       data: data,
-      price: CollectResponseDecorator.formatPrice(price)
+      price: ResponseDecorator.formatPrice(price)
     }
   }
 
@@ -180,7 +215,7 @@ export default class CollectResponseDecorator {
     return {
       'DNS Name': alb.dnsName,
       Age: DateTimeHelper.convertToWeeksDaysHours(alb.age),
-      'Price Per Month': CollectResponseDecorator.formatPrice(alb.pricePerMonth),
+      'Price Per Month': ResponseDecorator.formatPrice(alb.pricePerMonth),
       'Name Tag': alb.nameTag
     }
   }
@@ -196,7 +231,7 @@ export default class CollectResponseDecorator {
     const price = succeededResources.map(r => r.pricePerMonth).reduce((a, b) => a + b, 0)
     return {
       data: data,
-      price: CollectResponseDecorator.formatPrice(price)
+      price: ResponseDecorator.formatPrice(price)
     }
   }
 
