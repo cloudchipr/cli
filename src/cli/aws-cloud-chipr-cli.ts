@@ -15,10 +15,7 @@ import CollectResponseDecorator from '../responses/collect-response-decorator'
 import chalk from 'chalk'
 import { FilterHelper } from '../helpers/filter-helper'
 import CollectAllSummaryDecorator from '../responses/collect-all-summary-decorator'
-import {Spinner} from '../spinner/spinner'
 const fs = require('fs')
-
-const spinner = Spinner.getInstance()
 
 export default class AwsCloudChiprCli implements CloudChiprCliInterface {
   customiseCommand (command: Command): CloudChiprCliInterface {
@@ -128,56 +125,45 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
       .description('Collect app resources based on the specified filters')
       .option('-f, --filter <type>', 'Filter')
       .action(() => {
-        spinner.setText('Collecting EBS resources').start()
-        AwsCloudChiprCli.executeCommand<Ebs>(
-          CloudChiprCommand.collect(),
-          AwsSubCommand.ebs(),
+        Promise.all([
+          AwsCloudChiprCli.executeCollectCommand<Ebs>(
+            AwsSubCommand.ebs(),
           Object.assign(parentOptions, { filter: './default-filters/ebs.yaml' }) as OptionValues
-        ).then((response) => {
-          spinner.succeed('Done')
-          // AwsCloudChiprCli.output((new CollectResponseDecorator()).decorate(response.items))
-        }).catch(() => {
-          spinner.fail('Failed')
+          ),
+          AwsCloudChiprCli.executeCollectCommand<Ec2>(
+            AwsSubCommand.ec2(),
+          Object.assign(parentOptions, { filter: './default-filters/ec2.yaml' }) as OptionValues
+          ),
+          AwsCloudChiprCli.executeCollectCommand<Eip>(
+            AwsSubCommand.eip(),
+          Object.assign(parentOptions, { filter: './default-filters/eip.yaml' }) as OptionValues
+          ),
+          AwsCloudChiprCli.executeCollectCommand<Alb>(
+            AwsSubCommand.alb(),
+          Object.assign(parentOptions, { filter: './default-filters/alb.yaml' }) as OptionValues
+          ),
+          AwsCloudChiprCli.executeCollectCommand<Elb>(
+            AwsSubCommand.elb(),
+          Object.assign(parentOptions, { filter: './default-filters/elb.yaml' }) as OptionValues
+          ),
+          AwsCloudChiprCli.executeCollectCommand<Nlb>(
+            AwsSubCommand.nlb(),
+          Object.assign(parentOptions, { filter: './default-filters/nlb.yaml' }) as OptionValues
+          ),
+          AwsCloudChiprCli.executeCollectCommand<Rds>(
+            AwsSubCommand.rds(),
+          Object.assign(parentOptions, { filter: './default-filters/rds.yaml' }) as OptionValues
+          )]
+        ).then(result => {
+          const responses: Array<Response<ProviderResource>> = result
+          if (parentOptions.output === Output.SUMMARIZED) {
+            AwsCloudChiprCli.outputCollectCommandSummary(responses, parentOptions.outputFormat)
+          } else {
+            responses.forEach(response => {
+              AwsCloudChiprCli.outputCollectCommand(response, parentOptions.outputFormat, false, true)
+            })
+          }
         })
-        // Promise.all([
-        //   AwsCloudChiprCli.executeCollectCommand<Ebs>(
-        //     AwsSubCommand.ebs(),
-        //     Object.assign(parentOptions, { filter: './default-filters/ebs.yaml' }) as OptionValues
-        //   ),
-        //   AwsCloudChiprCli.executeCollectCommand<Ec2>(
-        //     AwsSubCommand.ec2(),
-        //     Object.assign(parentOptions, { filter: './default-filters/ec2.yaml' }) as OptionValues
-        //   ),
-        //   AwsCloudChiprCli.executeCollectCommand<Eip>(
-        //     AwsSubCommand.eip(),
-        //     Object.assign(parentOptions, { filter: './default-filters/eip.yaml' }) as OptionValues
-        //   ),
-        //   AwsCloudChiprCli.executeCollectCommand<Alb>(
-        //     AwsSubCommand.alb(),
-        //     Object.assign(parentOptions, { filter: './default-filters/alb.yaml' }) as OptionValues
-        //   ),
-        //   AwsCloudChiprCli.executeCollectCommand<Elb>(
-        //     AwsSubCommand.elb(),
-        //     Object.assign(parentOptions, { filter: './default-filters/elb.yaml' }) as OptionValues
-        //   ),
-        //   AwsCloudChiprCli.executeCollectCommand<Nlb>(
-        //     AwsSubCommand.nlb(),
-        //     Object.assign(parentOptions, { filter: './default-filters/nlb.yaml' }) as OptionValues
-        //   ),
-        //   AwsCloudChiprCli.executeCollectCommand<Rds>(
-        //     AwsSubCommand.rds(),
-        //     Object.assign(parentOptions, { filter: './default-filters/rds.yaml' }) as OptionValues
-        //   )]
-        // ).then(result => {
-        //   const responses: Array<Response<ProviderResource>> = result
-        //   if (parentOptions.output === Output.SUMMARIZED) {
-        //     AwsCloudChiprCli.outputCollectCommandSummary(responses, parentOptions.outputFormat)
-        //   } else {
-        //     responses.forEach(response => {
-        //       AwsCloudChiprCli.outputCollectCommand(response, parentOptions.outputFormat)
-        //     })
-        //   }
-        // })
       })
 
     return this
