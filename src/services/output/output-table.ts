@@ -13,16 +13,16 @@ const COLORS = [
 ]
 
 export class OutputTable implements OutputInterface {
-  public print (data: any): void {
+  public print (data: any, context: object = {}): void {
     if (data.length === 0) { return }
 
     const table = new Table({
       chars: {
-        top: '',
+        top: context.hasOwnProperty('showTopBorder') ? '-' : '',
         'top-mid': '',
         'top-left': '',
         'top-right': '',
-        bottom: '',
+        bottom: context.hasOwnProperty('showBottomBorder') ? '-' : '',
         'bottom-mid': '',
         'bottom-left': '',
         'bottom-right': '',

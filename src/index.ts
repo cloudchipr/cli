@@ -2,7 +2,7 @@
 
 import chalk from 'chalk'
 import { Command, Option } from 'commander'
-import { CloudProvider, Output, OutputFormats } from './constants'
+import { CloudProvider, Output, OutputFormats, Verbose } from './constants'
 import CloudChiprCliProvider from './cli/cloud-chipr-cli-provider'
 require('dotenv').config()
 
@@ -10,7 +10,7 @@ const command = new Command()
 command
   .description('Cloudchipr-cli (c8r) is a command line tool to help users collect, identify, filter and clean cloud resources in order to reduce resource waste and optimize cloud cost.')
   .addOption(new Option('--cloud-provider <cloud-provider>', 'Cloud provider').default(CloudProvider.AWS).choices(Object.values(CloudProvider)))
-  .addOption(new Option('--verbose <verbose>', 'Verbose').default(0))
+  .addOption(new Option('--verbose <verbose>', 'Verbose').default(Verbose.DISABLED).choices(Object.values(Verbose)))
   .addOption(new Option('--version <version>', 'Version'))
   .addOption(new Option('--dry-run <dry-run>', 'Dry run'))
   .addOption(new Option('--output <output>', 'Output').default(Output.DETAILED).choices(Object.values(Output)))

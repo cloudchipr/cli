@@ -23,7 +23,7 @@ const spinner = Spinner.getInstance()
 export default class AwsCloudChiprCli implements CloudChiprCliInterface {
   customiseCommand (command: Command): CloudChiprCliInterface {
     command
-      .addOption(new Option('--region <region>', 'Region, default uses value of AWS_REGION env variable'))
+      .addOption(new Option('--region <string...>', 'Region, default uses value of AWS_REGION env variable').default([]))
       .addOption(new Option('--account-id <account-id>', 'Account id'))
       .addOption(new Option('--profile <profile>', 'Profile, default uses value of AWS_PROFILE env variable'))
 
@@ -294,8 +294,15 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
     return AwsCloudChiprCli.executeCommand<T>(CloudChiprCommand.collect(), subcommand, options)
   }
 
-  private static outputCollectCommand<T extends ProviderResource> (response: Response<T>, outputFormat: string) {
-    AwsCloudChiprCli.output((new CollectResponseDecorator()).decorate(response.items), outputFormat)
+  private static outputCollectCommand<T extends ProviderResource> (response: Response<T>, outputFormat: string, showNotFoundMessage: boolean = true, showTitle: boolean = false) {
+    if (response.count > 0) {
+      if (showTitle) {
+        AwsCloudChiprCli.output(`✅️ ${response.items[0].constructor.name.toUpperCase()} ⬇️`, OutputFormats.TEXT)
+      }
+      AwsCloudChiprCli.output((new CollectResponseDecorator()).decorate(response.items), outputFormat, showTitle ? {showTopBorder: true, showBottomBorder: true} : {})
+    } else if (showNotFoundMessage) {
+      AwsCloudChiprCli.output('🟡 ' + chalk.hex('#FFD800')('We found no resources matching provided filters, please modify and try again!'), OutputFormats.TEXT)
+    }
   }
 
   private static outputCollectCommandSummary (response: Array<Response<ProviderResource>>, outputFormat: string) {
@@ -311,13 +318,13 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
     const response = await AwsCloudChiprCli.executeCommand<T>(CloudChiprCommand.clean(), subcommand, options)
     const decoratedData = (new CollectResponseDecorator()).decorateClean(response.items, collect, subcommand.getValue())
     AwsCloudChiprCli.output(decoratedData.data, OutputFormats.ROW_DELETE)
-    AwsCloudChiprCli.output(`All done, you just saved ${String(chalk.hex('#00FF00')(decoratedData.price))} per month!!!`)
+    AwsCloudChiprCli.output(`🎉🎉🎉 All done, you just saved ${String(chalk.hex('#00FF00')(decoratedData.price))} per month!!!`)
   }
 
   private async executeCleanCommandWithPrompt<T extends ProviderResource> (subcommand: SubCommandInterface, options: OptionValues, force: boolean) {
     const collect = await AwsCloudChiprCli.executeCommand<T>(CloudChiprCommand.collect(), subcommand, options)
     if (collect.count === 0) {
-      AwsCloudChiprCli.output('Nothing to clean now, please try again later!', OutputFormats.TEXT)
+      AwsCloudChiprCli.output('🟡 ' + chalk.hex('#FFD800')('We found no resources matching provided filters, please modify and try again!'), OutputFormats.TEXT)
       return
     }
     if (force) {
@@ -344,10 +351,6 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
       process.env.AWS_PROFILE = options.profile
     }
 
-    if (options.region !== undefined) {
-      process.env.AWS_DEFAULT_REGION = options.region
-    }
-
     const engineAdapter = new AWSShellEngineAdapter<T>(this.getCustodian())
     return engineAdapter.execute(request)
   }
@@ -364,8 +367,8 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
     return !!confirm.proceed
   }
 
-  private static output (items: any, format?: string): void {
-    (new OutputService()).print(items, format)
+  private static output (items: any, format?: string, context: object = {}): void {
+    (new OutputService()).print(items, format, context)
   }
 
   private static getFilterExample (subcommand: string): string {

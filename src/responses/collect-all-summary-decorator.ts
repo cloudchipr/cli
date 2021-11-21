@@ -1,4 +1,4 @@
-import { ProviderResource, Response } from '../../../cloudchipr-engine'
+import { ProviderResource, Response } from '@cloudchipr/cloudchipr-engine'
 
 export default class CollectAllSummaryDecorator {
   decorate (resources: Array<Response<ProviderResource>>) {
