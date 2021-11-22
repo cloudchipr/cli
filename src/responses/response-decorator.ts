@@ -23,7 +23,7 @@ export default class ResponseDecorator {
   removeEmptyResourcesAndSortByPrice(resources: Array<Response<ProviderResource>>): Response<ProviderResource>[] {
     return resources.reduce((accumulator: Array<Response<ProviderResource>>, pilot: Response<ProviderResource>) => {
       if (pilot.count > 0) {
-        pilot.items.sort((a: ProviderResource, b: ProviderResource) => b.pricePerHour - a.pricePerHour);
+        pilot.items.sort((a: ProviderResource, b: ProviderResource) => b.pricePerMonth - a.pricePerMonth);
         accumulator.push(pilot);
       }
       return accumulator;
