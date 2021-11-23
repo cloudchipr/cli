@@ -38,9 +38,7 @@ cloudChiprCli
 try {
   command.parseAsync(process.argv).catch(e => {
     console.error(chalk.red(chalk.underline('Error:'), e.message))
-    console.error(e.stack)
   })
 } catch (e) {
   console.error(chalk.red(chalk.underline('Error:'), e.message))
-  console.error(e.stack)
 }
