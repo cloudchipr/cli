@@ -13,7 +13,7 @@ command
   .addOption(new Option('--verbose <verbose>', 'Verbose').default(Verbose.DISABLED).choices(Object.values(Verbose)))
   .addOption(new Option('--version <version>', 'Version'))
   .addOption(new Option('--dry-run <dry-run>', 'Dry run'))
-  .addOption(new Option('--output <output>', 'Output').default(Output.DETAILED).choices(Object.values(Output)))
+  .addOption(new Option('--output <output>', 'Output').default(null).choices(Object.values(Output)))
   .addOption(new Option('--output-format <output-format>', 'Output format').default(OutputFormats.TABLE).choices(Object.values(OutputFormats)))
   .showSuggestionAfterError()
 

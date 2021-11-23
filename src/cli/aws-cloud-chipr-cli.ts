@@ -49,9 +49,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
           .executeAllCollectCommand(parentOptions)
           .then(result => {
             const responses: Array<Response<ProviderResource>> = result
-            if (parentOptions.output === Output.SUMMARIZED) {
-              OutputService.print((new ResponseDecorator()).decorate(responses, Output.SUMMARIZED), parentOptions.outputFormat)
-            } else {
+            if (parentOptions.output !== Output.SUMMARIZED) {
               responses.forEach((response) => {
                 if (response.count === 0) {
                   return
@@ -63,6 +61,9 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
                 }
                 OutputService.print((new ResponseDecorator()).decorate([response], Output.DETAILED), parentOptions.outputFormat, context)
               })
+            }
+            if (parentOptions.output !== Output.DETAILED) {
+              OutputService.print((new ResponseDecorator()).decorate(responses, Output.SUMMARIZED), parentOptions.outputFormat)
             }
           })
       })
@@ -98,8 +99,13 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
     const response = await AwsCloudChiprCli.executeCollectCommand<InstanceType<typeof providerResource>>(AwsSubCommand[target](), allOptions)
     if (response.count === 0) {
       OutputService.print('We found no resources matching provided filters, please modify and try again!', OutputFormats.TEXT, {type: 'warning'})
-    } else {
+      return
+    }
+    if (parentOptions.output !== null) {
       OutputService.print((new ResponseDecorator()).decorate([response], parentOptions.output), parentOptions.outputFormat)
+    } else {
+      OutputService.print((new ResponseDecorator()).decorate([response], Output.DETAILED), parentOptions.outputFormat)
+      OutputService.print((new ResponseDecorator()).decorate([response], Output.SUMMARIZED), parentOptions.outputFormat)
     }
   }
 

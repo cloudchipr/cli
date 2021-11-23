@@ -1,0 +1,11 @@
+policies:
+  - name: ebs-collect
+    resource: ebs
+    filters:
+      - and:
+          - Attachments: []
+          - type: value
+            key: CreateTime
+            op: ge
+            value_type: age
+            value: 0
