@@ -97,7 +97,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
     const allOptions = Object.assign(parentOptions, { filter: options.filter || `./default-filters/${target}.yaml` }) as OptionValues
     const response = await AwsCloudChiprCli.executeCollectCommand<InstanceType<typeof providerResource>>(AwsSubCommand[target](), allOptions)
     if (response.count === 0) {
-      OutputService.print(chalk.hex('#FFD800')('We found no resources matching provided filters, please modify and try again!'), OutputFormats.TEXT, {type: 'warning'})
+      OutputService.print('We found no resources matching provided filters, please modify and try again!', OutputFormats.TEXT, {type: 'warning'})
     } else {
       OutputService.print((new ResponseDecorator()).decorate([response], parentOptions.output), parentOptions.outputFormat)
     }
@@ -122,7 +122,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
     const allOptions = Object.assign(parentOptions, { filter: options.filter || `./default-filters/${target}.yaml` }) as OptionValues
     const collect = await AwsCloudChiprCli.executeCommand<InstanceType<typeof providerResource>>(CloudChiprCommand.collect(), AwsSubCommand[target](), allOptions)
     if (collect.count === 0) {
-      OutputService.print(chalk.hex('#FFD800')('We found no resources matching provided filters, please modify and try again!'), OutputFormats.TEXT, {type: 'warning'})
+      OutputService.print('We found no resources matching provided filters, please modify and try again!', OutputFormats.TEXT, {type: 'warning'})
       return
     }
     if (options.force) {
@@ -141,7 +141,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
     const response = await AwsCloudChiprCli.executeCommand<T>(CloudChiprCommand.clean(), subcommand, options)
     const decoratedData = (new ResponseDecorator()).decorateClean(response.items, collect, subcommand.getValue())
     OutputService.print(decoratedData.data, OutputFormats.ROW_DELETE)
-    OutputService.print(`All done, you just saved ${String(chalk.hex('#00FF00')(decoratedData.price))} per month!!!`, OutputFormats.TEXT, {type: 'superSuccess'})
+    OutputService.print(`All done, you just saved ${String(chalk.green(decoratedData.price))} per month!!!`, OutputFormats.TEXT, {type: 'superSuccess'})
   }
 
   private static async executeCommand<T> (command: CloudChiprCommand, subcommand: SubCommandInterface, options: OptionValues): Promise<Response<T>> {

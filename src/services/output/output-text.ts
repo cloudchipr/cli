@@ -1,23 +1,23 @@
 import { OutputInterface } from './output-interface'
+import chalk from 'chalk'
 
 export class OutputText implements OutputInterface {
   public print (data: any, context: any = {}): void {
-    let messagePrefix = ''
+    let message = typeof data === 'string' ? data : JSON.stringify(data)
     switch (context.type) {
-      case 'success':
-        messagePrefix = '✅️ '
-        break
       case 'superSuccess':
-        messagePrefix = '🎉🎉🎉 '
+        message = '🎉🎉🎉 ' + message
+        break
+      case 'success':
+        message = chalk.green('● ' + message)
         break
       case 'warning':
-        messagePrefix = '🟡 '
+        message = chalk.hex('#FFD800')('● ' + message)
+        break
+      case 'info':
+        message = chalk.blue('● ' + message)
         break
     }
-    if (typeof data === 'string') {
-      console.log(messagePrefix + data)
-    } else {
-      console.log(messagePrefix + JSON.stringify(data))
-    }
+    console.log(message)
   }
 }
