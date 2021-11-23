@@ -13,7 +13,7 @@ const COLORS = [
 ]
 
 export class OutputTable implements OutputInterface {
-  public print (data: any, context: object = {}): void {
+  public print (data: any, context: any = {}): void {
     if (data.length === 0) { return }
 
     const table = new Table({

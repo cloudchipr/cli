@@ -33,30 +33,30 @@ export enum SubCommands {
 export const SubCommandsDetail = {
     [SubCommands.EBS]: {
         collectDescription: 'Collect EBS volumes specific information based on provided filters.',
-        cleanDescription: '',
+        cleanDescription: 'Terminate EBS volumes specific information based on provided filters.',
     },
     [SubCommands.EC2]: {
         collectDescription: 'Collect EC2 instance specific information based on provided filters.',
-        cleanDescription: '',
+        cleanDescription: 'Terminate EC2 instance specific information based on provided filters.',
     },
     [SubCommands.ELB]: {
         collectDescription: 'Collect ELB specific information based on provided filters.',
-        cleanDescription: '',
+        cleanDescription: 'Terminate ELB specific information based on provided filters.',
     },
     [SubCommands.NLB]: {
         collectDescription: 'Collect NLB specific information based on provided filters.',
-        cleanDescription: '',
+        cleanDescription: 'Terminate NLB specific information based on provided filters.',
     },
     [SubCommands.ALB]: {
         collectDescription: 'Collect ALB specific information based on provided filters.',
-        cleanDescription: '',
+        cleanDescription: 'Terminate ALB specific information based on provided filters.',
     },
     [SubCommands.EIP]: {
         collectDescription: 'Collect EIP specific information based on provided filters.',
-        cleanDescription: '',
+        cleanDescription: 'Terminate EIP specific information based on provided filters.',
     },
     [SubCommands.RDS]: {
         collectDescription: 'Collect RDS database specific information based on provided filters.',
-        cleanDescription: '',
+        cleanDescription: 'Terminate RDS database specific information based on provided filters.',
     },
 } as const;

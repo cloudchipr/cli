@@ -7,7 +7,7 @@ import { OutputInterface } from './output-interface'
 import { OutputRowDelete } from './output-row-delete'
 
 export class OutputService {
-  public print (data: any, format: string = 'text', context: object = {}): void {
+  public static print (data: any, format: string = 'text', context: any = {}): void {
     let output: OutputInterface
     switch (format) {
       case OutputFormats.JSON: {
