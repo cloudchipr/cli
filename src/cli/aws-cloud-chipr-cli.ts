@@ -50,18 +50,18 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
           .then(result => {
             const responses: Array<Response<ProviderResource>> = result
             if (parentOptions.output === Output.SUMMARIZED) {
-              AwsCloudChiprCli.output((new ResponseDecorator()).decorate(responses, Output.SUMMARIZED), parentOptions.outputFormat)
+              OutputService.print((new ResponseDecorator()).decorate(responses, Output.SUMMARIZED), parentOptions.outputFormat)
             } else {
               responses.forEach((response) => {
                 if (response.count === 0) {
                   return
                 }
-                AwsCloudChiprCli.output(`✅️ ${response.items[0].constructor.name.toUpperCase()} ⬇️`, OutputFormats.TEXT)
+                OutputService.print(`${response.items[0].constructor.name.toUpperCase()} ⬇️`, OutputFormats.TEXT, {type: 'success'})
                 const context = {
                   showTopBorder: true,
                   showBottomBorder: true
                 }
-                AwsCloudChiprCli.output((new ResponseDecorator()).decorate([response], Output.DETAILED), parentOptions.outputFormat, context)
+                OutputService.print((new ResponseDecorator()).decorate([response], Output.DETAILED), parentOptions.outputFormat, context)
               })
             }
           })
@@ -72,103 +72,18 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
 
   customiseCleanCommand (command: Command): CloudChiprCliInterface {
     const parentOptions = command.parent.opts()
-    command
-      .command('ebs')
-      .description('Terminate EBS volumes specific information based on provided filters.')
-      .option('--force', 'Force')
-      .option('-f, --filter <type>', 'Filter')
-      .action(async (options) => {
-        await this.executeCleanCommandWithPrompt<Ebs>(
-          AwsSubCommand.ebs(),
-          Object.assign(parentOptions, { filter: options.filter || './default-filters/ebs.yaml' }) as OptionValues,
-          options.force
-        )
-      })
-      .addHelpText('after', AwsCloudChiprCli.getFilterExample('ebs'))
 
-    command
-      .command('ec2')
-      .description('Terminate EC2 instance specific information based on provided filters.')
-      .option('--force', 'Force')
-      .option('-f, --filter <type>', 'Filter')
-      .action(async (options) => {
-        await this.executeCleanCommandWithPrompt<Ec2>(
-          AwsSubCommand.ec2(),
-          Object.assign(parentOptions, { filter: options.filter || './default-filters/ec2.yaml' }) as OptionValues,
-          options.force
-        )
-      })
-      .addHelpText('after', AwsCloudChiprCli.getFilterExample('ec2'))
-
-    command
-      .command('elb')
-      .description('Terminate ELB specific information based on provided filters.')
-      .option('--force', 'Force')
-      .option('-f, --filter <type>', 'Filter')
-      .action(async (options) => {
-        await this.executeCleanCommandWithPrompt<Elb>(
-          AwsSubCommand.elb(),
-          Object.assign(parentOptions, { filter: options.filter || './default-filters/elb.yaml' }) as OptionValues,
-          options.force
-        )
-      })
-      .addHelpText('after', AwsCloudChiprCli.getFilterExample('elb'))
-
-    command
-      .command('nlb')
-      .description('Terminate NLB specific information based on provided filters.')
-      .option('--force', 'Force')
-      .option('-f, --filter <type>', 'Filter')
-      .action(async (options) => {
-        await this.executeCleanCommandWithPrompt<Nlb>(
-          AwsSubCommand.nlb(),
-          Object.assign(parentOptions, { filter: options.filter || './default-filters/nlb.yaml' }) as OptionValues,
-          options.force
-        )
-      })
-      .addHelpText('after', AwsCloudChiprCli.getFilterExample('nlb'))
-
-    command
-      .command('alb')
-      .description('Terminate ALB specific information based on provided filters.')
-      .option('--force', 'Force')
-      .option('-f, --filter <type>', 'Filter')
-      .action(async (options) => {
-        await this.executeCleanCommandWithPrompt<Alb>(
-          AwsSubCommand.alb(),
-          Object.assign(parentOptions, { filter: options.filter || './default-filters/alb.yaml' }) as OptionValues,
-          options.force
-        )
-      })
-      .addHelpText('after', AwsCloudChiprCli.getFilterExample('alb'))
-
-    command
-      .command('eip')
-      .description('Terminate EIP specific information based on provided filters.')
-      .option('--force', 'Force')
-      .option('-f, --filter <type>', 'Filter')
-      .action(async (options) => {
-        await this.executeCleanCommandWithPrompt<Eip>(
-          AwsSubCommand.eip(),
-          Object.assign(parentOptions, { filter: options.filter || './default-filters/eip.yaml' }) as OptionValues,
-          options.force
-        )
-      })
-      .addHelpText('after', AwsCloudChiprCli.getFilterExample('eip'))
-
-    command
-      .command('rds')
-      .description('Terminate RDS database specific information based on provided filters.')
-      .option('--force', 'Force')
-      .option('-f, --filter <type>', 'Filter')
-      .action(async (options) => {
-        await this.executeCleanCommandWithPrompt<Rds>(
-          AwsSubCommand.rds(),
-          Object.assign(parentOptions, { filter: options.filter || './default-filters/rds.yaml' }) as OptionValues,
-          options.force
-        )
-      })
-      .addHelpText('after', AwsCloudChiprCli.getFilterExample('rds'))
+    for (const key in SubCommandsDetail) {
+      command
+        .command(key)
+        .description(SubCommandsDetail[key].cleanDescription)
+        .option('--force', 'Force')
+        .option('-f, --filter <type>', 'Filter')
+        .action(async (options) => {
+          await AwsCloudChiprCli.executeSingleCleanCommandWithPrompt(key, parentOptions, options)
+        })
+        .addHelpText('after', AwsCloudChiprCli.getFilterExample(key))
+    }
 
     return this
   }
@@ -182,9 +97,9 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
     const allOptions = Object.assign(parentOptions, { filter: options.filter || `./default-filters/${target}.yaml` }) as OptionValues
     const response = await AwsCloudChiprCli.executeCollectCommand<InstanceType<typeof providerResource>>(AwsSubCommand[target](), allOptions)
     if (response.count === 0) {
-      AwsCloudChiprCli.output('🟡 ' + chalk.hex('#FFD800')('We found no resources matching provided filters, please modify and try again!'), OutputFormats.TEXT)
+      OutputService.print(chalk.hex('#FFD800')('We found no resources matching provided filters, please modify and try again!'), OutputFormats.TEXT, {type: 'warning'})
     } else {
-      AwsCloudChiprCli.output((new ResponseDecorator()).decorate([response], parentOptions.output), parentOptions.outputFormat)
+      OutputService.print((new ResponseDecorator()).decorate([response], parentOptions.output), parentOptions.outputFormat)
     }
   }
 
@@ -202,20 +117,22 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
     return AwsCloudChiprCli.executeCommand<T>(CloudChiprCommand.collect(), subcommand, options)
   }
 
-  private async executeCleanCommandWithPrompt<T extends ProviderResource> (subcommand: SubCommandInterface, options: OptionValues, force: boolean) {
-    const collect = await AwsCloudChiprCli.executeCommand<T>(CloudChiprCommand.collect(), subcommand, options)
+  private static async executeSingleCleanCommandWithPrompt (target: string, parentOptions: OptionValues, options: any) {
+    const providerResource = AwsCloudChiprCli.getProviderResourceFromString(target)
+    const allOptions = Object.assign(parentOptions, { filter: options.filter || `./default-filters/${target}.yaml` }) as OptionValues
+    const collect = await AwsCloudChiprCli.executeCommand<InstanceType<typeof providerResource>>(CloudChiprCommand.collect(), AwsSubCommand[target](), allOptions)
     if (collect.count === 0) {
-      AwsCloudChiprCli.output('🟡 ' + chalk.hex('#FFD800')('We found no resources matching provided filters, please modify and try again!'), OutputFormats.TEXT)
+      OutputService.print(chalk.hex('#FFD800')('We found no resources matching provided filters, please modify and try again!'), OutputFormats.TEXT, {type: 'warning'})
       return
     }
-    if (force) {
-      await AwsCloudChiprCli.executeCleanCommand<T>(subcommand, options, collect.items)
+    if (options.force) {
+      await AwsCloudChiprCli.executeCleanCommand<InstanceType<typeof providerResource>>(AwsSubCommand[target](), allOptions, collect.items)
       return
     }
-    AwsCloudChiprCli.output((new ResponseDecorator()).decorate([collect], Output.DETAILED), OutputFormats.TABLE)
-    AwsCloudChiprCli.prompt(subcommand.getValue()).then((confirm) => {
+    OutputService.print((new ResponseDecorator()).decorate([collect], Output.DETAILED), OutputFormats.TABLE)
+    AwsCloudChiprCli.prompt(AwsSubCommand[target]().getValue()).then((confirm) => {
       if (confirm) {
-        AwsCloudChiprCli.executeCleanCommand<T>(subcommand, options, collect.items)
+        AwsCloudChiprCli.executeCleanCommand<InstanceType<typeof providerResource>>(AwsSubCommand[target](), allOptions, collect.items)
       }
     })
   }
@@ -223,8 +140,8 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
   private static async executeCleanCommand<T extends ProviderResource> (subcommand: SubCommandInterface, options: OptionValues, collect: any[]) {
     const response = await AwsCloudChiprCli.executeCommand<T>(CloudChiprCommand.clean(), subcommand, options)
     const decoratedData = (new ResponseDecorator()).decorateClean(response.items, collect, subcommand.getValue())
-    AwsCloudChiprCli.output(decoratedData.data, OutputFormats.ROW_DELETE)
-    AwsCloudChiprCli.output(`🎉🎉🎉 All done, you just saved ${String(chalk.hex('#00FF00')(decoratedData.price))} per month!!!`)
+    OutputService.print(decoratedData.data, OutputFormats.ROW_DELETE)
+    OutputService.print(`All done, you just saved ${String(chalk.hex('#00FF00')(decoratedData.price))} per month!!!`, OutputFormats.TEXT, {type: 'superSuccess'})
   }
 
   private static async executeCommand<T> (command: CloudChiprCommand, subcommand: SubCommandInterface, options: OptionValues): Promise<Response<T>> {
@@ -253,10 +170,6 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
       }
     ])
     return !!confirm.proceed
-  }
-
-  private static output (items: any, format?: string, context: object = {}): void {
-    (new OutputService()).print(items, format, context)
   }
 
   private static getFilterExample (subcommand: string): string {
