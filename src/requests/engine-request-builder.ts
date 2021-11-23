@@ -3,6 +3,7 @@ import {
   EngineRequest,
   SubCommandInterface
 } from '@cloudchipr/cloudchipr-engine'
+import {OptionValues} from "commander";
 
 export default abstract class EngineRequestBuilder {
   protected command: Command
@@ -12,7 +13,7 @@ export default abstract class EngineRequestBuilder {
     this.setCommand(command)
   }
 
-  abstract setOptions (options: any): EngineRequestBuilder
+  abstract setOptions (options: OptionValues | string[]): EngineRequestBuilder
 
   setCommand (command: Command): EngineRequestBuilder {
     this.command = command
