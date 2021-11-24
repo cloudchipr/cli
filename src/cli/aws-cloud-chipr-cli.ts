@@ -1,7 +1,6 @@
 import { Command, Option, OptionValues } from 'commander'
 import {Output, OutputFormats, SubCommands, SubCommandsDetail} from '../constants'
 import { OutputService } from '../services/output/output-service'
-import EngineRequestBuilder from '../engine-request-builder'
 import {
   AwsSubCommand,
   AWSShellEngineAdapter,
@@ -14,6 +13,7 @@ import inquirer from 'inquirer'
 import chalk from 'chalk'
 import { FilterHelper } from '../helpers/filter-helper'
 import ResponseDecorator from '../responses/response-decorator'
+import EngineRequestBuilderFactory from '../requests/engine-request-builder-factory'
 const fs = require('fs')
 
 export default class AwsCloudChiprCli implements CloudChiprCliInterface {
@@ -151,11 +151,10 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
   }
 
   private static async executeCommand<T> (command: CloudChiprCommand, subcommand: SubCommandInterface, options: OptionValues): Promise<Response<T>> {
-    const request = EngineRequestBuilder
-      .builder()
-      .setOptions(options)
-      .setCommand(command)
+    const request = EngineRequestBuilderFactory
+      .getInstance(command)
       .setSubCommand(subcommand)
+      .setOptions(options)
       .build()
 
     if (options.profile !== undefined) {
