@@ -30,6 +30,19 @@ export enum SubCommands {
     RDS = 'rds',
 }
 
+export const AllRegions: Set<string> = new Set([
+    'us-east-2',
+    'us-east-1',
+    'us-west-1',
+    'us-west-2',
+    'ca-central-1',
+    'eu-central-1',
+    'eu-west-1',
+    'eu-west-2',
+    'eu-west-3',
+    'sa-east-1',
+])
+
 export const SubCommandsDetail = {
     [SubCommands.EBS]: {
         collectDescription: 'Collect EBS volumes specific information based on provided filters.',
