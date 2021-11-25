@@ -177,6 +177,7 @@ export default class ResponseDecorator {
 
   elb (elb: Elb) {
     return {
+      'Load Balancer Name': elb.loadBalancerName,
       'DNS Name': elb.dnsName,
       Age: DateTimeHelper.convertToWeeksDaysHours(elb.age),
       'Price Per Month': ResponseDecorator.formatPrice(elb.pricePerMonth),
@@ -188,7 +189,7 @@ export default class ResponseDecorator {
     let price: number = 0
     const succeededIds = resource.items.map((item: Elb) => {
       price += item.pricePerMonth
-      return item.dnsName
+      return item.loadBalancerName
     })
     const data = requestedIds.map((id: string) => this.clean('ELB', id, succeededIds.includes(id)))
     return {
@@ -198,11 +199,12 @@ export default class ResponseDecorator {
   }
 
   elbGetIds (resource: Response<ProviderResource>) {
-    return resource.items.map((item: Elb) => item.dnsName)
+    return resource.items.map((item: Elb) => item.loadBalancerName)
   }
 
   nlb (nlb: Nlb) {
     return {
+      'Load Balancer Name': nlb.loadBalancerName,
       'DNS Name': nlb.dnsName,
       Age: DateTimeHelper.convertToWeeksDaysHours(nlb.age),
       'Price Per Month': ResponseDecorator.formatPrice(nlb.pricePerMonth),
@@ -214,7 +216,7 @@ export default class ResponseDecorator {
     let price: number = 0
     const succeededIds = resource.items.map((item: Nlb) => {
       price += item.pricePerMonth
-      return item.dnsName
+      return item.loadBalancerName
     })
     const data = requestedIds.map((id: string) => this.clean('Nlb', id, succeededIds.includes(id)))
     return {
@@ -224,11 +226,12 @@ export default class ResponseDecorator {
   }
 
   nlbGetIds (resource: Response<ProviderResource>) {
-    return resource.items.map((item: Nlb) => item.dnsName)
+    return resource.items.map((item: Nlb) => item.loadBalancerName)
   }
 
   alb (alb: Alb) {
     return {
+      'Load Balancer Name': alb.loadBalancerName,
       'DNS Name': alb.dnsName,
       Age: DateTimeHelper.convertToWeeksDaysHours(alb.age),
       'Price Per Month': ResponseDecorator.formatPrice(alb.pricePerMonth),
@@ -240,7 +243,7 @@ export default class ResponseDecorator {
     let price: number = 0
     const succeededIds = resource.items.map((item: Alb) => {
       price += item.pricePerMonth
-      return item.dnsName
+      return item.loadBalancerName
     })
     const data = requestedIds.map((id: string) => this.clean('Alb', id, succeededIds.includes(id)))
     return {
@@ -250,7 +253,7 @@ export default class ResponseDecorator {
   }
 
   albGetIds (resource: Response<ProviderResource>) {
-    return resource.items.map((item: Alb) => item.dnsName)
+    return resource.items.map((item: Alb) => item.loadBalancerName)
   }
 
   clean (subcommand: string, id: string, success: boolean) {

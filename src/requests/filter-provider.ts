@@ -22,9 +22,17 @@ export class FilterProvider {
       case SubCommands.EC2:
         resource = 'instance-id'
         break
-      // case SubCommands.EIP:
-      //   resource = 'public-ip'
-      //   break
+      case SubCommands.RDS:
+        resource = 'db-instance-identifier'
+        break
+      case SubCommands.EIP:
+        resource = 'public-ip'
+        break
+      case SubCommands.ELB:
+      case SubCommands.NLB:
+      case SubCommands.ALB:
+        resource = 'load-balancer-name'
+        break
       default:
         throw new Error(`Invalid subcommand [${subCommand.getValue()}] provided for clean command.`)
     }
