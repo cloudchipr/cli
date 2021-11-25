@@ -81,7 +81,10 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
         .option('--force', 'Force')
         .option('-f, --filter <type>', 'Filter')
         .action(async (options) => {
-          await AwsCloudChiprCli.executeSingleCleanCommandWithPrompt(key, parentOptions, options)
+          // await AwsCloudChiprCli.executeSingleCleanCommandWithPrompt(key, parentOptions, options)
+          if (!options.force) {
+            console.log(1111111)
+          }
         })
         .addHelpText('after', AwsCloudChiprCli.getFilterExample(key))
     }
@@ -131,16 +134,14 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
       OutputService.print('We found no resources matching provided filters, please modify and try again!', OutputFormats.TEXT, {type: 'warning'})
       return
     }
-    if (options.force) {
-      await AwsCloudChiprCli.executeCleanCommand<InstanceType<typeof providerResource>>(AwsSubCommand[target](), collect)
-      return
+    let confirm = true
+    if (!options.force) {
+      OutputService.print((new ResponseDecorator()).decorate([collect], Output.DETAILED), OutputFormats.TABLE)
+      confirm = await AwsCloudChiprCli.prompt(AwsSubCommand[target]().getValue())
     }
-    OutputService.print((new ResponseDecorator()).decorate([collect], Output.DETAILED), OutputFormats.TABLE)
-    AwsCloudChiprCli.prompt(AwsSubCommand[target]().getValue()).then((confirm) => {
-      if (confirm) {
-        AwsCloudChiprCli.executeCleanCommand<InstanceType<typeof providerResource>>(AwsSubCommand[target](), collect)
-      }
-    })
+    if (confirm) {
+      await AwsCloudChiprCli.executeCleanCommand<InstanceType<typeof providerResource>>(AwsSubCommand[target](), collect)
+    }
   }
 
   private static async executeCleanCommand<T extends ProviderResource> (subcommand: SubCommandInterface, collect: Response<ProviderResource>) {
