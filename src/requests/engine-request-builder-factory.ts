@@ -9,8 +9,7 @@ export default class EngineRequestBuilderFactory {
       case 'collect':
         return new EngineCollectRequestBuilder(command)
       case 'clean':
-        return new EngineCollectRequestBuilder(command) // temp return the collect builder
-        //return new EngineCleanRequestBuilder(command)
+        return new EngineCleanRequestBuilder(command)
       default:
         throw new Error(`Invalid command [${command.getValue()}] provided.`)
     }

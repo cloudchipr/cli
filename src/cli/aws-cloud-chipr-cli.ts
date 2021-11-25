@@ -132,32 +132,33 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
       return
     }
     if (options.force) {
-      await AwsCloudChiprCli.executeCleanCommand<InstanceType<typeof providerResource>>(AwsSubCommand[target](), allOptions, collect.items)
+      await AwsCloudChiprCli.executeCleanCommand<InstanceType<typeof providerResource>>(AwsSubCommand[target](), collect)
       return
     }
     OutputService.print((new ResponseDecorator()).decorate([collect], Output.DETAILED), OutputFormats.TABLE)
     AwsCloudChiprCli.prompt(AwsSubCommand[target]().getValue()).then((confirm) => {
       if (confirm) {
-        AwsCloudChiprCli.executeCleanCommand<InstanceType<typeof providerResource>>(AwsSubCommand[target](), allOptions, collect.items)
+        AwsCloudChiprCli.executeCleanCommand<InstanceType<typeof providerResource>>(AwsSubCommand[target](), collect)
       }
     })
   }
 
-  private static async executeCleanCommand<T extends ProviderResource> (subcommand: SubCommandInterface, options: OptionValues, collect: any[]) {
-    const response = await AwsCloudChiprCli.executeCommand<T>(CloudChiprCommand.clean(), subcommand, options)
-    const decoratedData = (new ResponseDecorator()).decorateClean(response.items, collect, subcommand.getValue())
+  private static async executeCleanCommand<T extends ProviderResource> (subcommand: SubCommandInterface, collect: Response<ProviderResource>) {
+    const ids = (new ResponseDecorator()).getIds(collect, subcommand.getValue())
+    const response = await AwsCloudChiprCli.executeCommand<T>(CloudChiprCommand.clean(), subcommand, ids)
+    const decoratedData = (new ResponseDecorator()).decorateClean(response, ids, subcommand.getValue())
     OutputService.print(decoratedData.data, OutputFormats.ROW_DELETE)
     OutputService.print(`All done, you just saved ${String(chalk.green(decoratedData.price))} per month!!!`, OutputFormats.TEXT, {type: 'superSuccess'})
   }
 
-  private static async executeCommand<T> (command: CloudChiprCommand, subcommand: SubCommandInterface, options: OptionValues): Promise<Response<T>> {
+  private static async executeCommand<T> (command: CloudChiprCommand, subcommand: SubCommandInterface, options?: OptionValues | string[]): Promise<Response<T>> {
     const request = EngineRequestBuilderFactory
       .getInstance(command)
       .setSubCommand(subcommand)
       .setOptions(options)
       .build()
 
-    if (options.profile !== undefined) {
+    if (!Array.isArray(options) && options.profile !== undefined) {
       process.env.AWS_PROFILE = options.profile
     }
 

@@ -16,8 +16,12 @@ export default class ResponseDecorator {
     return data
   }
 
-  decorateClean (succeededResources: ProviderResource[], requestedResources: ProviderResource[], subcommand: string) {
-    return this[`${subcommand}Clean`](succeededResources, requestedResources)
+  decorateClean (resource: Response<ProviderResource>, requestedIds: string[], subcommand: string) {
+    return this[`${subcommand}Clean`](resource, requestedIds)
+  }
+
+  getIds (resource: Response<ProviderResource>, subcommand: string) {
+    return this[`${subcommand}GetIds`](resource)
   }
 
   removeEmptyResourcesAndSortByPrice(resources: Array<Response<ProviderResource>>): Response<ProviderResource>[] {
@@ -72,19 +76,21 @@ export default class ResponseDecorator {
     }
   }
 
-  ec2Clean (succeededResources: Ec2[], requestedResources: Ec2[]) {
-    const data = succeededResources
-      .map(r => this.clean('ec2', r.id.toString(), true))
-      .concat(
-        requestedResources
-          .filter(r => succeededResources.findIndex(sr => sr.id === r.id) === -1)
-          .map(r => this.clean('ec2', r.id.toString(), false))
-      )
-    const price = succeededResources.map(r => r.pricePerMonth).reduce((a, b) => a + b, 0)
+  ec2Clean (resource: Response<ProviderResource>, requestedIds: string[]) {
+    let price: number = 0
+    const succeededIds = resource.items.map((item: Ec2) => {
+      price += item.pricePerMonth
+      return item.id
+    })
+    const data = requestedIds.map((id: string) => this.clean('EC2', id, succeededIds.includes(id)))
     return {
       data: data,
       price: ResponseDecorator.formatPrice(price)
     }
+  }
+
+  ec2GetIds (resource: Response<ProviderResource>) {
+    return resource.items.map((item: Ec2) => item.id)
   }
 
   ebs (ebs: Ebs) {
@@ -99,19 +105,21 @@ export default class ResponseDecorator {
     }
   }
 
-  ebsClean (succeededResources: Ebs[], requestedResources: Ebs[]) {
-    const data = succeededResources
-      .map(r => this.clean('ebs', r.id.toString(), true))
-      .concat(
-        requestedResources
-          .filter(r => succeededResources.findIndex(sr => sr.id === r.id) === -1)
-          .map(r => this.clean('ebs', r.id.toString(), false))
-      )
-    const price = succeededResources.map(r => r.pricePerMonth).reduce((a, b) => a + b, 0)
+  ebsClean (resource: Response<ProviderResource>, requestedIds: string[]) {
+    let price: number = 0
+    const succeededIds = resource.items.map((item: Ebs) => {
+      price += item.pricePerMonth
+      return item.id
+    })
+    const data = requestedIds.map((id: string) => this.clean('EBS', id, succeededIds.includes(id)))
     return {
       data: data,
       price: ResponseDecorator.formatPrice(price)
     }
+  }
+
+  ebsGetIds (resource: Response<ProviderResource>) {
+    return resource.items.map((item: Ebs) => item.id)
   }
 
   rds (rds: Rds) {
@@ -125,19 +133,21 @@ export default class ResponseDecorator {
     }
   }
 
-  rdsClean (succeededResources: Rds[], requestedResources: Rds[]) {
-    const data = succeededResources
-      .map(r => this.clean('rds', r.id.toString(), true))
-      .concat(
-        requestedResources
-          .filter(r => succeededResources.findIndex(sr => sr.id === r.id) === -1)
-          .map(r => this.clean('rds', r.id.toString(), false))
-      )
-    const price = succeededResources.map(r => r.pricePerMonthGB).reduce((a, b) => a + b, 0)
+  rdsClean (resource: Response<ProviderResource>, requestedIds: string[]) {
+    let price: number = 0
+    const succeededIds = resource.items.map((item: Rds) => {
+      price += item.pricePerMonth
+      return item.id
+    })
+    const data = requestedIds.map((id: string) => this.clean('RDS', id, succeededIds.includes(id)))
     return {
       data: data,
       price: ResponseDecorator.formatPrice(price)
     }
+  }
+
+  rdsGetIds (resource: Response<ProviderResource>) {
+    return resource.items.map((item: Rds) => item.id)
   }
 
   eip (eip: Eip) {
@@ -148,19 +158,21 @@ export default class ResponseDecorator {
     }
   }
 
-  eipClean (succeededResources: Eip[], requestedResources: Eip[]) {
-    const data = succeededResources
-      .map(r => this.clean('eip', r.ip.toString(), true))
-      .concat(
-        requestedResources
-          .filter(r => succeededResources.findIndex(sr => sr.ip === r.ip) === -1)
-          .map(r => this.clean('eip', r.ip.toString(), false))
-      )
-    const price = succeededResources.map(r => r.pricePerMonth).reduce((a, b) => a + b, 0)
+  eipClean (resource: Response<ProviderResource>, requestedIds: string[]) {
+    let price: number = 0
+    const succeededIds = resource.items.map((item: Eip) => {
+      price += item.pricePerMonth
+      return item.ip
+    })
+    const data = requestedIds.map((id: string) => this.clean('EIP', id, succeededIds.includes(id)))
     return {
       data: data,
       price: ResponseDecorator.formatPrice(price)
     }
+  }
+
+  eipGetIds (resource: Response<ProviderResource>) {
+    return resource.items.map((item: Eip) => item.ip)
   }
 
   elb (elb: Elb) {
@@ -172,19 +184,21 @@ export default class ResponseDecorator {
     }
   }
 
-  elbClean (succeededResources: Elb[], requestedResources: Elb[]) {
-    const data = succeededResources
-      .map(r => this.clean('elb', r.dnsName.toString(), true))
-      .concat(
-        requestedResources
-          .filter(r => succeededResources.findIndex(sr => sr.dnsName === r.dnsName) === -1)
-          .map(r => this.clean('elb', r.dnsName.toString(), false))
-      )
-    const price = succeededResources.map(r => r.pricePerMonth).reduce((a, b) => a + b, 0)
+  elbClean (resource: Response<ProviderResource>, requestedIds: string[]) {
+    let price: number = 0
+    const succeededIds = resource.items.map((item: Elb) => {
+      price += item.pricePerMonth
+      return item.dnsName
+    })
+    const data = requestedIds.map((id: string) => this.clean('ELB', id, succeededIds.includes(id)))
     return {
       data: data,
       price: ResponseDecorator.formatPrice(price)
     }
+  }
+
+  elbGetIds (resource: Response<ProviderResource>) {
+    return resource.items.map((item: Elb) => item.dnsName)
   }
 
   nlb (nlb: Nlb) {
@@ -196,19 +210,21 @@ export default class ResponseDecorator {
     }
   }
 
-  nlbClean (succeededResources: Nlb[], requestedResources: Nlb[]) {
-    const data = succeededResources
-      .map(r => this.clean('nlb', r.dnsName.toString(), true))
-      .concat(
-        requestedResources
-          .filter(r => succeededResources.findIndex(sr => sr.dnsName === r.dnsName) === -1)
-          .map(r => this.clean('nlb', r.dnsName.toString(), false))
-      )
-    const price = succeededResources.map(r => r.pricePerMonth).reduce((a, b) => a + b, 0)
+  nlbClean (resource: Response<ProviderResource>, requestedIds: string[]) {
+    let price: number = 0
+    const succeededIds = resource.items.map((item: Nlb) => {
+      price += item.pricePerMonth
+      return item.dnsName
+    })
+    const data = requestedIds.map((id: string) => this.clean('Nlb', id, succeededIds.includes(id)))
     return {
       data: data,
       price: ResponseDecorator.formatPrice(price)
     }
+  }
+
+  nlbGetIds (resource: Response<ProviderResource>) {
+    return resource.items.map((item: Nlb) => item.dnsName)
   }
 
   alb (alb: Alb) {
@@ -220,19 +236,21 @@ export default class ResponseDecorator {
     }
   }
 
-  albClean (succeededResources: Alb[], requestedResources: Alb[]) {
-    const data = succeededResources
-      .map(r => this.clean('alb', r.dnsName.toString(), true))
-      .concat(
-        requestedResources
-          .filter(r => succeededResources.findIndex(sr => sr.dnsName === r.dnsName) === -1)
-          .map(r => this.clean('alb', r.dnsName.toString(), false))
-      )
-    const price = succeededResources.map(r => r.pricePerMonth).reduce((a, b) => a + b, 0)
+  albClean (resource: Response<ProviderResource>, requestedIds: string[]) {
+    let price: number = 0
+    const succeededIds = resource.items.map((item: Alb) => {
+      price += item.pricePerMonth
+      return item.dnsName
+    })
+    const data = requestedIds.map((id: string) => this.clean('Alb', id, succeededIds.includes(id)))
     return {
       data: data,
       price: ResponseDecorator.formatPrice(price)
     }
+  }
+
+  albGetIds (resource: Response<ProviderResource>) {
+    return resource.items.map((item: Alb) => item.dnsName)
   }
 
   clean (subcommand: string, id: string, success: boolean) {
