@@ -17,6 +17,12 @@ import EngineRequestBuilderFactory from '../requests/engine-request-builder-fact
 const fs = require('fs')
 
 export default class AwsCloudChiprCli implements CloudChiprCliInterface {
+  private responseDecorator: ResponseDecorator;
+
+  constructor () {
+    this.responseDecorator = new ResponseDecorator()
+  }
+
   customiseCommand (command: Command): CloudChiprCliInterface {
     command
       .addOption(new Option('--region <string...>', 'Region, default uses value of AWS_REGION env variable').default([]))
@@ -35,17 +41,17 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
         .description(SubCommandsDetail[key].collectDescription)
         .option('-f, --filter <type>', 'Filter')
         .action(async (options) => {
-          await AwsCloudChiprCli.executeSingleCollectCommand(key, parentOptions, options)
+          await this.executeSingleCollectCommand(key, parentOptions, options)
         })
-        .addHelpText('after', AwsCloudChiprCli.getFilterExample(key))
+        .addHelpText('after', this.getFilterExample(key))
     }
 
     command
       .command('all')
       .description('Collect app resources based on the specified filters')
       .option('-f, --filter <type>', 'Filter')
-      .action(() => {
-        AwsCloudChiprCli
+      .action(async () => {
+        await this
           .executeAllCollectCommand(parentOptions)
           .then(result => {
             const responses: Array<Response<ProviderResource>> = result
@@ -59,11 +65,11 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
                   showTopBorder: true,
                   showBottomBorder: true
                 }
-                OutputService.print((new ResponseDecorator()).decorate([response], Output.DETAILED), parentOptions.outputFormat, context)
+                OutputService.print(this.responseDecorator.decorate([response], Output.DETAILED), parentOptions.outputFormat, context)
               })
             }
             if (parentOptions.output !== Output.DETAILED) {
-              OutputService.print((new ResponseDecorator()).decorate(responses, Output.SUMMARIZED), parentOptions.outputFormat)
+              OutputService.print(this.responseDecorator.decorate(responses, Output.SUMMARIZED), parentOptions.outputFormat)
             }
           })
       })
@@ -81,9 +87,9 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
         .option('--force', 'Force')
         .option('-f, --filter <type>', 'Filter')
         .action(async (options) => {
-          await AwsCloudChiprCli.executeSingleCleanCommandWithPrompt(key, parentOptions, options)
+          await this.executeSingleCleanCommandWithPrompt(key, parentOptions, options)
         })
-        .addHelpText('after', AwsCloudChiprCli.getFilterExample(key))
+        .addHelpText('after', this.getFilterExample(key))
     }
 
     return this
@@ -93,71 +99,70 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
   //   return this
   // }
 
-  private static async executeSingleCollectCommand (target: string, parentOptions: OptionValues, options: any) {
-    const providerResource = AwsCloudChiprCli.getProviderResourceFromString(target)
+  private async executeSingleCollectCommand (target: string, parentOptions: OptionValues, options: any) {
+    const providerResource = this.getProviderResourceFromString(target)
     const allOptions = Object.assign(parentOptions, { filter: options.filter || `./default-filters/${target}.yaml` }) as OptionValues
-    const response = await AwsCloudChiprCli.executeCollectCommand<InstanceType<typeof providerResource>>(AwsSubCommand[target](), allOptions)
+    const response = await this.executeCollectCommand<InstanceType<typeof providerResource>>(AwsSubCommand[target](), allOptions)
     if (response.count === 0) {
       OutputService.print('We found no resources matching provided filters, please modify and try again!', OutputFormats.TEXT, {type: 'warning'})
       return
     }
     if (parentOptions.output !== null) {
-      OutputService.print((new ResponseDecorator()).decorate([response], parentOptions.output), parentOptions.outputFormat)
+      OutputService.print(this.responseDecorator.decorate([response], parentOptions.output), parentOptions.outputFormat)
     } else {
-      OutputService.print((new ResponseDecorator()).decorate([response], Output.DETAILED), parentOptions.outputFormat)
-      OutputService.print((new ResponseDecorator()).decorate([response], Output.SUMMARIZED), parentOptions.outputFormat)
+      OutputService.print(this.responseDecorator.decorate([response], Output.DETAILED), parentOptions.outputFormat)
+      OutputService.print(this.responseDecorator.decorate([response], Output.SUMMARIZED), parentOptions.outputFormat)
     }
   }
 
-  private static executeAllCollectCommand (parentOptions: OptionValues) {
+  private executeAllCollectCommand (parentOptions: OptionValues) {
     const promises = []
     for (const key in SubCommandsDetail) {
       const allOptions = Object.assign(parentOptions, { filter: `./default-filters/${key}.yaml` }) as OptionValues
-      const providerResource = AwsCloudChiprCli.getProviderResourceFromString(key)
-      promises.push(AwsCloudChiprCli.executeCollectCommand<InstanceType<typeof providerResource>>(AwsSubCommand[key](), allOptions))
+      const providerResource = this.getProviderResourceFromString(key)
+      promises.push(this.executeCollectCommand<InstanceType<typeof providerResource>>(AwsSubCommand[key](), allOptions))
     }
     return Promise.all(promises)
   }
 
-  private static executeCollectCommand<T extends ProviderResource> (subcommand: SubCommandInterface, options: OptionValues): Promise<Response<T>> {
-    return AwsCloudChiprCli.executeCommand<T>(CloudChiprCommand.collect(), subcommand, options)
+  private executeCollectCommand<T extends ProviderResource> (subcommand: SubCommandInterface, options: OptionValues): Promise<Response<T>> {
+    return this.executeCommand<T>(CloudChiprCommand.collect(), subcommand, options)
   }
 
-  private static async executeSingleCleanCommandWithPrompt (target: string, parentOptions: OptionValues, options: any) {
-    const providerResource = AwsCloudChiprCli.getProviderResourceFromString(target)
+  private async executeSingleCleanCommandWithPrompt (target: string, parentOptions: OptionValues, options: any) {
+    const providerResource = this.getProviderResourceFromString(target)
     const allOptions = Object.assign(parentOptions, { filter: options.filter || `./default-filters/${target}.yaml` }) as OptionValues
-    const collect = await AwsCloudChiprCli.executeCommand<InstanceType<typeof providerResource>>(CloudChiprCommand.collect(), AwsSubCommand[target](), allOptions)
+    const collect = await this.executeCommand<InstanceType<typeof providerResource>>(CloudChiprCommand.collect(), AwsSubCommand[target](), allOptions)
     if (collect.count === 0) {
       OutputService.print('We found no resources matching provided filters, please modify and try again!', OutputFormats.TEXT, {type: 'warning'})
       return
     }
-    if (options.force) {
-      await AwsCloudChiprCli.executeCleanCommand<InstanceType<typeof providerResource>>(AwsSubCommand[target](), allOptions, collect.items)
-      return
+    let confirm = true
+    if (!options.force) {
+      OutputService.print(this.responseDecorator.decorate([collect], Output.DETAILED), OutputFormats.TABLE)
+      confirm = await this.prompt(AwsSubCommand[target]().getValue())
     }
-    OutputService.print((new ResponseDecorator()).decorate([collect], Output.DETAILED), OutputFormats.TABLE)
-    AwsCloudChiprCli.prompt(AwsSubCommand[target]().getValue()).then((confirm) => {
-      if (confirm) {
-        AwsCloudChiprCli.executeCleanCommand<InstanceType<typeof providerResource>>(AwsSubCommand[target](), allOptions, collect.items)
-      }
-    })
+    if (confirm) {
+      await this.executeCleanCommand<InstanceType<typeof providerResource>>(AwsSubCommand[target](), collect)
+    }
   }
 
-  private static async executeCleanCommand<T extends ProviderResource> (subcommand: SubCommandInterface, options: OptionValues, collect: any[]) {
-    const response = await AwsCloudChiprCli.executeCommand<T>(CloudChiprCommand.clean(), subcommand, options)
-    const decoratedData = (new ResponseDecorator()).decorateClean(response.items, collect, subcommand.getValue())
+  private async executeCleanCommand<T extends ProviderResource> (subcommand: SubCommandInterface, collect: Response<ProviderResource>) {
+    const ids = this.responseDecorator.getIds(collect, subcommand.getValue())
+    const response = await this.executeCommand<T>(CloudChiprCommand.clean(), subcommand, ids)
+    const decoratedData = this.responseDecorator.decorateClean(response, ids, subcommand.getValue())
     OutputService.print(decoratedData.data, OutputFormats.ROW_DELETE)
     OutputService.print(`All done, you just saved ${String(chalk.green(decoratedData.price))} per month!!!`, OutputFormats.TEXT, {type: 'superSuccess'})
   }
 
-  private static async executeCommand<T> (command: CloudChiprCommand, subcommand: SubCommandInterface, options: OptionValues): Promise<Response<T>> {
+  private async executeCommand<T> (command: CloudChiprCommand, subcommand: SubCommandInterface, options?: OptionValues | string[]): Promise<Response<T>> {
     const request = EngineRequestBuilderFactory
       .getInstance(command)
       .setSubCommand(subcommand)
       .setOptions(options)
       .build()
 
-    if (options.profile !== undefined) {
+    if (!Array.isArray(options) && options.profile !== undefined) {
       process.env.AWS_PROFILE = options.profile
     }
 
@@ -165,7 +170,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
     return engineAdapter.execute(request)
   }
 
-  private static async prompt (subcommand: string): Promise<boolean> {
+  private async prompt (subcommand: string): Promise<boolean> {
     const confirm = await inquirer.prompt([
       {
         type: 'confirm',
@@ -177,12 +182,12 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
     return !!confirm.proceed
   }
 
-  private static getFilterExample (subcommand: string): string {
+  private getFilterExample (subcommand: string): string {
     return `\n${chalk.yellow('Filter example (filter.yaml)')}:\n${FilterHelper.getDefaultFilter(subcommand)}`
   }
 
   // check if C8R_CUSTODIAN is provided and executable
-  private static getCustodian (): string {
+  private getCustodian (): string {
     const custodian: string = process.env.C8R_CUSTODIAN
     if (custodian === undefined) {
       throw new Error('C8R_CUSTODIAN is not provided')
@@ -197,7 +202,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
     return custodian
   }
 
-  private static getProviderResourceFromString (target: string) {
+  private getProviderResourceFromString (target: string) {
     switch (target) {
       case SubCommands.EBS:
         return Ebs

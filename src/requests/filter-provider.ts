@@ -14,14 +14,29 @@ export class FilterProvider {
 
   static getCleanFilter (ids: string[], subCommand: SubCommandInterface): FilterInterface {
     const builder = new FilterBuilder(new FilterValidator(subCommand))
+    let resource: string
     switch (subCommand.getValue()) {
       case SubCommands.EBS:
-        return builder
-          .resource('volume-id')
-          .equal('0')
-          .toList()
+        resource = 'volume-id'
+        break
+      case SubCommands.EC2:
+        resource = 'instance-id'
+        break
+      case SubCommands.RDS:
+        resource = 'db-instance-identifier'
+        break
+      case SubCommands.EIP:
+        resource = 'public-ip'
+        break
+      case SubCommands.ELB:
+      case SubCommands.NLB:
+      case SubCommands.ALB:
+        resource = 'load-balancer-name'
+        break
       default:
         throw new Error(`Invalid subcommand [${subCommand.getValue()}] provided for clean command.`)
     }
+    ids.forEach((id) => builder.or().resource(resource).equal(id))
+    return builder.toList()
   }
 }
