@@ -24,14 +24,14 @@ export default class ResponseDecorator {
     return this[`${subcommand}GetIds`](resource)
   }
 
-  private removeEmptyResourcesAndSortByPrice(resources: Array<Response<ProviderResource>>): Response<ProviderResource>[] {
+  private removeEmptyResourcesAndSortByPrice (resources: Array<Response<ProviderResource>>): Response<ProviderResource>[] {
     return resources.reduce((accumulator: Array<Response<ProviderResource>>, pilot: Response<ProviderResource>) => {
       if (pilot.count > 0) {
-        pilot.items.sort((a: ProviderResource, b: ProviderResource) => b.pricePerMonth - a.pricePerMonth);
-        accumulator.push(pilot);
+        pilot.items.sort((a: ProviderResource, b: ProviderResource) => b.pricePerMonth - a.pricePerMonth)
+        accumulator.push(pilot)
       }
-      return accumulator;
-    }, []);
+      return accumulator
+    }, [])
   }
 
   private eachItem (resource: Response<ProviderResource>, output: string) {
@@ -48,6 +48,10 @@ export default class ResponseDecorator {
       const data = this[item.constructor.name.toLowerCase()](item)
       if (item.c8rRegion) {
         data.Region = item.c8rRegion
+      }
+
+      if (item.c8rAccount) {
+        data.Account = item.c8rAccount
       }
       return data
     })

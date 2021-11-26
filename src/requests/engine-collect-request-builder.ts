@@ -5,19 +5,12 @@ import {
 } from '@cloudchipr/cloudchipr-engine'
 import { OptionValues } from 'commander'
 import { FilterProvider } from './filter-provider'
-import {AllRegions, Verbose} from '../constants'
+import { AllRegions, Verbose } from '../constants'
 import EngineRequestBuilder from './engine-request-builder'
 
 export default class EngineCollectRequestBuilder extends EngineRequestBuilder {
-  private options: OptionValues;
-
   constructor (command: Command) {
     super(command)
-  }
-
-  setOptions (options: OptionValues): EngineRequestBuilder {
-    this.options = options
-    return this
   }
 
   build (): EngineRequest {
@@ -34,7 +27,10 @@ export default class EngineCollectRequestBuilder extends EngineRequestBuilder {
     let regions : Set<string> = new Set(options.region)
     if (regions.has('all')) {
       regions = AllRegions
+      regions = AllRegions
     }
-    return new Parameter(filter, false, Array.from( regions ))
+
+    const accounts : Set<string> = new Set(options.accountId)
+    return new Parameter(filter, false, Array.from(regions), Array.from(accounts))
   }
 }
