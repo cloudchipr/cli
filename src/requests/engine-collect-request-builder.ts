@@ -36,6 +36,8 @@ export default class EngineCollectRequestBuilder extends EngineRequestBuilder {
       regions = AllRegions
       regions = AllRegions
     }
-    return new Parameter(filter, false, Array.from(regions), [])
+
+    const accounts : Set<string> = new Set(options.accountId)
+    return new Parameter(filter, false, Array.from(regions), Array.from(accounts))
   }
 }

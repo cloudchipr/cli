@@ -166,7 +166,9 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
       process.env.AWS_PROFILE = options.profile
     }
 
-    const engineAdapter = new AWSShellEngineAdapter<T>(this.getCustodian(), this.getCustodianOrg())
+    const custodianOrg = (options['accountId'] != undefined && (new Set(options['accountId'])).size)? this.getCustodianOrg(): undefined
+
+    const engineAdapter = new AWSShellEngineAdapter<T>(this.getCustodian(), custodianOrg)
     return engineAdapter.execute(request)
   }
 
@@ -204,7 +206,18 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
 
   // check if C8R_CUSTODIAN is provided and executable
   private getCustodianOrg (): string {
-    return process.env.C8R_CUSTODIAN_ORG
+    const custodianOrg: string = process.env.C8R_CUSTODIAN_ORG
+    if (custodianOrg === undefined) {
+      throw new Error('C8R_CUSTODIAN_ORG is not provided')
+    }
+
+    try {
+      fs.accessSync(custodianOrg)
+    } catch (err) {
+      throw new Error('C8R_CUSTODIAN_ORG is not provided or it not executable')
+    }
+
+    return custodianOrg
   }
 
   private getProviderResourceFromString (target: string) {
