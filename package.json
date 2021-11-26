@@ -21,7 +21,7 @@
     "@cloudchipr/cloudchipr-engine": "^0.0.34",
     "@types/cli-table": "^0.3.0",
     "@types/prettyjson": "^0.0.30",
-    "chalk": "^4.1.2",
+    "chalk": "^5.0.0",
     "cli-table": "^0.3.9",
     "commander": "^8.3.0",
     "dotenv": "^10.0.0",
