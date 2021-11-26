@@ -24,14 +24,14 @@ export default class ResponseDecorator {
     return this[`${subcommand}GetIds`](resource)
   }
 
-  private removeEmptyResourcesAndSortByPrice(resources: Array<Response<ProviderResource>>): Response<ProviderResource>[] {
+  private removeEmptyResourcesAndSortByPrice (resources: Array<Response<ProviderResource>>): Response<ProviderResource>[] {
     return resources.reduce((accumulator: Array<Response<ProviderResource>>, pilot: Response<ProviderResource>) => {
       if (pilot.count > 0) {
-        pilot.items.sort((a: ProviderResource, b: ProviderResource) => b.pricePerMonth - a.pricePerMonth);
-        accumulator.push(pilot);
+        pilot.items.sort((a: ProviderResource, b: ProviderResource) => b.pricePerMonth - a.pricePerMonth)
+        accumulator.push(pilot)
       }
-      return accumulator;
-    }, []);
+      return accumulator
+    }, [])
   }
 
   private eachItem (resource: Response<ProviderResource>, output: string) {

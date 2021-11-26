@@ -17,7 +17,7 @@ import EngineRequestBuilderFactory from '../requests/engine-request-builder-fact
 const fs = require('fs')
 
 export default class AwsCloudChiprCli implements CloudChiprCliInterface {
-  private responseDecorator: ResponseDecorator;
+  private responseDecorator: ResponseDecorator
 
   constructor () {
     this.responseDecorator = new ResponseDecorator()
@@ -60,7 +60,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
                 if (response.count === 0) {
                   return
                 }
-                OutputService.print(`${response.items[0].constructor.name.toUpperCase()} ⬇️`, OutputFormats.TEXT, {type: 'success'})
+                OutputService.print(`${response.items[0].constructor.name.toUpperCase()} ⬇️`, OutputFormats.TEXT, { type: 'success' })
                 const context = {
                   showTopBorder: true,
                   showBottomBorder: true
@@ -203,7 +203,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
   }
 
   // check if C8R_CUSTODIAN is provided and executable
-  private static getCustodianOrg (): string {
+  private getCustodianOrg (): string {
     return process.env.C8R_CUSTODIAN_ORG
   }
 
