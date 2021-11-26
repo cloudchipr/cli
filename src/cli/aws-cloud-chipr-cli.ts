@@ -143,19 +143,21 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
       confirm = await this.prompt(AwsSubCommand[target]().getValue())
     }
     if (confirm) {
-      await this.executeCleanCommand<InstanceType<typeof providerResource>>(AwsSubCommand[target](), collect)
+      await this.executeCleanCommand<InstanceType<typeof providerResource>>(AwsSubCommand[target](), collect, parentOptions)
     }
   }
 
-  private async executeCleanCommand<T extends ProviderResource> (subcommand: SubCommandInterface, collect: Response<ProviderResource>) {
+  private async executeCleanCommand<T extends ProviderResource> (subcommand: SubCommandInterface, collect: Response<ProviderResource>, options: OptionValues) {
     const ids = this.responseDecorator.getIds(collect, subcommand.getValue())
-    const response = await this.executeCommand<T>(CloudChiprCommand.clean(), subcommand, ids)
+    // @todo improve this part
+    options.ids = ids
+    const response = await this.executeCommand<T>(CloudChiprCommand.clean(), subcommand, options)
     const decoratedData = this.responseDecorator.decorateClean(response, ids, subcommand.getValue())
     OutputService.print(decoratedData.data, OutputFormats.ROW_DELETE)
     OutputService.print(`All done, you just saved ${String(chalk.green(decoratedData.price))} per month!!!`, OutputFormats.TEXT, { type: 'superSuccess' })
   }
 
-  private async executeCommand<T> (command: CloudChiprCommand, subcommand: SubCommandInterface, options?: OptionValues | string[]): Promise<Response<T>> {
+  private async executeCommand<T> (command: CloudChiprCommand, subcommand: SubCommandInterface, options: OptionValues): Promise<Response<T>> {
     const request = EngineRequestBuilderFactory
       .getInstance(command)
       .setSubCommand(subcommand)

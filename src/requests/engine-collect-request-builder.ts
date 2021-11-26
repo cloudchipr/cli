@@ -9,15 +9,8 @@ import { AllRegions, Verbose } from '../constants'
 import EngineRequestBuilder from './engine-request-builder'
 
 export default class EngineCollectRequestBuilder extends EngineRequestBuilder {
-  private options: OptionValues
-
   constructor (command: Command) {
     super(command)
-  }
-
-  setOptions (options: OptionValues): EngineRequestBuilder {
-    this.options = options
-    return this
   }
 
   build (): EngineRequest {
