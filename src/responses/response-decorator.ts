@@ -49,6 +49,10 @@ export default class ResponseDecorator {
       if (item.c8rRegion) {
         data.Region = item.c8rRegion
       }
+
+      if (item.c8rAccount) {
+        data.Account = item.c8rAccount
+      }
       return data
     })
   }

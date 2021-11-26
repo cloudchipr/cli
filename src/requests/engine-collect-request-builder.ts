@@ -22,10 +22,10 @@ export default class EngineCollectRequestBuilder extends EngineRequestBuilder {
 
   build (): EngineRequest {
     return new EngineRequest(
-      this.command,
-      this.subCommand,
-      this.buildParameter(this.options),
-      this.options.verbose === Verbose.ENABLED
+        this.command,
+        this.subCommand,
+        this.buildParameter(this.options),
+        this.options.verbose === Verbose.ENABLED
     )
   }
 
@@ -34,7 +34,8 @@ export default class EngineCollectRequestBuilder extends EngineRequestBuilder {
     let regions : Set<string> = new Set(options.region)
     if (regions.has('all')) {
       regions = AllRegions
+      regions = AllRegions
     }
-    return new Parameter(filter, false, Array.from( regions ))
+    return new Parameter(filter, false, Array.from( regions ), [])
   }
 }

@@ -7,7 +7,7 @@ import { FilterProvider } from './filter-provider'
 import EngineRequestBuilder from './engine-request-builder'
 
 export default class EngineCleanRequestBuilder extends EngineRequestBuilder {
-  private options: string[];
+  private options: string[]
 
   constructor (command: Command) {
     super(command)
@@ -29,6 +29,6 @@ export default class EngineCleanRequestBuilder extends EngineRequestBuilder {
 
   private buildParameter (options: string[]): Parameter {
     const filter = FilterProvider.getCleanFilter(options, this.subCommand)
-    return new Parameter(filter, false, [])
+    return new Parameter(filter, false, [], [])
   }
 }

@@ -44,32 +44,32 @@ export const AllRegions: Set<string> = new Set([
 ])
 
 export const SubCommandsDetail = {
-    [SubCommands.EBS]: {
-        collectDescription: 'Collect EBS volumes specific information based on provided filters.',
-        cleanDescription: 'Terminate EBS volumes specific information based on provided filters.',
-    },
-    [SubCommands.EC2]: {
-        collectDescription: 'Collect EC2 instance specific information based on provided filters.',
-        cleanDescription: 'Terminate EC2 instance specific information based on provided filters.',
-    },
-    [SubCommands.ELB]: {
-        collectDescription: 'Collect ELB specific information based on provided filters.',
-        cleanDescription: 'Terminate ELB specific information based on provided filters.',
-    },
-    [SubCommands.NLB]: {
-        collectDescription: 'Collect NLB specific information based on provided filters.',
-        cleanDescription: 'Terminate NLB specific information based on provided filters.',
-    },
-    [SubCommands.ALB]: {
-        collectDescription: 'Collect ALB specific information based on provided filters.',
-        cleanDescription: 'Terminate ALB specific information based on provided filters.',
-    },
-    [SubCommands.EIP]: {
-        collectDescription: 'Collect EIP specific information based on provided filters.',
-        cleanDescription: 'Terminate EIP specific information based on provided filters.',
-    },
-    [SubCommands.RDS]: {
-        collectDescription: 'Collect RDS database specific information based on provided filters.',
-        cleanDescription: 'Terminate RDS database specific information based on provided filters.',
-    },
-} as const;
+  [SubCommands.EBS]: {
+    collectDescription: 'Collect EBS volumes specific information based on provided filters.',
+    cleanDescription: 'Terminate EBS volumes specific information based on provided filters.'
+  },
+  [SubCommands.EC2]: {
+    collectDescription: 'Collect EC2 instance specific information based on provided filters.',
+    cleanDescription: 'Terminate EC2 instance specific information based on provided filters.'
+  },
+  [SubCommands.ELB]: {
+    collectDescription: 'Collect ELB specific information based on provided filters.',
+    cleanDescription: 'Terminate ELB specific information based on provided filters.'
+  },
+  [SubCommands.NLB]: {
+    collectDescription: 'Collect NLB specific information based on provided filters.',
+    cleanDescription: 'Terminate NLB specific information based on provided filters.'
+  },
+  [SubCommands.ALB]: {
+    collectDescription: 'Collect ALB specific information based on provided filters.',
+    cleanDescription: 'Terminate ALB specific information based on provided filters.'
+  },
+  [SubCommands.EIP]: {
+    collectDescription: 'Collect EIP specific information based on provided filters.',
+    cleanDescription: 'Terminate EIP specific information based on provided filters.'
+  },
+  [SubCommands.RDS]: {
+    collectDescription: 'Collect RDS database specific information based on provided filters.',
+    cleanDescription: 'Terminate RDS database specific information based on provided filters.'
+  }
+} as const

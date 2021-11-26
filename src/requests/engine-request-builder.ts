@@ -3,7 +3,7 @@ import {
   EngineRequest,
   SubCommandInterface
 } from '@cloudchipr/cloudchipr-engine'
-import {OptionValues} from "commander";
+import { OptionValues } from 'commander'
 
 export default abstract class EngineRequestBuilder {
   protected command: Command

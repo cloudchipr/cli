@@ -1,5 +1,5 @@
 import { Command, Option, OptionValues } from 'commander'
-import {Output, OutputFormats, SubCommands, SubCommandsDetail} from '../constants'
+import { Output, OutputFormats, SubCommands, SubCommandsDetail } from '../constants'
 import { OutputService } from '../services/output/output-service'
 import {
   AwsSubCommand,
@@ -26,7 +26,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
   customiseCommand (command: Command): CloudChiprCliInterface {
     command
       .addOption(new Option('--region <string...>', 'Region, default uses value of AWS_REGION env variable').default([]))
-      .addOption(new Option('--account-id <account-id>', 'Account id'))
+      .addOption(new Option('--account-id <string...>', 'Account id').default([]))
       .addOption(new Option('--profile <profile>', 'Profile, default uses value of AWS_PROFILE env variable'))
 
     return this
@@ -104,7 +104,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
     const allOptions = Object.assign(parentOptions, { filter: options.filter || `./default-filters/${target}.yaml` }) as OptionValues
     const response = await this.executeCollectCommand<InstanceType<typeof providerResource>>(AwsSubCommand[target](), allOptions)
     if (response.count === 0) {
-      OutputService.print('We found no resources matching provided filters, please modify and try again!', OutputFormats.TEXT, {type: 'warning'})
+      OutputService.print('We found no resources matching provided filters, please modify and try again!', OutputFormats.TEXT, { type: 'warning' })
       return
     }
     if (parentOptions.output !== null) {
@@ -134,7 +134,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
     const allOptions = Object.assign(parentOptions, { filter: options.filter || `./default-filters/${target}.yaml` }) as OptionValues
     const collect = await this.executeCommand<InstanceType<typeof providerResource>>(CloudChiprCommand.collect(), AwsSubCommand[target](), allOptions)
     if (collect.count === 0) {
-      OutputService.print('We found no resources matching provided filters, please modify and try again!', OutputFormats.TEXT, {type: 'warning'})
+      OutputService.print('We found no resources matching provided filters, please modify and try again!', OutputFormats.TEXT, { type: 'warning' })
       return
     }
     let confirm = true
@@ -152,7 +152,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
     const response = await this.executeCommand<T>(CloudChiprCommand.clean(), subcommand, ids)
     const decoratedData = this.responseDecorator.decorateClean(response, ids, subcommand.getValue())
     OutputService.print(decoratedData.data, OutputFormats.ROW_DELETE)
-    OutputService.print(`All done, you just saved ${String(chalk.green(decoratedData.price))} per month!!!`, OutputFormats.TEXT, {type: 'superSuccess'})
+    OutputService.print(`All done, you just saved ${String(chalk.green(decoratedData.price))} per month!!!`, OutputFormats.TEXT, { type: 'superSuccess' })
   }
 
   private async executeCommand<T> (command: CloudChiprCommand, subcommand: SubCommandInterface, options?: OptionValues | string[]): Promise<Response<T>> {
@@ -166,7 +166,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
       process.env.AWS_PROFILE = options.profile
     }
 
-    const engineAdapter = new AWSShellEngineAdapter<T>(this.getCustodian())
+    const engineAdapter = new AWSShellEngineAdapter<T>(this.getCustodian(), this.getCustodianOrg())
     return engineAdapter.execute(request)
   }
 
@@ -200,6 +200,11 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
     }
 
     return custodian
+  }
+
+  // check if C8R_CUSTODIAN is provided and executable
+  private static getCustodianOrg (): string {
+    return process.env.C8R_CUSTODIAN_ORG
   }
 
   private getProviderResourceFromString (target: string) {
