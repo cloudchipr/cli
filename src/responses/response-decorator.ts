@@ -135,8 +135,9 @@ export default class ResponseDecorator {
       'DB ID': rds.id,
       'Instance Type': rds.instanceType,
       'Average Connection': rds.averageConnections,
-      'Price Per Month GB': this.formatPrice(rds.pricePerMonthGB),
+      'Price Per Month': this.formatPrice(rds.pricePerMonth),
       'DB Type': rds.dbType,
+      'Multi-AZ': rds.multiAZ ? 'Yes' : 'No',
       'Name Tag': rds.nameTag
     }
   }

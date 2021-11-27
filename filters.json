@@ -1,0 +1,27 @@
+[
+  {
+    "Type": "TERM_MATCH",
+    "Field": "ServiceCode",
+    "Value": "AmazonRDS"
+  },
+  {
+    "Type": "TERM_MATCH",
+    "Field": "regionCode",
+    "Value": "us-east-1"
+  },
+  {
+    "Type": "TERM_MATCH",
+    "Field": "instanceType",
+    "Value": "db.m6g.large"
+  },
+  {
+    "Type": "TERM_MATCH",
+    "Field": "databaseEngine",
+    "Value": "postgres"
+  },
+  {
+    "Type": "TERM_MATCH",
+    "Field": "deploymentOption",
+    "Value": "Single-AZ"
+  }
+]
