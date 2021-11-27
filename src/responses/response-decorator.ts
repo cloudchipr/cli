@@ -13,7 +13,7 @@ export default class ResponseDecorator {
     resources.forEach((resource: Response<ProviderResource>) => {
       data = [...data, ...this.eachItem(resource, output)]
     })
-    return data
+    return output === Output.DETAILED ? data : this.sortByPriceSummary(data)
   }
 
   decorateClean (resource: Response<ProviderResource>, requestedIds: string[], subcommand: string) {
@@ -32,6 +32,10 @@ export default class ResponseDecorator {
       }
       return accumulator
     }, [])
+  }
+
+  private sortByPriceSummary (data: any[]): any[] {
+    return data.sort((a: any, b: any) => parseFloat(b['Cost Per Month'].slice(1)) - parseFloat(a['Cost Per Month'].slice(1)))
   }
 
   private eachItem (resource: Response<ProviderResource>, output: string) {
@@ -62,7 +66,7 @@ export default class ResponseDecorator {
     return [
       {
         Service: resource.items[0].constructor.name.toUpperCase(),
-        'Cost per month': this.formatPrice(totalPrice)
+        'Cost Per Month': this.formatPrice(totalPrice)
       }
     ]
   }
@@ -70,7 +74,7 @@ export default class ResponseDecorator {
   private ec2 (ec2: Ec2) {
     return {
       'Instance ID': ec2.id,
-      'Instance type': ec2.type,
+      'Instance Type': ec2.type,
       'CPU %': NumberConvertHelper.toFixed(ec2.cpu),
       NetIn: SizeConvertHelper.fromBytes(ec2.networkIn),
       NetOut: SizeConvertHelper.fromBytes(ec2.networkOut),

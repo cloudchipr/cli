@@ -1,6 +1,6 @@
 import {
   Command,
-  EngineRequest,
+  EngineRequest, FilterInterface,
   Parameter
 } from '@cloudchipr/cloudchipr-engine'
 import { OptionValues } from 'commander'
@@ -13,24 +13,7 @@ export default class EngineCollectRequestBuilder extends EngineRequestBuilder {
     super(command)
   }
 
-  build (): EngineRequest {
-    return new EngineRequest(
-      this.command,
-      this.subCommand,
-      this.buildParameter(this.options),
-      this.options.verbose === Verbose.ENABLED
-    )
-  }
-
-  private buildParameter (options: OptionValues, ids: string[] = []): Parameter {
-    const filter = FilterProvider.getCollectFilter(options, this.subCommand)
-    let regions : Set<string> = new Set(options.region)
-    if (regions.has('all')) {
-      regions = AllRegions
-      regions = AllRegions
-    }
-
-    const accounts : Set<string> = new Set(options.accountId)
-    return new Parameter(filter, false, Array.from(regions), Array.from(accounts))
+  getFilter (): FilterInterface {
+    return FilterProvider.getCollectFilter(this.options, this.subCommand)
   }
 }
