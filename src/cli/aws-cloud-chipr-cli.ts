@@ -149,19 +149,18 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
 
   private async executeCleanCommand<T extends ProviderResource> (subcommand: SubCommandInterface, collect: Response<ProviderResource>, options: OptionValues) {
     const ids = this.responseDecorator.getIds(collect, subcommand.getValue())
-    // @todo improve this part
-    options.ids = ids
-    const response = await this.executeCommand<T>(CloudChiprCommand.clean(), subcommand, options)
+    const response = await this.executeCommand<T>(CloudChiprCommand.clean(), subcommand, options, ids)
     const decoratedData = this.responseDecorator.decorateClean(response, ids, subcommand.getValue())
     OutputService.print(decoratedData.data, OutputFormats.ROW_DELETE)
     OutputService.print(`All done, you just saved ${String(chalk.green(decoratedData.price))} per month!!!`, OutputFormats.TEXT, { type: 'superSuccess' })
   }
 
-  private async executeCommand<T> (command: CloudChiprCommand, subcommand: SubCommandInterface, options: OptionValues): Promise<Response<T>> {
+  private async executeCommand<T> (command: CloudChiprCommand, subcommand: SubCommandInterface, options: OptionValues, ids: string[] = []): Promise<Response<T>> {
     const request = EngineRequestBuilderFactory
       .getInstance(command)
       .setSubCommand(subcommand)
       .setOptions(options)
+      .setIds(ids)
       .build()
 
     if (!Array.isArray(options) && options.profile !== undefined) {
@@ -180,7 +179,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
         type: 'confirm',
         name: 'proceed',
         prefix: '',
-        message: `All ${subcommand.toUpperCase()} volumes listed above will be deleted. Are you sure you want to proceed? `
+        message: `All resources listed above will be deleted. Are you sure you want to proceed? `
       }
     ])
     return !!confirm.proceed
