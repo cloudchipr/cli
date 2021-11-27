@@ -13,15 +13,6 @@ export default class EngineCollectRequestBuilder extends EngineRequestBuilder {
     super(command)
   }
 
-  // build (): EngineRequest {
-  //   return new EngineRequest(
-  //     this.command,
-  //     this.subCommand,
-  //     this.buildParameter(this.options, this.getFilter()),
-  //     this.options.verbose === Verbose.ENABLED
-  //   )
-  // }
-
   getFilter (): FilterInterface {
     return FilterProvider.getCollectFilter(this.options, this.subCommand)
   }
