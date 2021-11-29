@@ -24,6 +24,10 @@ export default class ResponseDecorator {
     return this[`${subcommand}GetIds`](resource)
   }
 
+  formatPrice (price: number): string {
+    return '$' + price.toFixed(2)
+  }
+
   private removeEmptyResourcesAndSortByPrice (resources: Array<Response<ProviderResource>>): Response<ProviderResource>[] {
     return resources.reduce((accumulator: Array<Response<ProviderResource>>, pilot: Response<ProviderResource>) => {
       if (pilot.count > 0) {
@@ -93,7 +97,7 @@ export default class ResponseDecorator {
     const data = requestedIds.map((id: string) => this.clean('EC2', id, succeededIds.includes(id)))
     return {
       data: data,
-      price: this.formatPrice(price)
+      price: price
     }
   }
 
@@ -122,7 +126,7 @@ export default class ResponseDecorator {
     const data = requestedIds.map((id: string) => this.clean('EBS', id, succeededIds.includes(id)))
     return {
       data: data,
-      price: this.formatPrice(price)
+      price: price
     }
   }
 
@@ -151,7 +155,7 @@ export default class ResponseDecorator {
     const data = requestedIds.map((id: string) => this.clean('RDS', id, succeededIds.includes(id)))
     return {
       data: data,
-      price: this.formatPrice(price)
+      price: price
     }
   }
 
@@ -176,7 +180,7 @@ export default class ResponseDecorator {
     const data = requestedIds.map((id: string) => this.clean('EIP', id, succeededIds.includes(id)))
     return {
       data: data,
-      price: this.formatPrice(price)
+      price: price
     }
   }
 
@@ -203,7 +207,7 @@ export default class ResponseDecorator {
     const data = requestedIds.map((id: string) => this.clean('ELB', id, succeededIds.includes(id)))
     return {
       data: data,
-      price: this.formatPrice(price)
+      price: price
     }
   }
 
@@ -230,7 +234,7 @@ export default class ResponseDecorator {
     const data = requestedIds.map((id: string) => this.clean('Nlb', id, succeededIds.includes(id)))
     return {
       data: data,
-      price: this.formatPrice(price)
+      price: price
     }
   }
 
@@ -257,7 +261,7 @@ export default class ResponseDecorator {
     const data = requestedIds.map((id: string) => this.clean('Alb', id, succeededIds.includes(id)))
     return {
       data: data,
-      price: this.formatPrice(price)
+      price: price
     }
   }
 
@@ -271,9 +275,5 @@ export default class ResponseDecorator {
       id: id,
       success: success
     }
-  }
-
-  private formatPrice (price: number): string {
-    return '$' + price.toFixed(2)
   }
 }

@@ -1,5 +1,5 @@
 import { Command, Option, OptionValues } from 'commander'
-import {CleanChunk, Output, OutputFormats, SubCommands, SubCommandsDetail} from '../constants'
+import { CleanChunkSize, Output, OutputFormats, SubCommands, SubCommandsDetail } from '../constants'
 import { OutputService } from '../services/output/output-service'
 import {
   AwsSubCommand,
@@ -150,14 +150,14 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
   private async executeCleanCommand<T extends ProviderResource> (subcommand: SubCommandInterface, collect: Response<ProviderResource>, options: OptionValues) {
     const ids = this.responseDecorator.getIds(collect, subcommand.getValue())
     let totalPrice = 0
-    for (let i = 0, j = ids.length; i < j; i += CleanChunk) {
-      const temporaryIds = ids.slice(i, i + CleanChunk);
+    for (let i = 0, j = ids.length; i < j; i += CleanChunkSize) {
+      const temporaryIds = ids.slice(i, i + CleanChunkSize);
       const response = await this.executeCommand<T>(CloudChiprCommand.clean(), subcommand, options, temporaryIds)
       const decoratedData = this.responseDecorator.decorateClean(response, temporaryIds, subcommand.getValue())
       OutputService.print(decoratedData.data, OutputFormats.ROW_DELETE)
       totalPrice += decoratedData.price
     }
-    OutputService.print(`All done, you just saved ${String(chalk.green(totalPrice))} per month!!!`, OutputFormats.TEXT, { type: 'superSuccess' })
+    OutputService.print(`All done, you just saved ${String(chalk.green(this.responseDecorator.formatPrice(totalPrice)))} per month!!!`, OutputFormats.TEXT, { type: 'superSuccess' })
   }
 
   private async executeCommand<T> (command: CloudChiprCommand, subcommand: SubCommandInterface, options: OptionValues, ids: string[] = []): Promise<Response<T>> {

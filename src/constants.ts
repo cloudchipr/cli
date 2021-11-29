@@ -74,4 +74,4 @@ export const SubCommandsDetail = {
   }
 } as const
 
-export const CleanChunk = 1
+export const CleanChunkSize = 10
