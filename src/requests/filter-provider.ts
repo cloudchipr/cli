@@ -36,10 +36,7 @@ export class FilterProvider {
       default:
         throw new Error(`Invalid subcommand [${subCommand.getValue()}] provided for clean command.`)
     }
-    ids.forEach((id) => {
-      console.log(id, '************')
-      builder.or().resource(resource).equal(id)
-    })
+    ids.forEach((id) => builder.or().resource(resource).equal(id))
     return builder.toList()
   }
 }
