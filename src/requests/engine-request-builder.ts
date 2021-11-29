@@ -4,8 +4,7 @@ import {
   SubCommandInterface
 } from '@cloudchipr/cloudchipr-engine'
 import { OptionValues } from 'commander'
-import {AllRegions, Verbose} from "../constants";
-import {FilterProvider} from "./filter-provider";
+import { AllRegions, Verbose } from '../constants'
 
 export default abstract class EngineRequestBuilder {
   protected command: Command

@@ -73,3 +73,5 @@ export const SubCommandsDetail = {
     cleanDescription: 'Terminate RDS database specific information based on provided filters.'
   }
 } as const
+
+export const CleanChunkSize = 5
