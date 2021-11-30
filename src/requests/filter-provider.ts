@@ -2,7 +2,7 @@ import { readFileSync } from 'fs'
 import yaml from 'yaml'
 import { FilterBuilder, FilterInterface, SubCommandInterface, FilterValidator } from '@cloudchipr/cloudchipr-engine'
 import { OptionValues } from 'commander'
-import {SubCommands} from '../constants'
+import { SubCommands } from '../constants'
 
 export class FilterProvider {
   static getCollectFilter (options: OptionValues, subCommand: SubCommandInterface): FilterInterface {

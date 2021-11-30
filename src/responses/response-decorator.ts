@@ -13,7 +13,7 @@ export default class ResponseDecorator {
     resources.forEach((resource: Response<ProviderResource>) => {
       data = [...data, ...this.eachItem(resource, output)]
     })
-    return data
+    return output === Output.DETAILED ? data : this.sortByPriceSummary(data)
   }
 
   decorateClean (resource: Response<ProviderResource>, requestedIds: string[], subcommand: string) {
@@ -24,14 +24,22 @@ export default class ResponseDecorator {
     return this[`${subcommand}GetIds`](resource)
   }
 
-  private removeEmptyResourcesAndSortByPrice(resources: Array<Response<ProviderResource>>): Response<ProviderResource>[] {
+  formatPrice (price: number): string {
+    return '$' + price.toFixed(2)
+  }
+
+  private removeEmptyResourcesAndSortByPrice (resources: Array<Response<ProviderResource>>): Response<ProviderResource>[] {
     return resources.reduce((accumulator: Array<Response<ProviderResource>>, pilot: Response<ProviderResource>) => {
       if (pilot.count > 0) {
-        pilot.items.sort((a: ProviderResource, b: ProviderResource) => b.pricePerMonth - a.pricePerMonth);
-        accumulator.push(pilot);
+        pilot.items.sort((a: ProviderResource, b: ProviderResource) => b.pricePerMonth - a.pricePerMonth)
+        accumulator.push(pilot)
       }
-      return accumulator;
-    }, []);
+      return accumulator
+    }, [])
+  }
+
+  private sortByPriceSummary (data: any[]): any[] {
+    return data.sort((a: any, b: any) => parseFloat(b['Cost Per Month'].slice(1)) - parseFloat(a['Cost Per Month'].slice(1)))
   }
 
   private eachItem (resource: Response<ProviderResource>, output: string) {
@@ -49,6 +57,10 @@ export default class ResponseDecorator {
       if (item.c8rRegion) {
         data.Region = item.c8rRegion
       }
+
+      if (item.c8rAccount) {
+        data.Account = item.c8rAccount
+      }
       return data
     })
   }
@@ -58,7 +70,7 @@ export default class ResponseDecorator {
     return [
       {
         Service: resource.items[0].constructor.name.toUpperCase(),
-        'Cost per month': this.formatPrice(totalPrice)
+        'Cost Per Month': this.formatPrice(totalPrice)
       }
     ]
   }
@@ -66,7 +78,7 @@ export default class ResponseDecorator {
   private ec2 (ec2: Ec2) {
     return {
       'Instance ID': ec2.id,
-      'Instance type': ec2.type,
+      'Instance Type': ec2.type,
       'CPU %': NumberConvertHelper.toFixed(ec2.cpu),
       NetIn: SizeConvertHelper.fromBytes(ec2.networkIn),
       NetOut: SizeConvertHelper.fromBytes(ec2.networkOut),
@@ -85,7 +97,7 @@ export default class ResponseDecorator {
     const data = requestedIds.map((id: string) => this.clean('EC2', id, succeededIds.includes(id)))
     return {
       data: data,
-      price: this.formatPrice(price)
+      price: price
     }
   }
 
@@ -114,7 +126,7 @@ export default class ResponseDecorator {
     const data = requestedIds.map((id: string) => this.clean('EBS', id, succeededIds.includes(id)))
     return {
       data: data,
-      price: this.formatPrice(price)
+      price: price
     }
   }
 
@@ -127,8 +139,9 @@ export default class ResponseDecorator {
       'DB ID': rds.id,
       'Instance Type': rds.instanceType,
       'Average Connection': rds.averageConnections,
-      'Price Per Month GB': this.formatPrice(rds.pricePerMonthGB),
+      'Price Per Month': this.formatPrice(rds.pricePerMonth),
       'DB Type': rds.dbType,
+      'Multi-AZ': rds.multiAZ ? 'Yes' : 'No',
       'Name Tag': rds.nameTag
     }
   }
@@ -142,7 +155,7 @@ export default class ResponseDecorator {
     const data = requestedIds.map((id: string) => this.clean('RDS', id, succeededIds.includes(id)))
     return {
       data: data,
-      price: this.formatPrice(price)
+      price: price
     }
   }
 
@@ -167,7 +180,7 @@ export default class ResponseDecorator {
     const data = requestedIds.map((id: string) => this.clean('EIP', id, succeededIds.includes(id)))
     return {
       data: data,
-      price: this.formatPrice(price)
+      price: price
     }
   }
 
@@ -194,7 +207,7 @@ export default class ResponseDecorator {
     const data = requestedIds.map((id: string) => this.clean('ELB', id, succeededIds.includes(id)))
     return {
       data: data,
-      price: this.formatPrice(price)
+      price: price
     }
   }
 
@@ -221,7 +234,7 @@ export default class ResponseDecorator {
     const data = requestedIds.map((id: string) => this.clean('Nlb', id, succeededIds.includes(id)))
     return {
       data: data,
-      price: this.formatPrice(price)
+      price: price
     }
   }
 
@@ -248,7 +261,7 @@ export default class ResponseDecorator {
     const data = requestedIds.map((id: string) => this.clean('Alb', id, succeededIds.includes(id)))
     return {
       data: data,
-      price: this.formatPrice(price)
+      price: price
     }
   }
 
@@ -262,9 +275,5 @@ export default class ResponseDecorator {
       id: id,
       success: success
     }
-  }
-
-  private formatPrice (price: number): string {
-    return '$' + price.toFixed(2)
   }
 }
