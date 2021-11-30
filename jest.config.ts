@@ -73,8 +73,11 @@ export default {
   // An array of file extensions your modules use
   moduleFileExtensions: [
     "js",
+    "jsx",
     "ts",
-    "json"
+    "tsx",
+    "json",
+    "node"
   ],
 
   // A map from regular expressions to module names or to arrays of module names that allow to stub out resources with a single module
@@ -99,10 +102,10 @@ export default {
   // reporters: undefined,
 
   // Automatically reset mock state between every test
-  // resetMocks: false,
+  resetMocks: true,
 
   // Reset the module registry before running each individual test
-  // resetModules: false,
+  resetModules: true,
 
   // A path to a custom resolver
   // resolver: undefined,
@@ -144,7 +147,7 @@ export default {
 
   // The glob patterns Jest uses to detect test files
   testMatch: [
-    "*.+[test.ts]"
+    "**/tests/**/*.+(ts)"
   ],
 
   // An array of regexp pattern strings that are matched against all test paths, matched tests are skipped
@@ -169,7 +172,7 @@ export default {
 
   // A map from regular expressions to paths to transformers
   transform: {
-    "^.+\\.ts$": "ts-jest"
+    "^.+\\.(ts)$": "ts-jest"
   },
 
   // An array of regexp pattern strings that are matched against all source file paths, matched files will skip transformation
