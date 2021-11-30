@@ -106,5 +106,6 @@
     "lib",
     "./test/*",
     "./default-filters",
+    "./jest.config.ts",
   ]
 }
