@@ -54,24 +54,24 @@ export class Spinner {
   }
 
   public succeed(text?: string) {
-    this.stopSpinnerWithStatus('🟢', chalk.green(text))
+    this.stopSpinnerWithStatus(chalk.green('● ' + text))
   }
 
   public fail(text?: string) {
-    this.stopSpinnerWithStatus('🔴', chalk.red(text))
+    this.stopSpinnerWithStatus(chalk.red('● ' + text))
   }
 
   public warn(text?: string) {
-    this.stopSpinnerWithStatus('🟠', chalk.yellow(text))
+    this.stopSpinnerWithStatus(chalk.hex('#FFD800')('● ' + text))
   }
 
   public info(text?: string) {
-    this.stopSpinnerWithStatus('🔵', chalk.yellow(text))
+    this.stopSpinnerWithStatus(chalk.blue('● ' + text))
   }
 
   public stop(): void {
     this.stopSpinner()
-    this.clearCurrentLine()
+    // this.clearCurrentLine()
     this.setText('')
     this.printNewLine()
   }
@@ -83,11 +83,10 @@ export class Spinner {
     this.currentTimer = null
   }
 
-  private stopSpinnerWithStatus(status: string, text?: string) {
+  private stopSpinnerWithStatus(text?: string) {
     this.setText('')
-    const message = `${status} ${text}`
     this.stopSpinner()
-    this.printOnCurrentLine(message)
+    this.printOnCurrentLine(text)
     this.printNewLine()
   }
 

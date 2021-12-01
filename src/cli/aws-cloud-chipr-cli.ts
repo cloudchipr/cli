@@ -1,5 +1,5 @@
 import { Command, Option, OptionValues } from 'commander'
-import { CleanChunkSize, Output, OutputFormats, SubCommands, SubCommandsDetail } from '../constants'
+import {CleanChunkSize, Commands, Output, OutputFormats, SubCommands, SubCommandsDetail} from '../constants'
 import { OutputService } from '../services/output/output-service'
 import {
   AwsSubCommand,
@@ -14,13 +14,17 @@ import chalk from 'chalk'
 import { FilterHelper } from '../helpers/filter-helper'
 import ResponseDecorator from '../responses/response-decorator'
 import EngineRequestBuilderFactory from '../requests/engine-request-builder-factory'
+import { Spinner } from '../spinner/spinner'
+import {LoadingMessageHelper} from "../helpers/loading-message-helper";
 const fs = require('fs')
 
 export default class AwsCloudChiprCli implements CloudChiprCliInterface {
   private responseDecorator: ResponseDecorator
+  private spinner: Spinner
 
   constructor () {
     this.responseDecorator = new ResponseDecorator()
+    this.spinner = Spinner.getInstance()
   }
 
   customiseCommand (command: Command): CloudChiprCliInterface {
@@ -87,6 +91,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
         .option('--force', 'Force')
         .option('-f, --filter <type>', 'Filter')
         .action(async (options) => {
+          this.spinner.setText(LoadingMessageHelper.getLoadingMessage(Commands.COLLECT, key)).start()
           await this.executeSingleCleanCommandWithPrompt(key, parentOptions, options)
         })
         .addHelpText('after', this.getFilterExample(key))
@@ -134,30 +139,31 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
     const allOptions = Object.assign(parentOptions, { filter: options.filter || `./default-filters/${target}.yaml` }) as OptionValues
     const collect = await this.executeCommand<InstanceType<typeof providerResource>>(CloudChiprCommand.collect(), AwsSubCommand[target](), allOptions)
     if (collect.count === 0) {
-      OutputService.print('We found no resources matching provided filters, please modify and try again!', OutputFormats.TEXT, { type: 'warning' })
+      this.spinner.warn('We found no resources matching provided filters, please modify and try again!')
+      // OutputService.print('We found no resources matching provided filters, please modify and try again!', OutputFormats.TEXT, { type: 'warning' })
       return
     }
     let confirm = true
     if (!options.force) {
+      this.spinner.stop()
       OutputService.print(this.responseDecorator.decorate([collect], Output.DETAILED), OutputFormats.TABLE)
       confirm = await this.prompt(AwsSubCommand[target]().getValue())
     }
     if (confirm) {
+      this.spinner.setText(LoadingMessageHelper.getLoadingMessage(Commands.CLEAN, target)).start()
       await this.executeCleanCommand<InstanceType<typeof providerResource>>(AwsSubCommand[target](), collect, parentOptions)
+    } else {
+      this.spinner.stop()
     }
   }
 
   private async executeCleanCommand<T extends ProviderResource> (subcommand: SubCommandInterface, collect: Response<ProviderResource>, options: OptionValues) {
     const ids = this.responseDecorator.getIds(collect, subcommand.getValue())
-    let totalPrice = 0
-    for (let i = 0, j = ids.length; i < j; i += CleanChunkSize) {
-      const temporaryIds = ids.slice(i, i + CleanChunkSize);
-      const response = await this.executeCommand<T>(CloudChiprCommand.clean(), subcommand, options, temporaryIds)
-      const decoratedData = this.responseDecorator.decorateClean(response, temporaryIds, subcommand.getValue())
-      OutputService.print(decoratedData.data, OutputFormats.ROW_DELETE)
-      totalPrice += decoratedData.price
-    }
-    OutputService.print(`All done, you just saved ${String(chalk.green(this.responseDecorator.formatPrice(totalPrice)))} per month!!!`, OutputFormats.TEXT, { type: 'superSuccess' })
+    const response = await this.executeCommand<T>(CloudChiprCommand.clean(), subcommand, options, ids)
+    const decoratedData = this.responseDecorator.decorateClean(response, ids, subcommand.getValue())
+    this.spinner.succeed('Done!')
+    OutputService.print(decoratedData.data, OutputFormats.ROW_DELETE)
+    OutputService.print(`All done, you just saved ${String(chalk.green(decoratedData.price))} per month!!!`, OutputFormats.TEXT, { type: 'superSuccess' })
   }
 
   private async executeCommand<T> (command: CloudChiprCommand, subcommand: SubCommandInterface, options: OptionValues, ids: string[] = []): Promise<Response<T>> {

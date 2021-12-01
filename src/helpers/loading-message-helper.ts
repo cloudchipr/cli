@@ -1,11 +1,13 @@
+import { Commands } from '../constants'
+
 export class LoadingMessageHelper {
   static getLoadingMessage (command: string, subcommand: string): string {
     let message = ''
     switch (command) {
-      case 'collect':
+      case Commands.COLLECT:
         message = 'Collecting '
         break
-      case 'clean':
+      case Commands.CLEAN:
         message = 'Cleaning '
         break
       default:

@@ -20,6 +20,11 @@ export enum OutputFormats {
     ROW_DELETE = 'row_delete',
 }
 
+export enum Commands {
+    COLLECT = 'collect',
+    CLEAN = 'clean',
+}
+
 export enum SubCommands {
     EBS = 'ebs',
     EC2 = 'ec2',
