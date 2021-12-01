@@ -1,3 +1,3 @@
 export interface OutputInterface {
-    print(data: any, context: object): void;
+    print(data: any, context: any): void;
 }

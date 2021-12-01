@@ -8,7 +8,7 @@ WORKDIR /src
 
 # Install Cloud Custodian
 RUN python3 -m venv custodian
-RUN . custodian/bin/activate && pip install c7n
+RUN . custodian/bin/activate && pip install c7n && pip install c7n-org
 
 # Create app directory
 WORKDIR /src/c8r-cli
@@ -30,4 +30,5 @@ RUN npm link
 
 # SET CUSTODIAN envirnomet variable
 ENV C8R_CUSTODIAN=../custodian/bin/custodian
+ENV C8R_CUSTODIAN_ORG=../custodian/bin/c7n-org
 
