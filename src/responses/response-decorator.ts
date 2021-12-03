@@ -97,7 +97,7 @@ export default class ResponseDecorator {
     const data = requestedIds.map((id: string) => this.clean('EC2', id, succeededIds.includes(id)))
     return {
       data: data,
-      price: price
+      price: this.formatPrice(price)
     }
   }
 
@@ -126,7 +126,7 @@ export default class ResponseDecorator {
     const data = requestedIds.map((id: string) => this.clean('EBS', id, succeededIds.includes(id)))
     return {
       data: data,
-      price: price
+      price: this.formatPrice(price)
     }
   }
 
@@ -155,7 +155,7 @@ export default class ResponseDecorator {
     const data = requestedIds.map((id: string) => this.clean('RDS', id, succeededIds.includes(id)))
     return {
       data: data,
-      price: price
+      price: this.formatPrice(price)
     }
   }
 
@@ -180,7 +180,7 @@ export default class ResponseDecorator {
     const data = requestedIds.map((id: string) => this.clean('EIP', id, succeededIds.includes(id)))
     return {
       data: data,
-      price: price
+      price: this.formatPrice(price)
     }
   }
 
@@ -207,7 +207,7 @@ export default class ResponseDecorator {
     const data = requestedIds.map((id: string) => this.clean('ELB', id, succeededIds.includes(id)))
     return {
       data: data,
-      price: price
+      price: this.formatPrice(price)
     }
   }
 
@@ -234,7 +234,7 @@ export default class ResponseDecorator {
     const data = requestedIds.map((id: string) => this.clean('Nlb', id, succeededIds.includes(id)))
     return {
       data: data,
-      price: price
+      price: this.formatPrice(price)
     }
   }
 
@@ -261,7 +261,7 @@ export default class ResponseDecorator {
     const data = requestedIds.map((id: string) => this.clean('Alb', id, succeededIds.includes(id)))
     return {
       data: data,
-      price: price
+      price: this.formatPrice(price)
     }
   }
 
