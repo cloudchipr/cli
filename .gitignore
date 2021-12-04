@@ -2,6 +2,7 @@
 node_modules/
 dist/
 lib/
+tmp/
 
 # Compiled Java class files
 *.class
