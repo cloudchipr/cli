@@ -1,5 +1,5 @@
 import { Command, Option, OptionValues } from 'commander'
-import { CleanChunkSize, Output, OutputFormats, SubCommands, SubCommandsDetail } from '../constants'
+import { Output, OutputFormats, SubCommands, SubCommandsDetail } from '../constants'
 import { OutputService } from '../services/output/output-service'
 import {
   AwsSubCommand,

@@ -4,6 +4,7 @@ import chalk from 'chalk'
 import { Command, Option } from 'commander'
 import { CloudProvider, Output, OutputFormats } from './constants'
 import CloudChiprCliProvider from './cli/cloud-chipr-cli-provider'
+import { LoggerHelper } from './helpers/logger-helper'
 require('dotenv').config()
 
 const command = new Command()
@@ -37,7 +38,13 @@ cloudChiprCli
 
 try {
   command.parseAsync(process.argv).catch(e => {
-    console.error(chalk.red(chalk.underline('Error:'), e.message))
+    if (command.getOptionValue('verbose') === true) {
+      const filename = `./tmp/logs/${Date.now()}.log`
+      LoggerHelper.logFile(filename, e.message, e)
+      console.error(chalk.red(chalk.underline('Error:'), `Failed on executing command, the trace log can be found in ${filename} directory.`))
+    } else {
+      console.error(chalk.red(chalk.underline('Error:'), 'Failed on executing command, please run c8s with --verbose flag and follow the trace log.'))
+    }
   })
 } catch (e) {
   console.error(chalk.red(chalk.underline('Error:'), e.message))
