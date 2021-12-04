@@ -4,7 +4,7 @@ import {
   SubCommandInterface
 } from '@cloudchipr/cloudchipr-engine'
 import { OptionValues } from 'commander'
-import { AllRegions, Verbose } from '../constants'
+import { AllRegions } from '../constants'
 
 export default abstract class EngineRequestBuilder {
   protected command: Command
@@ -41,7 +41,7 @@ export default abstract class EngineRequestBuilder {
       this.command,
       this.subCommand,
       this.buildParameter(this.options, this.getFilter()),
-      this.options.verbose === Verbose.ENABLED
+      this.options.verbose === true
     )
   }
 

@@ -7,11 +7,6 @@ export enum Output {
     SUMMARIZED = 'summarized',
 }
 
-export enum Verbose {
-    DISABLED = '0',
-    ENABLED = '1',
-}
-
 export enum OutputFormats {
     JSON = 'json',
     YAML = 'yaml',
