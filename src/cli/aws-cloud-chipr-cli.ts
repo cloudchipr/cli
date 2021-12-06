@@ -17,6 +17,7 @@ import ResponseDecorator from '../responses/response-decorator'
 import EngineRequestBuilderFactory from '../requests/engine-request-builder-factory'
 import { AwsHelper } from '../helpers/aws-helper'
 import {CustodianHelper} from '../helpers/custodian-helper'
+import ora from 'ora'
 
 export default class AwsCloudChiprCli implements CloudChiprCliInterface {
   private responseDecorator: ResponseDecorator
@@ -42,8 +43,27 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
         .command(key)
         .description(SubCommandsDetail[key].collectDescription)
         .option('-f, --filter <type>', 'Filter')
-        .action(async (options) => {
-          await this.executeSingleCollectCommand(key, parentOptions, options)
+        .action((options) => {
+          console.log('start')
+          const spinner = ora('Loading unicorns').start();
+          // const providerResource = AwsHelper.getProviderResourceFromString(key)
+          // const allOptions = Object.assign(parentOptions, { filter: options.filter || `./default-filters/${key}.yaml` }) as OptionValues
+          // this.executeCommand<InstanceType<typeof providerResource>>(CloudChiprCommand.collect(), AwsSubCommand[key](), allOptions)
+          //   .then((response) => {
+          //     if (response.count === 0) {
+          //       OutputService.print('We found no resources matching provided filters, please modify and try again!', OutputFormats.TEXT, { type: 'warning' })
+          //       return
+          //     }
+          //     // stop
+          //     spinner.stop()
+          //     if (parentOptions.output !== null) {
+          //       OutputService.print(this.responseDecorator.decorate([response], parentOptions.output), parentOptions.outputFormat)
+          //     } else {
+          //       OutputService.print(this.responseDecorator.decorate([response], Output.DETAILED), parentOptions.outputFormat)
+          //       OutputService.print(this.responseDecorator.decorate([response], Output.SUMMARIZED), parentOptions.outputFormat)
+          //     }
+          //   })
+          // await this.executeSingleCollectCommand(key, parentOptions, options)
         })
         .addHelpText('after', this.getFilterExample(key))
     }
@@ -101,21 +121,21 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
   //   return this
   // }
 
-  private async executeSingleCollectCommand (target: string, parentOptions: OptionValues, options: any) {
-    const providerResource = AwsHelper.getProviderResourceFromString(target)
-    const allOptions = Object.assign(parentOptions, { filter: options.filter || `./default-filters/${target}.yaml` }) as OptionValues
-    const response = await this.executeCollectCommand<InstanceType<typeof providerResource>>(AwsSubCommand[target](), allOptions)
-    if (response.count === 0) {
-      OutputService.print('We found no resources matching provided filters, please modify and try again!', OutputFormats.TEXT, { type: 'warning' })
-      return
-    }
-    if (parentOptions.output !== null) {
-      OutputService.print(this.responseDecorator.decorate([response], parentOptions.output), parentOptions.outputFormat)
-    } else {
-      OutputService.print(this.responseDecorator.decorate([response], Output.DETAILED), parentOptions.outputFormat)
-      OutputService.print(this.responseDecorator.decorate([response], Output.SUMMARIZED), parentOptions.outputFormat)
-    }
-  }
+  // private async executeSingleCollectCommand (target: string, parentOptions: OptionValues, options: any) {
+  //   const providerResource = AwsHelper.getProviderResourceFromString(target)
+  //   const allOptions = Object.assign(parentOptions, { filter: options.filter || `./default-filters/${target}.yaml` }) as OptionValues
+  //   const response = await this.executeCollectCommand<InstanceType<typeof providerResource>>(AwsSubCommand[target](), allOptions)
+  //   if (response.count === 0) {
+  //     OutputService.print('We found no resources matching provided filters, please modify and try again!', OutputFormats.TEXT, { type: 'warning' })
+  //     return
+  //   }
+  //   if (parentOptions.output !== null) {
+  //     OutputService.print(this.responseDecorator.decorate([response], parentOptions.output), parentOptions.outputFormat)
+  //   } else {
+  //     OutputService.print(this.responseDecorator.decorate([response], Output.DETAILED), parentOptions.outputFormat)
+  //     OutputService.print(this.responseDecorator.decorate([response], Output.SUMMARIZED), parentOptions.outputFormat)
+  //   }
+  // }
 
   private executeAllCollectCommand (parentOptions: OptionValues) {
     const promises = []
