@@ -1,11 +1,12 @@
 import { Command, Option, OptionValues } from 'commander'
-import { Output, OutputFormats, SubCommands, SubCommandsDetail } from '../constants'
+import { Output, OutputFormats, SubCommandsDetail } from '../constants'
 import { OutputService } from '../services/output/output-service'
 import {
   AwsSubCommand,
   AWSShellEngineAdapter,
   Command as CloudChiprCommand,
-  Ec2, Ebs, Elb, Nlb, Alb, Eip, Rds, SubCommandInterface, ProviderResource,
+  SubCommandInterface,
+  ProviderResource,
   Response
 } from '@cloudchipr/cloudchipr-engine'
 import CloudChiprCliInterface from './cloud-chipr-cli-interface'
@@ -14,7 +15,8 @@ import chalk from 'chalk'
 import { FilterHelper } from '../helpers/filter-helper'
 import ResponseDecorator from '../responses/response-decorator'
 import EngineRequestBuilderFactory from '../requests/engine-request-builder-factory'
-const fs = require('fs')
+import { AwsHelper } from '../helpers/aws-helper'
+import {CustodianHelper} from '../helpers/custodian-helper'
 
 export default class AwsCloudChiprCli implements CloudChiprCliInterface {
   private responseDecorator: ResponseDecorator
@@ -100,7 +102,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
   // }
 
   private async executeSingleCollectCommand (target: string, parentOptions: OptionValues, options: any) {
-    const providerResource = this.getProviderResourceFromString(target)
+    const providerResource = AwsHelper.getProviderResourceFromString(target)
     const allOptions = Object.assign(parentOptions, { filter: options.filter || `./default-filters/${target}.yaml` }) as OptionValues
     const response = await this.executeCollectCommand<InstanceType<typeof providerResource>>(AwsSubCommand[target](), allOptions)
     if (response.count === 0) {
@@ -119,7 +121,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
     const promises = []
     for (const key in SubCommandsDetail) {
       const allOptions = Object.assign(parentOptions, { filter: `./default-filters/${key}.yaml` }) as OptionValues
-      const providerResource = this.getProviderResourceFromString(key)
+      const providerResource = AwsHelper.getProviderResourceFromString(key)
       promises.push(this.executeCollectCommand<InstanceType<typeof providerResource>>(AwsSubCommand[key](), allOptions))
     }
     return Promise.all(promises)
@@ -130,7 +132,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
   }
 
   private async executeSingleCleanCommandWithPrompt (target: string, parentOptions: OptionValues, options: any) {
-    const providerResource = this.getProviderResourceFromString(target)
+    const providerResource = AwsHelper.getProviderResourceFromString(target)
     const allOptions = Object.assign(parentOptions, { filter: options.filter || `./default-filters/${target}.yaml` }) as OptionValues
     const collect = await this.executeCommand<InstanceType<typeof providerResource>>(CloudChiprCommand.collect(), AwsSubCommand[target](), allOptions)
     if (collect.count === 0) {
@@ -167,9 +169,9 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
       process.env.AWS_PROFILE = options.profile
     }
 
-    const custodianOrg = (options['accountId'] != undefined && (new Set(options['accountId'])).size)? this.getCustodianOrg(): undefined
+    const custodianOrg = (options['accountId'] != undefined && (new Set(options['accountId'])).size)? CustodianHelper.getCustodianOrg(): undefined
 
-    const engineAdapter = new AWSShellEngineAdapter<T>(this.getCustodian(), custodianOrg)
+    const engineAdapter = new AWSShellEngineAdapter<T>(CustodianHelper.getCustodian(), custodianOrg)
     return engineAdapter.execute(request)
   }
 
@@ -187,56 +189,5 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
 
   private getFilterExample (subcommand: string): string {
     return `\n${chalk.yellow('Filter example (filter.yaml)')}:\n${FilterHelper.getDefaultFilter(subcommand)}`
-  }
-
-  // check if C8R_CUSTODIAN is provided and executable
-  private getCustodian (): string {
-    const custodian: string = process.env.C8R_CUSTODIAN
-    if (custodian === undefined) {
-      throw new Error('C8R_CUSTODIAN is not provided')
-    }
-
-    try {
-      fs.accessSync(custodian)
-    } catch (err) {
-      throw new Error('C8R_CUSTODIAN is not provided or it not executable')
-    }
-
-    return custodian
-  }
-
-  // check if C8R_CUSTODIAN is provided and executable
-  private getCustodianOrg (): string {
-    const custodianOrg: string = process.env.C8R_CUSTODIAN_ORG
-    if (custodianOrg === undefined) {
-      throw new Error('C8R_CUSTODIAN_ORG is not provided')
-    }
-
-    try {
-      fs.accessSync(custodianOrg)
-    } catch (err) {
-      throw new Error('C8R_CUSTODIAN_ORG is not provided or it not executable')
-    }
-
-    return custodianOrg
-  }
-
-  private getProviderResourceFromString (target: string) {
-    switch (target) {
-      case SubCommands.EBS:
-        return Ebs
-      case SubCommands.EC2:
-        return Ec2
-      case SubCommands.ELB:
-        return Elb
-      case SubCommands.NLB:
-        return Nlb
-      case SubCommands.ALB:
-        return Alb
-      case SubCommands.EIP:
-        return Eip
-      case SubCommands.RDS:
-        return Rds
-    }
   }
 }
