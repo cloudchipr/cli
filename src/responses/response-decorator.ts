@@ -78,7 +78,7 @@ export default class ResponseDecorator {
   private ec2 (ec2: Ec2) {
     return {
       'Instance ID': ec2.id,
-      'Instance Type': ec2.type,
+      'Type': ec2.type,
       'CPU %': NumberConvertHelper.toFixed(ec2.cpu),
       NetIn: SizeConvertHelper.fromBytes(ec2.networkIn),
       NetOut: SizeConvertHelper.fromBytes(ec2.networkOut),
@@ -107,8 +107,8 @@ export default class ResponseDecorator {
 
   private ebs (ebs: Ebs) {
     return {
-      'Instance ID': ebs.id,
-      'Instance Type': ebs.type,
+      'Volume ID': ebs.id,
+      'Type': ebs.type,
       State: ebs.state,
       Size: ebs.size,
       Age: DateTimeHelper.convertToWeeksDaysHours(ebs.age),
