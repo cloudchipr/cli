@@ -78,7 +78,7 @@ export default class ResponseDecorator {
   private ec2 (ec2: Ec2) {
     return {
       'Instance ID': ec2.id,
-      'Type': ec2.type,
+      'Instance Type': ec2.type,
       'CPU %': NumberConvertHelper.toFixed(ec2.cpu),
       NetIn: SizeConvertHelper.fromBytes(ec2.networkIn),
       NetOut: SizeConvertHelper.fromBytes(ec2.networkOut),
