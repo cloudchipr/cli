@@ -107,8 +107,8 @@ export default class ResponseDecorator {
 
   private ebs (ebs: Ebs) {
     return {
-      'Instance ID': ebs.id,
-      'Instance Type': ebs.type,
+      'Volume ID': ebs.id,
+      'Type': ebs.type,
       State: ebs.state,
       Size: ebs.size,
       Age: DateTimeHelper.convertToWeeksDaysHours(ebs.age),
