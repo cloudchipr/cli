@@ -1,8 +1,8 @@
 and:
   - resource: "launch-time"
     op: "GreaterThanEqualTo"
-    value: 14
+    value: 7
   - resource: "database-connections"
     op: "LessThanEqualTo"
-    value: 100000
-    since: 1
+    value: 1
+    since: 7
