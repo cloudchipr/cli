@@ -55,7 +55,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
           .executeAllCollectCommand(parentOptions)
           .then(result => {
             const responses: Array<Response<ProviderResource>> = result
-            if (parentOptions.output !== Output.SUMMARIZED) {
+            if (parentOptions.output === Output.DETAILED || parentOptions.output === null) {
               responses.forEach((response) => {
                 if (response.count === 0) {
                   return
@@ -68,7 +68,10 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
                 OutputService.print(this.responseDecorator.decorate([response], Output.DETAILED), parentOptions.outputFormat, context)
               })
             }
-            if (parentOptions.output !== Output.DETAILED) {
+            if (parentOptions.output === null) {
+              OutputService.print(`Summary ⬇️`, OutputFormats.TEXT, { type: 'success' })
+            }
+            if (parentOptions.output === Output.SUMMARIZED || parentOptions.output === null) {
               OutputService.print(this.responseDecorator.decorate(responses, Output.SUMMARIZED), parentOptions.outputFormat)
             }
           })
