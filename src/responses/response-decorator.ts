@@ -31,7 +31,7 @@ export default class ResponseDecorator {
   private removeEmptyResourcesAndSortByPrice (resources: Array<Response<ProviderResource>>): Response<ProviderResource>[] {
     return resources.reduce((accumulator: Array<Response<ProviderResource>>, pilot: Response<ProviderResource>) => {
       if (pilot.count > 0) {
-        pilot.items.sort((a: ProviderResource, b: ProviderResource) => b.pricePerMonth - a.pricePerMonth)
+        pilot.items.sort((a: ProviderResource, b: ProviderResource) => a.c8rAccount.localeCompare(b.c8rAccount) || b.pricePerMonth - a.pricePerMonth)
         accumulator.push(pilot)
       }
       return accumulator
@@ -52,17 +52,7 @@ export default class ResponseDecorator {
   }
 
   private eachItemDetail (resource: Response<ProviderResource>) {
-    return resource.items.map((item: ProviderResource) => {
-      const data = this[item.constructor.name.toLowerCase()](item)
-      if (item.c8rRegion) {
-        data.Region = item.c8rRegion
-      }
-
-      if (item.c8rAccount) {
-        data.Account = item.c8rAccount
-      }
-      return data
-    })
+    return resource.items.map((item: ProviderResource) => this[item.constructor.name.toLowerCase()](item))
   }
 
   private eachItemSummary (resource: Response<ProviderResource>) {
@@ -84,7 +74,9 @@ export default class ResponseDecorator {
       NetOut: SizeConvertHelper.fromBytes(ec2.networkOut),
       'Price Per Month': this.formatPrice(ec2.pricePerMonth),
       Age: DateTimeHelper.convertToWeeksDaysHours(ec2.age),
-      'Name Tag': ec2.nameTag
+      'Name Tag': ec2.nameTag,
+      Region: ec2.c8rRegion,
+      Account: ec2.c8rAccount
     }
   }
 
@@ -113,7 +105,9 @@ export default class ResponseDecorator {
       Size: ebs.size,
       Age: DateTimeHelper.convertToWeeksDaysHours(ebs.age),
       'Price Per Month': this.formatPrice(ebs.pricePerMonth),
-      'Name Tag': ebs.nameTag
+      'Name Tag': ebs.nameTag,
+      Region: ebs.c8rRegion,
+      Account: ebs.c8rAccount
     }
   }
 
@@ -142,7 +136,9 @@ export default class ResponseDecorator {
       'Price Per Month': this.formatPrice(rds.pricePerMonth),
       'DB Type': rds.dbType,
       'Multi-AZ': rds.multiAZ ? 'Yes' : 'No',
-      'Name Tag': rds.nameTag
+      'Name Tag': rds.nameTag,
+      Region: rds.c8rRegion,
+      Account: rds.c8rAccount
     }
   }
 
@@ -167,7 +163,9 @@ export default class ResponseDecorator {
     return {
       'IP Address': eip.ip,
       'Price Per Month': this.formatPrice(eip.pricePerMonth),
-      'Name Tag': eip.nameTag
+      'Name Tag': eip.nameTag,
+      Region: eip.c8rRegion,
+      Account: eip.c8rAccount
     }
   }
 
@@ -194,7 +192,9 @@ export default class ResponseDecorator {
       'DNS Name': elb.dnsName,
       Age: DateTimeHelper.convertToWeeksDaysHours(elb.age),
       'Price Per Month': this.formatPrice(elb.pricePerMonth),
-      'Name Tag': elb.nameTag
+      'Name Tag': elb.nameTag,
+      Region: elb.c8rRegion,
+      Account: elb.c8rAccount
     }
   }
 
@@ -221,7 +221,9 @@ export default class ResponseDecorator {
       'DNS Name': nlb.dnsName,
       Age: DateTimeHelper.convertToWeeksDaysHours(nlb.age),
       'Price Per Month': this.formatPrice(nlb.pricePerMonth),
-      'Name Tag': nlb.nameTag
+      'Name Tag': nlb.nameTag,
+      Region: nlb.c8rRegion,
+      Account: nlb.c8rAccount
     }
   }
 
@@ -248,7 +250,9 @@ export default class ResponseDecorator {
       'DNS Name': alb.dnsName,
       Age: DateTimeHelper.convertToWeeksDaysHours(alb.age),
       'Price Per Month': this.formatPrice(alb.pricePerMonth),
-      'Name Tag': alb.nameTag
+      'Name Tag': alb.nameTag,
+      Region: alb.c8rRegion,
+      Account: alb.c8rAccount
     }
   }
 
