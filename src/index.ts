@@ -38,14 +38,17 @@ cloudChiprCli
 
 try {
   command.parseAsync(process.argv).catch(e => {
+    const filename = `./.c8r/logs/${(new Date()).toISOString().slice(0, 10)}.log`
+    LoggerHelper.logFile(filename, e.message, e)
     if (command.getOptionValue('verbose') === true) {
-      const filename = `./tmp/logs/${Date.now()}.log`
-      LoggerHelper.logFile(filename, e.message, e)
-      console.error(chalk.red(chalk.underline('Error:'), `Failed on executing command, the trace log can be found in ${filename} directory.`))
+      console.error(chalk.red(chalk.underline('Error:'), `Failed on executing command due to: ${e.message}. \nThe trace log can be found in ${filename} directory.`))
+      console.error(chalk.red(e.stack))
     } else {
-      console.error(chalk.red(chalk.underline('Error:'), 'Failed on executing command, please run c8s with --verbose flag and follow the trace log.'))
+      console.error(chalk.red(chalk.underline('Error:'), 'Failed on executing command, please run c8r with --verbose flag and follow the trace log.'))
     }
   })
 } catch (e) {
-  console.error(chalk.red(chalk.underline('Error:'), e.message))
+  const filename = `./.c8r/logs/${(new Date()).toISOString().slice(0, 10)}.log`
+  LoggerHelper.logFile(filename, e.message, e)
+  console.error(chalk.red(chalk.underline('Error:'), `Failed on executing command due to: ${e.message}. \nThe trace log can be found in ${filename} directory.`))
 }
