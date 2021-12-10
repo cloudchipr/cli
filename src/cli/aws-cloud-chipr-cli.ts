@@ -68,7 +68,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
               OutputService.print(`Overall Summary of potential total cost cutting opportunities found ⬇️`, OutputFormats.TEXT, { type: 'success' })
               OutputService.print(this.responseDecorator.decorate(responses, Output.SUMMARIZED), parentOptions.outputFormat)
             }
-            OutputService.print(`Please run c8r clean [options] [command] with the same filters if you wish to clean.`, OutputFormats.TEXT, { type: 'info' })
+            OutputService.print(`Please run ${chalk.bgHex('#F7F7F7').hex('#D16464')('c8r clean [options] all')} with the same filters if you wish to clean.`, OutputFormats.TEXT)
           })
       })
 
@@ -113,7 +113,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
       OutputService.print(`Overall Summary of potential total cost cutting opportunities found ⬇️`, OutputFormats.TEXT, { type: 'success' })
       OutputService.print(this.responseDecorator.decorate([response], Output.SUMMARIZED), parentOptions.outputFormat)
     }
-    OutputService.print(`Please run c8r clean [options] [command] with the same filters if you wish to clean.`, OutputFormats.TEXT, { type: 'info' })
+    OutputService.print(`Please run ${chalk.bgHex('#F7F7F7').hex('#D16464')('c8r clean [options] ' + target)} with the same filters if you wish to clean.`, OutputFormats.TEXT)
   }
 
   private executeAllCollectCommand (parentOptions: OptionValues) {
