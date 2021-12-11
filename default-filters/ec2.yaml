@@ -1,16 +1,16 @@
 and:
   - resource: "launch-time"
     op: "GreaterThanEqualTo"
-    value: 14
+    value: 7
   - resource: "cpu"
     op: "LessThanEqualTo"
     since: 1
-    value: 100
+    value: 5
   - resource: "network-in"
     op: "LessThanEqualTo"
-    since: 1
-    value: 100000000000
+    since: 7
+    value: 100000000
   - resource: "network-out"
     op: "LessThanEqualTo"
-    since: 1
-    value: 100000000000
+    since: 7
+    value: 100000000
