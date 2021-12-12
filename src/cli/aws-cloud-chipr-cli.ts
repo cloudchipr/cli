@@ -41,7 +41,10 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
         .description(SubCommandsDetail[key].collectDescription)
         .option('-f, --filter <type>', 'Filter')
         .action(async (options) => {
-          await this.executeSingleCollectCommand(key, parentOptions, options)
+          const providerResource = AwsHelper.getProviderResourceFromString(key)
+          const allOptions = Object.assign(parentOptions, { filter: options.filter || `./default-filters/${key}.yaml` }) as OptionValues
+          const response = await this.executeCommand<InstanceType<typeof providerResource>>(CloudChiprCommand.collect(), AwsSubCommand[key](), allOptions)
+          this.printCollectResponse([response], key, parentOptions.output, parentOptions.outputFormat)
         })
         .addHelpText('after', AwsCloudChiprCli.getFilterExample(key))
     }
@@ -51,8 +54,13 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
       .description('Collect app resources based on the specified filters')
       .option('-f, --filter <type>', 'Filter')
       .action(async () => {
-        await this
-          .executeAllCollectCommand(parentOptions)
+        const promises = []
+        for (const key in SubCommandsDetail) {
+          const allOptions = Object.assign(parentOptions, { filter: `./default-filters/${key}.yaml` }) as OptionValues
+          const providerResource = AwsHelper.getProviderResourceFromString(key)
+          promises.push(this.executeCommand<InstanceType<typeof providerResource>>(CloudChiprCommand.collect(), AwsSubCommand[key](), allOptions))
+        }
+        Promise.all(promises)
           .then(result => {
             this.printCollectResponse(result, 'all', parentOptions.output, parentOptions.outputFormat)
           })
@@ -76,33 +84,21 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
         .addHelpText('after', AwsCloudChiprCli.getFilterExample(key))
     }
 
+    command
+      .command('all')
+      .description('Terminate all resources from a cloud provider')
+      .option('--force', 'Force')
+      .option('-f, --filter <type>', 'Filter')
+      .action(async () => {
+        OutputService.print(`[Clean All] command is not implemented yet!`, OutputFormats.TEXT, { type: 'info' })
+      })
+
     return this
   }
 
   // customiseNukeCommand (command: Command): CloudChiprCliInterface {
   //   return this
   // }
-
-  private async executeSingleCollectCommand (target: string, parentOptions: OptionValues, options: any) {
-    const providerResource = AwsHelper.getProviderResourceFromString(target)
-    const allOptions = Object.assign(parentOptions, { filter: options.filter || `./default-filters/${target}.yaml` }) as OptionValues
-    const response = await this.executeCollectCommand<InstanceType<typeof providerResource>>(AwsSubCommand[target](), allOptions)
-    this.printCollectResponse([response], target, parentOptions.output, parentOptions.outputFormat)
-  }
-
-  private executeAllCollectCommand (parentOptions: OptionValues) {
-    const promises = []
-    for (const key in SubCommandsDetail) {
-      const allOptions = Object.assign(parentOptions, { filter: `./default-filters/${key}.yaml` }) as OptionValues
-      const providerResource = AwsHelper.getProviderResourceFromString(key)
-      promises.push(this.executeCollectCommand<InstanceType<typeof providerResource>>(AwsSubCommand[key](), allOptions))
-    }
-    return Promise.all(promises)
-  }
-
-  private executeCollectCommand<T extends ProviderResource> (subcommand: SubCommandInterface, options: OptionValues): Promise<Response<T>> {
-    return this.executeCommand<T>(CloudChiprCommand.collect(), subcommand, options)
-  }
 
   private async executeSingleCleanCommandWithPrompt (target: string, parentOptions: OptionValues, options: any) {
     const providerResource = AwsHelper.getProviderResourceFromString(target)
