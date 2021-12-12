@@ -25,7 +25,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
 
   customiseCommand (command: Command): CloudChiprCliInterface {
     command
-      .addOption(new Option('--region <string...>', 'Region, default uses value of AWS_REGION env variable').default([]))
+      .addOption(new Option('--region <string...>', 'Region, default uses value of AWS_DEFAULT_REGION env variable').default([]))
       .addOption(new Option('--account-id <string...>', 'Account id').default([]))
       .addOption(new Option('--profile <profile>', 'Profile, default uses value of AWS_PROFILE env variable'))
 

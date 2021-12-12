@@ -75,7 +75,7 @@ export default class ResponseDecorator {
       'Price Per Month': this.formatPrice(ec2.pricePerMonth),
       Age: DateTimeHelper.convertToWeeksDaysHours(ec2.age),
       'Name Tag': ec2.nameTag,
-      Region: ec2.c8rRegion,
+      Region: ec2.getRegion(),
       Account: ec2.c8rAccount
     }
   }
@@ -106,7 +106,7 @@ export default class ResponseDecorator {
       Age: DateTimeHelper.convertToWeeksDaysHours(ebs.age),
       'Price Per Month': this.formatPrice(ebs.pricePerMonth),
       'Name Tag': ebs.nameTag,
-      Region: ebs.c8rRegion,
+      Region: ebs.getRegion(),
       Account: ebs.c8rAccount
     }
   }
@@ -137,7 +137,7 @@ export default class ResponseDecorator {
       'DB Type': rds.dbType,
       'Multi-AZ': rds.multiAZ ? 'Yes' : 'No',
       'Name Tag': rds.nameTag,
-      Region: rds.c8rRegion,
+      Region: rds.getRegion(),
       Account: rds.c8rAccount
     }
   }
@@ -164,7 +164,7 @@ export default class ResponseDecorator {
       'IP Address': eip.ip,
       'Price Per Month': this.formatPrice(eip.pricePerMonth),
       'Name Tag': eip.nameTag,
-      Region: eip.c8rRegion,
+      Region: eip.getRegion(),
       Account: eip.c8rAccount
     }
   }
@@ -193,7 +193,7 @@ export default class ResponseDecorator {
       Age: DateTimeHelper.convertToWeeksDaysHours(elb.age),
       'Price Per Month': this.formatPrice(elb.pricePerMonth),
       'Name Tag': elb.nameTag,
-      Region: elb.c8rRegion,
+      Region: elb.getRegion(),
       Account: elb.c8rAccount
     }
   }
@@ -222,7 +222,7 @@ export default class ResponseDecorator {
       Age: DateTimeHelper.convertToWeeksDaysHours(nlb.age),
       'Price Per Month': this.formatPrice(nlb.pricePerMonth),
       'Name Tag': nlb.nameTag,
-      Region: nlb.c8rRegion,
+      Region: nlb.getRegion(),
       Account: nlb.c8rAccount
     }
   }
@@ -251,7 +251,7 @@ export default class ResponseDecorator {
       Age: DateTimeHelper.convertToWeeksDaysHours(alb.age),
       'Price Per Month': this.formatPrice(alb.pricePerMonth),
       'Name Tag': alb.nameTag,
-      Region: alb.c8rRegion,
+      Region: alb.getRegion(),
       Account: alb.c8rAccount
     }
   }
