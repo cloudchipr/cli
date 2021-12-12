@@ -32,4 +32,8 @@ export class EnvHelper {
 
     return custodianOrg
   }
+
+  static setEnvironmentVariable (key: string, value: any): void{
+    process.env[key] = value
+  }
 }

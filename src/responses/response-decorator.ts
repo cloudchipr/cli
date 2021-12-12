@@ -11,7 +11,7 @@ export default class ResponseDecorator {
     resources.forEach((resource: Response<ProviderResource>) => {
       data = [...data, ...this.eachItem(resource, output)]
     })
-    return output === Output.DETAILED ? data : this.sortByPriceSummary(data)
+    return data
   }
 
   decorateClean (resource: Response<ProviderResource>, requestedIds: string[], subcommand: string) {
@@ -26,6 +26,10 @@ export default class ResponseDecorator {
     return '$' + price.toFixed(2)
   }
 
+  sortByPriceSummary (data: any[]): any[] {
+    return data.sort((a: any, b: any) => parseFloat(b['Cost Per Month'].slice(1)) - parseFloat(a['Cost Per Month'].slice(1)))
+  }
+
   private removeEmptyResourcesAndSortByPrice (resources: Array<Response<ProviderResource>>): Response<ProviderResource>[] {
     return resources.reduce((accumulator: Array<Response<ProviderResource>>, pilot: Response<ProviderResource>) => {
       if (pilot.count > 0) {
@@ -34,10 +38,6 @@ export default class ResponseDecorator {
       }
       return accumulator
     }, [])
-  }
-
-  private sortByPriceSummary (data: any[]): any[] {
-    return data.sort((a: any, b: any) => parseFloat(b['Cost Per Month'].slice(1)) - parseFloat(a['Cost Per Month'].slice(1)))
   }
 
   private eachItem (resource: Response<ProviderResource>, output: string) {

@@ -54,21 +54,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
         await this
           .executeAllCollectCommand(parentOptions)
           .then(result => {
-            const responses: Array<Response<ProviderResource>> = result
-            if (parentOptions.output === Output.DETAILED || parentOptions.output === null) {
-              responses.forEach((response) => {
-                if (response.count === 0) {
-                  return
-                }
-                OutputService.print(`${response.items[0].constructor.name.toUpperCase()} - Potential saving cutting opportunities found ⬇️`, OutputFormats.TEXT, { type: 'success' })
-                OutputService.print(this.responseDecorator.decorate([response], Output.DETAILED), parentOptions.outputFormat, {showTopBorder: true, showBottomBorder: true})
-              })
-            }
-            if (parentOptions.output === Output.SUMMARIZED || parentOptions.output === null) {
-              OutputService.print(`Overall Summary of potential total cost cutting opportunities found ⬇️`, OutputFormats.TEXT, { type: 'success' })
-              OutputService.print(this.responseDecorator.decorate(responses, Output.SUMMARIZED), parentOptions.outputFormat)
-            }
-            OutputService.print(`Please run ${chalk.bgHex('#F7F7F7').hex('#D16464')('c8r clean [options] all')} with the same filters if you wish to clean.`, OutputFormats.TEXT)
+            this.printCollectResponse(result, 'all', parentOptions.output, parentOptions.outputFormat)
           })
       })
 
@@ -101,19 +87,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
     const providerResource = AwsHelper.getProviderResourceFromString(target)
     const allOptions = Object.assign(parentOptions, { filter: options.filter || `./default-filters/${target}.yaml` }) as OptionValues
     const response = await this.executeCollectCommand<InstanceType<typeof providerResource>>(AwsSubCommand[target](), allOptions)
-    if (response.count === 0) {
-      OutputService.print('We found no resources matching provided filters, please modify and try again!', OutputFormats.TEXT, { type: 'warning' })
-      return
-    }
-    if (parentOptions.output === Output.DETAILED || parentOptions.output === null) {
-      OutputService.print(`${target.toUpperCase()} - Potential saving cutting opportunities found ⬇️`, OutputFormats.TEXT, { type: 'success' })
-      OutputService.print(this.responseDecorator.decorate([response], Output.DETAILED), parentOptions.outputFormat, {showTopBorder: true, showBottomBorder: true})
-    }
-    if (parentOptions.output === Output.SUMMARIZED || parentOptions.output === null) {
-      OutputService.print(`Overall Summary of potential total cost cutting opportunities found ⬇️`, OutputFormats.TEXT, { type: 'success' })
-      OutputService.print(this.responseDecorator.decorate([response], Output.SUMMARIZED), parentOptions.outputFormat)
-    }
-    OutputService.print(`Please run ${chalk.bgHex('#F7F7F7').hex('#D16464')('c8r clean [options] ' + target)} with the same filters if you wish to clean.`, OutputFormats.TEXT)
+    this.printCollectResponse([response], target, parentOptions.output, parentOptions.outputFormat)
   }
 
   private executeAllCollectCommand (parentOptions: OptionValues) {
@@ -164,8 +138,8 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
       .setIds(ids)
       .build()
 
-    if (!Array.isArray(options) && options.profile !== undefined) {
-      process.env.AWS_PROFILE = options.profile
+    if (options.profile !== undefined) {
+      EnvHelper.setEnvironmentVariable('AWS_PROFILE', options.profile)
     }
 
     const custodianOrg = (options['accountId'] != undefined && (new Set(options['accountId'])).size) ? EnvHelper.getCustodianOrg(): undefined
@@ -184,6 +158,32 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
       }
     ])
     return !!confirm.proceed
+  }
+
+  private printCollectResponse(responses: Response<ProviderResource>[], target: string, output?: string, outputFormat?: string) {
+    let found = false
+    let summaryData = []
+    responses.forEach((response) => {
+      if (response.count === 0) {
+        return
+      }
+      found = true
+      if (output === Output.DETAILED || output === null) {
+        OutputService.print(`${response.items[0].constructor.name.toUpperCase()} - Potential saving cutting opportunities found ⬇️`, OutputFormats.TEXT, { type: 'success' })
+        OutputService.print(this.responseDecorator.decorate([response], Output.DETAILED), outputFormat, {showTopBorder: true, showBottomBorder: true})
+      }
+      if (output === Output.SUMMARIZED || output === null) {
+        summaryData = [...summaryData, ...this.responseDecorator.decorate([response], Output.SUMMARIZED)]
+      }
+    })
+    if (summaryData.length > 0) {
+      OutputService.print(this.responseDecorator.sortByPriceSummary(summaryData), outputFormat)
+    }
+    if (found) {
+      OutputService.print(`Please run ${chalk.bgHex('#F7F7F7').hex('#D16464')('c8r clean [options] ' + target)} with the same filters if you wish to clean.`, OutputFormats.TEXT)
+    } else {
+      OutputService.print('We found no resources matching provided filters, please modify and try again!', OutputFormats.TEXT, {type: 'warning'})
+    }
   }
 
   static getFilterExample (subcommand: string): string {
