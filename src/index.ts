@@ -4,7 +4,7 @@ import chalk from 'chalk'
 import { Command, Option } from 'commander'
 import { CloudProvider, Output, OutputFormats } from './constants'
 import CloudChiprCliProvider from './cli/cloud-chipr-cli-provider'
-import { LoggerHelper } from './helpers/logger-helper'
+import { LoggerHelper } from './helpers'
 require('dotenv').config()
 
 const command = new Command()

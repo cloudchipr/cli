@@ -1,7 +1,6 @@
 import { Command, Option, OptionValues } from 'commander'
 import { Output, OutputFormats, SubCommandsDetail } from '../constants'
-import { AwsHelper } from '../helpers/aws-helper'
-import { EnvHelper } from '../helpers/env-helper'
+import { AwsHelper, EnvHelper, FilterHelper } from '../helpers'
 import { OutputService } from '../services/output/output-service'
 import {
   AwsSubCommand,
@@ -14,7 +13,6 @@ import {
 import CloudChiprCliInterface from './cloud-chipr-cli-interface'
 import inquirer from 'inquirer'
 import chalk from 'chalk'
-import { FilterHelper } from '../helpers/filter-helper'
 import ResponseDecorator from '../responses/response-decorator'
 import EngineRequestBuilderFactory from '../requests/engine-request-builder-factory'
 
@@ -45,7 +43,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
         .action(async (options) => {
           await this.executeSingleCollectCommand(key, parentOptions, options)
         })
-        .addHelpText('after', this.getFilterExample(key))
+        .addHelpText('after', AwsCloudChiprCli.getFilterExample(key))
     }
 
     command
@@ -89,7 +87,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
         .action(async (options) => {
           await this.executeSingleCleanCommandWithPrompt(key, parentOptions, options)
         })
-        .addHelpText('after', this.getFilterExample(key))
+        .addHelpText('after', AwsCloudChiprCli.getFilterExample(key))
     }
 
     return this
@@ -188,7 +186,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
     return !!confirm.proceed
   }
 
-  private getFilterExample (subcommand: string): string {
+  static getFilterExample (subcommand: string): string {
     return `\n${chalk.yellow('Filter example (filter.yaml)')}:\n${FilterHelper.getDefaultFilter(subcommand)}`
   }
 }

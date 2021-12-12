@@ -1,10 +1,8 @@
 import {
   Ec2, Ebs, Elb, Nlb, Alb, Eip, Rds, ProviderResource, Response
 } from '@cloudchipr/cloudchipr-engine'
-import { DateTimeHelper } from '../helpers/date-time-helper'
-import { SizeConvertHelper } from '../helpers/size-convert-helper'
-import { NumberConvertHelper } from '../helpers/number-convert-helper'
 import { Output } from '../constants'
+import { DateTimeHelper, NumberConvertHelper, SizeConvertHelper } from '../helpers'
 
 export default class ResponseDecorator {
   decorate (resources: Response<ProviderResource>[], output: string): any[] {
