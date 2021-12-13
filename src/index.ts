@@ -4,7 +4,7 @@ import chalk from 'chalk'
 import { Command, Option } from 'commander'
 import { CloudProvider, Output, OutputFormats } from './constants'
 import CloudChiprCliProvider from './cli/cloud-chipr-cli-provider'
-import { LoggerHelper } from './helpers/logger-helper'
+import { LoggerHelper } from './helpers'
 require('dotenv').config()
 
 const command = new Command()
@@ -25,10 +25,6 @@ const collect = command
 const clean = command
   .command('clean')
   .description('Connects to the user\'s cloud account(s) and permanently terminates resources identified by the user\'s configuration of filters.\nIt\'s best used as a follow up to `collect` command, which allows users to identify costly unused resources.')
-clean
-  .command('all')
-  .description('Terminate all resources from a cloud provider')
-  .option('-f, --filter <type>', 'Filter')
 
 const cloudChiprCli = CloudChiprCliProvider.getProvider(command.opts().cloudProvider)
 cloudChiprCli
