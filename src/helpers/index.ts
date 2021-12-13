@@ -1,4 +1,3 @@
-export { AwsHelper } from './aws-helper'
 export { DateTimeHelper } from './date-time-helper'
 export { EnvHelper } from './env-helper'
 export { FilterHelper } from './filter-helper'

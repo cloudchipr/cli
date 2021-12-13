@@ -1,6 +1,6 @@
 import { Command, Option, OptionValues } from 'commander'
-import { Output, OutputFormats, SubCommandsDetail } from '../constants'
-import { AwsHelper, EnvHelper, FilterHelper } from '../helpers'
+import { Output, OutputFormats, SubCommands, SubCommandsDetail } from '../constants'
+import { EnvHelper, FilterHelper } from '../helpers'
 import { OutputService } from '../services/output/output-service'
 import {
   AwsSubCommand,
@@ -8,7 +8,7 @@ import {
   Command as CloudChiprCommand,
   SubCommandInterface,
   ProviderResource,
-  Response
+  Response, Ebs, Ec2, Elb, Nlb, Alb, Eip, Rds
 } from '@cloudchipr/cloudchipr-engine'
 import CloudChiprCliInterface from './cloud-chipr-cli-interface'
 import inquirer from 'inquirer'
@@ -41,7 +41,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
         .description(SubCommandsDetail[key].collectDescription)
         .option('-f, --filter <type>', 'Filter')
         .action(async (options) => {
-          const providerResource = AwsHelper.getProviderResourceFromString(key)
+          const providerResource = AwsCloudChiprCli.getProviderResourceFromString(key)
           const allOptions = Object.assign(parentOptions, { filter: options.filter || `./default-filters/${key}.yaml` }) as OptionValues
           const response = await this.executeCommand<InstanceType<typeof providerResource>>(CloudChiprCommand.collect(), AwsSubCommand[key](), allOptions)
           this.printCollectResponse([response], key, parentOptions.output, parentOptions.outputFormat)
@@ -57,7 +57,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
         const promises = []
         for (const key in SubCommandsDetail) {
           const allOptions = Object.assign(parentOptions, { filter: `./default-filters/${key}.yaml` }) as OptionValues
-          const providerResource = AwsHelper.getProviderResourceFromString(key)
+          const providerResource = AwsCloudChiprCli.getProviderResourceFromString(key)
           promises.push(this.executeCommand<InstanceType<typeof providerResource>>(CloudChiprCommand.collect(), AwsSubCommand[key](), allOptions))
         }
         Promise.all(promises)
@@ -101,7 +101,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
   // }
 
   private async executeSingleCleanCommandWithPrompt (target: string, parentOptions: OptionValues, options: any) {
-    const providerResource = AwsHelper.getProviderResourceFromString(target)
+    const providerResource = AwsCloudChiprCli.getProviderResourceFromString(target)
     const allOptions = Object.assign(parentOptions, { filter: options.filter || `./default-filters/${target}.yaml` }) as OptionValues
     const collect = await this.executeCommand<InstanceType<typeof providerResource>>(CloudChiprCommand.collect(), AwsSubCommand[target](), allOptions)
     if (collect.count === 0) {
@@ -184,5 +184,24 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
 
   static getFilterExample (subcommand: string): string {
     return `\n${chalk.yellow('Filter example (filter.yaml)')}:\n${FilterHelper.getDefaultFilter(subcommand)}`
+  }
+
+  static getProviderResourceFromString (target: string) {
+    switch (target) {
+      case SubCommands.EBS:
+        return Ebs
+      case SubCommands.EC2:
+        return Ec2
+      case SubCommands.ELB:
+        return Elb
+      case SubCommands.NLB:
+        return Nlb
+      case SubCommands.ALB:
+        return Alb
+      case SubCommands.EIP:
+        return Eip
+      case SubCommands.RDS:
+        return Rds
+    }
   }
 }
