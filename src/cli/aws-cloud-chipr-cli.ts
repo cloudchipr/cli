@@ -165,7 +165,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
       }
       found = true
       if (output === Output.DETAILED || output === null) {
-        OutputService.print(`${response.items[0].constructor.name.toUpperCase()} - Potential saving cutting opportunities found ⬇️`, OutputFormats.TEXT, { type: 'success' })
+        OutputService.print(`${response.items[0].constructor.name.toUpperCase()} - Potential saving opportunities found ⬇️`, OutputFormats.TEXT, { type: 'success' })
         OutputService.print(this.responseDecorator.decorate([response], Output.DETAILED), outputFormat, {showTopBorder: true, showBottomBorder: true})
       }
       if (output === Output.SUMMARIZED || output === null) {
