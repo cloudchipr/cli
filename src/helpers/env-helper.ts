@@ -36,4 +36,8 @@ export class EnvHelper {
   static setEnvironmentVariable (key: string, value: any): void{
     process.env[key] = value
   }
+
+  static getEnvironmentVariable (key: string): any {
+    return process.env[key]
+  }
 }

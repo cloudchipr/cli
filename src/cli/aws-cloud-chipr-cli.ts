@@ -19,6 +19,7 @@ import EngineRequestBuilderFactory from '../requests/engine-request-builder-fact
 
 export default class AwsCloudChiprCli implements CloudChiprCliInterface {
   private responseDecorator: ResponseDecorator
+  readonly AWS_DEFAULT_REGION = 'us-east-1';
 
   constructor () {
     this.responseDecorator = new ResponseDecorator()
@@ -169,6 +170,10 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
 
     if (options.profile !== undefined) {
       EnvHelper.setEnvironmentVariable('AWS_PROFILE', options.profile)
+    }
+
+    if (!EnvHelper.getEnvironmentVariable('AWS_DEFAULT_REGION')) {
+      EnvHelper.setEnvironmentVariable('AWS_DEFAULT_REGION', this.AWS_DEFAULT_REGION)
     }
 
     const custodianOrg = (options['accountId'] != undefined && (new Set(options['accountId'])).size) ? EnvHelper.getCustodianOrg(): undefined
