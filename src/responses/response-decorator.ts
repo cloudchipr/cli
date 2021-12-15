@@ -18,6 +18,16 @@ export default class ResponseDecorator {
     return this[`${subcommand}Clean`](resource, requestedIds)
   }
 
+  decorateCleanFailure (ids: object) {
+    let data = []
+    for (const subCommand in ids) {
+      ids[subCommand].forEach((id) => {
+        data.push(this.clean(subCommand, id, false))
+      })
+    }
+    return data
+  }
+
   getIds (resource: Response<ProviderResource>, subcommand: string) {
     return this[`${subcommand}GetIds`](resource)
   }

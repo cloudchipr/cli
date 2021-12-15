@@ -68,7 +68,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
       command
         .command(key)
         .description(SubCommandsDetail[key].cleanDescription)
-        .option('--force', 'Force')
+        .option('--yes', `To terminate ${key.toUpperCase()} specific information without confirmation`)
         .option('-f, --filter <type>', 'Filter')
         .action(async (options) => {
           await this.executeCleanCommand([key as SubCommands], parentOptions, options)
@@ -79,7 +79,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
     command
       .command('all')
       .description('Terminate all resources from a cloud provider')
-      .option('--force', 'Force')
+      .option('--yes', 'To terminate all resources specific information without confirmation')
       .option('-f, --filter <type>', 'Filter')
       .action(async (options) => {
         await this.executeCleanCommand(Object.values(SubCommands), parentOptions, options)
@@ -112,6 +112,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
 
   private async executeCleanCommand (subCommands: SubCommands[], parentOptions: OptionValues, options: OptionValues) {
     const collectResponse = await this.executeCollectCommand(subCommands, parentOptions, options)
+    this.printCollectResponse(collectResponse, '', Output.DETAILED, OutputFormats.TABLE, false)
     const ids = {}
     let found = false
     collectResponse.forEach((response) => {
@@ -122,16 +123,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
       const subCommand = response.items[0].constructor.name.toLowerCase();
       ids[subCommand] = this.responseDecorator.getIds(response, subCommand)
     })
-    if (!found) {
-      OutputService.print('We found no resources matching provided filters, please modify and try again!', OutputFormats.TEXT, { type: 'warning' })
-      return
-    }
-    let confirm = true
-    if (!options.force) {
-      this.printCollectResponse(collectResponse, '', Output.DETAILED, OutputFormats.TABLE, false)
-      confirm = await PromptHelper.prompt('All resources listed above will be deleted. Are you sure you want to proceed? ')
-    }
-    if (!confirm) {
+    if (!found || (!options.yes && !(await PromptHelper.prompt('All resources listed above will be deleted. Are you sure you want to proceed? ')))) {
       return
     }
     const spinner = ora('CloudChipr is now cleaning the resources. This might take some time...').start();
@@ -139,21 +131,11 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
       const promises = []
       for (const key in ids) {
         const providerResource = AwsCloudChiprCli.getProviderResourceFromString(key)
-        promises.push(this.executeCommand<InstanceType<typeof providerResource>>(CloudChiprCommand.clean(), AwsSubCommand[key](), options, ids[key]))
+        promises.push(this.executeCommand<InstanceType<typeof providerResource>>(CloudChiprCommand.clean(), AwsSubCommand[key](), parentOptions, ids[key]))
       }
       const cleanResponse = await Promise.all(promises)
-      let price = 0
       spinner.succeed()
-      cleanResponse.forEach((response) => {
-        if (response.count === 0) {
-          return
-        }
-        const subCommand = response.items[0].constructor.name.toLowerCase();
-        const decoratedData = this.responseDecorator.decorateClean(response, ids[subCommand], subCommand)
-        OutputService.print(decoratedData.data, OutputFormats.ROW_DELETE)
-        price += decoratedData.price
-      })
-      OutputService.print(`All done, you just saved ${String(chalk.green(this.responseDecorator.formatPrice(price)))} per month!!!`, OutputFormats.TEXT, { type: 'superSuccess' })
+      this.printCleanResponse(cleanResponse, ids)
     } catch (e) {
       spinner.fail()
       throw e
@@ -205,6 +187,26 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
       OutputService.print(`Please run ${chalk.bgHex('#F7F7F7').hex('#D16464')('c8r clean [options] ' + target)} with the same filters if you wish to clean.`, OutputFormats.TEXT)
     } else if (!found) {
       OutputService.print('We found no resources matching provided filters, please modify and try again!', OutputFormats.TEXT, {type: 'warning'})
+    }
+  }
+
+  private printCleanResponse(responses: Response<ProviderResource>[], ids: object) {
+    let price = 0
+    let found = false
+    responses.forEach((response) => {
+      if (response.count === 0) {
+        return
+      }
+      found = true
+      const subCommand = response.items[0].constructor.name.toLowerCase();
+      const decoratedData = this.responseDecorator.decorateClean(response, ids[subCommand], subCommand)
+      OutputService.print(decoratedData.data, OutputFormats.ROW_DELETE)
+      price += decoratedData.price
+    })
+    if (found) {
+      OutputService.print(`All done, you just saved ${String(chalk.green(this.responseDecorator.formatPrice(price)))} per month!!!`, OutputFormats.TEXT, {type: 'superSuccess'})
+    } else {
+      OutputService.print(this.responseDecorator.decorateCleanFailure(ids), OutputFormats.ROW_DELETE)
     }
   }
 
