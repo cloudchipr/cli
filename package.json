@@ -41,7 +41,7 @@
     "eslint-plugin-import": "^2.24.2",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^5.1.0",
-    "jest": "^27.3.1",
+    "jest": "^27.4.5",
     "prettier": "^2.5.0",
     "ts-jest": "^27.0.7",
     "ts-node": "^10.2.1",
