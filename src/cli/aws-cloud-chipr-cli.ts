@@ -43,7 +43,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
         .description(SubCommandsDetail[key].collectDescription)
         .option('-f, --filter <type>', 'Filter')
         .action(async (options) => {
-          const response = await AwsCloudChiprCli.executeCollectCommand([key as SubCommands], parentOptions, options)
+          const response = await this.executeCollectCommand([key as SubCommands], parentOptions, options)
           this.printCollectResponse(response, key, parentOptions.output, parentOptions.outputFormat)
         })
         .addHelpText('after', AwsCloudChiprCli.getFilterExample(key))
@@ -54,7 +54,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
       .description('Collect app resources based on the specified filters')
       .option('-f, --filter <type>', 'Filter')
       .action(async (options) => {
-        const response = await AwsCloudChiprCli.executeCollectCommand(Object.values(SubCommands), parentOptions, options)
+        const response = await this.executeCollectCommand(Object.values(SubCommands), parentOptions, options)
         this.printCollectResponse(response, 'all', parentOptions.output, parentOptions.outputFormat)
       })
 
@@ -92,14 +92,14 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
   //   return this
   // }
 
-  private static async executeCollectCommand (subCommands: SubCommands[], parentOptions: OptionValues, options: OptionValues): Promise<Response<ProviderResource>[]> {
+  private async executeCollectCommand (subCommands: SubCommands[], parentOptions: OptionValues, options: OptionValues): Promise<Response<ProviderResource>[]> {
     const spinner = ora('CloudChipr is now collecting data. This might take some time...').start();
     try {
       const promises = []
       for (const subCommand of subCommands) {
         const allOptions = Object.assign(parentOptions, { filter: options.filter || `./default-filters/${subCommand}.yaml` }) as OptionValues
         const providerResource = AwsCloudChiprCli.getProviderResourceFromString(subCommand)
-        promises.push(AwsCloudChiprCli.executeCommand<InstanceType<typeof providerResource>>(CloudChiprCommand.collect(), AwsSubCommand[subCommand](), allOptions))
+        promises.push(this.executeCommand<InstanceType<typeof providerResource>>(CloudChiprCommand.collect(), AwsSubCommand[subCommand](), allOptions))
       }
       const response = await Promise.all(promises)
       spinner.succeed()
@@ -111,7 +111,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
   }
 
   private async executeCleanCommand (subCommands: SubCommands[], parentOptions: OptionValues, options: OptionValues) {
-    const collectResponse = await AwsCloudChiprCli.executeCollectCommand(subCommands, parentOptions, options)
+    const collectResponse = await this.executeCollectCommand(subCommands, parentOptions, options)
     const ids = {}
     let found = false
     collectResponse.forEach((response) => {
@@ -139,7 +139,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
       const promises = []
       for (const key in ids) {
         const providerResource = AwsCloudChiprCli.getProviderResourceFromString(key)
-        promises.push(AwsCloudChiprCli.executeCommand<InstanceType<typeof providerResource>>(CloudChiprCommand.clean(), AwsSubCommand[key](), options, ids[key]))
+        promises.push(this.executeCommand<InstanceType<typeof providerResource>>(CloudChiprCommand.clean(), AwsSubCommand[key](), options, ids[key]))
       }
       const cleanResponse = await Promise.all(promises)
       let price = 0
@@ -160,7 +160,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
     }
   }
 
-  private static async executeCommand<T> (command: CloudChiprCommand, subcommand: SubCommandInterface, options: OptionValues, ids: string[] = []): Promise<Response<T>> {
+  private async executeCommand<T> (command: CloudChiprCommand, subcommand: SubCommandInterface, options: OptionValues, ids: string[] = []): Promise<Response<T>> {
     const request = EngineRequestBuilderFactory
       .getInstance(command)
       .setSubCommand(subcommand)
