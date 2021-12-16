@@ -1,6 +1,5 @@
 import * as fs from 'fs'
-import { CustodianError } from '../../../cloudchipr-engine'
-import { CustodianOrgError } from '../exceptions/custodian-org-error'
+import { CustodianError, CustodianOrgError } from '../exceptions'
 
 export class EnvHelper {
   static getCustodian (): string {
