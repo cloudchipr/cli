@@ -2,7 +2,7 @@ import {
   Ec2, Ebs, Elb, Nlb, Alb, Eip, Rds, ProviderResource, Response
 } from '@cloudchipr/cloudchipr-engine'
 import { Output } from '../constants'
-import { DateTimeHelper, NumberConvertHelper, SizeConvertHelper } from '../helpers'
+import { convertBytes, convertDateTimeToWeeksDaysHours, numberToFixed } from '../helpers'
 
 export default class ResponseDecorator {
   decorate (resources: Response<ProviderResource>[], output: string): any[] {
@@ -77,11 +77,11 @@ export default class ResponseDecorator {
     return {
       'Instance ID': ec2.id,
       'Instance Type': ec2.type,
-      'CPU %': NumberConvertHelper.toFixed(ec2.cpu),
-      NetIn: SizeConvertHelper.fromBytes(ec2.networkIn),
-      NetOut: SizeConvertHelper.fromBytes(ec2.networkOut),
+      'CPU %': numberToFixed(ec2.cpu),
+      NetIn: convertBytes(ec2.networkIn),
+      NetOut: convertBytes(ec2.networkOut),
       'Price Per Month': this.formatPrice(ec2.pricePerMonth),
-      Age: DateTimeHelper.convertToWeeksDaysHours(ec2.age),
+      Age: convertDateTimeToWeeksDaysHours(ec2.age),
       'Name Tag': ec2.nameTag,
       Region: ec2.getRegion(),
       Account: ec2.c8rAccount
@@ -111,7 +111,7 @@ export default class ResponseDecorator {
       'Type': ebs.type,
       State: ebs.state,
       Size: ebs.size,
-      Age: DateTimeHelper.convertToWeeksDaysHours(ebs.age),
+      Age: convertDateTimeToWeeksDaysHours(ebs.age),
       'Price Per Month': this.formatPrice(ebs.pricePerMonth),
       'Name Tag': ebs.nameTag,
       Region: ebs.getRegion(),
@@ -198,7 +198,7 @@ export default class ResponseDecorator {
     return {
       'Load Balancer Name': elb.loadBalancerName,
       'DNS Name': elb.dnsName,
-      Age: DateTimeHelper.convertToWeeksDaysHours(elb.age),
+      Age: convertDateTimeToWeeksDaysHours(elb.age),
       'Price Per Month': this.formatPrice(elb.pricePerMonth),
       'Name Tag': elb.nameTag,
       Region: elb.getRegion(),
@@ -227,7 +227,7 @@ export default class ResponseDecorator {
     return {
       'Load Balancer Name': nlb.loadBalancerName,
       'DNS Name': nlb.dnsName,
-      Age: DateTimeHelper.convertToWeeksDaysHours(nlb.age),
+      Age: convertDateTimeToWeeksDaysHours(nlb.age),
       'Price Per Month': this.formatPrice(nlb.pricePerMonth),
       'Name Tag': nlb.nameTag,
       Region: nlb.getRegion(),
@@ -256,7 +256,7 @@ export default class ResponseDecorator {
     return {
       'Load Balancer Name': alb.loadBalancerName,
       'DNS Name': alb.dnsName,
-      Age: DateTimeHelper.convertToWeeksDaysHours(alb.age),
+      Age: convertDateTimeToWeeksDaysHours(alb.age),
       'Price Per Month': this.formatPrice(alb.pricePerMonth),
       'Name Tag': alb.nameTag,
       Region: alb.getRegion(),

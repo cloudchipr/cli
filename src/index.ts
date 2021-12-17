@@ -4,8 +4,8 @@ import chalk from 'chalk'
 import { Command, Option } from 'commander'
 import { CloudProvider, Output, OutputFormats } from './constants'
 import CloudChiprCliProvider from './cli/cloud-chipr-cli-provider'
-import { LoggerHelper } from './helpers'
-require('dotenv').config()
+import { logFile } from './helpers'
+require('dotenv').config({path: `${__dirname}/../.env`})
 
 const command = new Command()
 command
@@ -34,8 +34,8 @@ cloudChiprCli
 
 try {
   command.parseAsync(process.argv).catch(e => {
-    const filename = `./.c8r/logs/${(new Date()).toISOString().slice(0, 10)}.log`
-    LoggerHelper.logFile(filename, e.message, e)
+    const filename = `${__dirname}/../.c8r/logs/${(new Date()).toISOString().slice(0, 10)}.log`
+    logFile(filename, e.message, e)
     if (command.getOptionValue('verbose') === true) {
       console.error(chalk.red(chalk.underline('Error:'), `Failed on executing command due to: ${e.message}. \nThe trace log can be found in ${filename} directory.`))
       console.error(chalk.red(e.stack))
@@ -44,7 +44,7 @@ try {
     }
   })
 } catch (e) {
-  const filename = `./.c8r/logs/${(new Date()).toISOString().slice(0, 10)}.log`
-  LoggerHelper.logFile(filename, e.message, e)
+  const filename = `${__dirname}/../.c8r/logs/${(new Date()).toISOString().slice(0, 10)}.log`
+  logFile(filename, e.message, e)
   console.error(chalk.red(chalk.underline('Error:'), `Failed on executing command due to: ${e.message}. \nThe trace log can be found in ${filename} directory.`))
 }
