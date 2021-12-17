@@ -5,7 +5,7 @@ import { Command, Option } from 'commander'
 import { CloudProvider, Output, OutputFormats } from './constants'
 import CloudChiprCliProvider from './cli/cloud-chipr-cli-provider'
 import { logFile } from './helpers'
-require('dotenv').config()
+require('dotenv').config({path: `${__dirname}/../.env`})
 
 const command = new Command()
 command

@@ -5,6 +5,7 @@ import {
   confirm,
   getCustodian,
   getCustodianOrg,
+  getDefaultFilterPath,
   getEnvironmentVariable,
   getFilterExample,
   setEnvironmentVariable
@@ -103,7 +104,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
     try {
       const promises = []
       for (const subCommand of subCommands) {
-        const allOptions = Object.assign(parentOptions, { filter: options.filter || `./default-filters/${subCommand}.yaml` }) as OptionValues
+        const allOptions = Object.assign(parentOptions, { filter: options.filter || getDefaultFilterPath(subCommand) }) as OptionValues
         const providerResource = AwsCloudChiprCli.getProviderResourceFromString(subCommand)
         promises.push(this.executeCommand<InstanceType<typeof providerResource>>(CloudChiprCommand.collect(), AwsSubCommand[subCommand](), allOptions))
       }

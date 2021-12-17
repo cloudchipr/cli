@@ -68,8 +68,12 @@ export function getEnvironmentVariable(key: string): any {
   return process.env[key]
 }
 
+export function getDefaultFilterPath(subcommand: string): string {
+  return `${__dirname}/../default-filters/${subcommand}.yaml`
+}
+
 export function getDefaultFilter(subcommand: string): string {
-  return readFileSync(`./default-filters/${subcommand}.yaml`, 'utf8')
+  return readFileSync(getDefaultFilterPath(subcommand), 'utf8')
 }
 
 export function getFilterExample(subcommand: string): string {
