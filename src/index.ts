@@ -34,7 +34,7 @@ cloudChiprCli
 
 try {
   command.parseAsync(process.argv).catch(e => {
-    const filename = `./.c8r/logs/${(new Date()).toISOString().slice(0, 10)}.log`
+    const filename = `${__dirname}/../.c8r/logs/${(new Date()).toISOString().slice(0, 10)}.log`
     logFile(filename, e.message, e)
     if (command.getOptionValue('verbose') === true) {
       console.error(chalk.red(chalk.underline('Error:'), `Failed on executing command due to: ${e.message}. \nThe trace log can be found in ${filename} directory.`))
@@ -44,7 +44,7 @@ try {
     }
   })
 } catch (e) {
-  const filename = `./.c8r/logs/${(new Date()).toISOString().slice(0, 10)}.log`
+  const filename = `${__dirname}/../.c8r/logs/${(new Date()).toISOString().slice(0, 10)}.log`
   logFile(filename, e.message, e)
   console.error(chalk.red(chalk.underline('Error:'), `Failed on executing command due to: ${e.message}. \nThe trace log can be found in ${filename} directory.`))
 }
