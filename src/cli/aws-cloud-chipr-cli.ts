@@ -1,8 +1,14 @@
 import { Command, Option, OptionValues } from 'commander'
 import ora from 'ora'
 import { Output, OutputFormats, SubCommands, SubCommandsDetail } from '../constants'
-import { EnvHelper, FilterHelper } from '../helpers'
-import { PromptHelper } from '../helpers/prompt-helper'
+import {
+  confirm,
+  getCustodian,
+  getCustodianOrg,
+  getEnvironmentVariable,
+  getFilterExample,
+  setEnvironmentVariable
+} from '../helpers'
 import { OutputService } from '../services/output/output-service'
 import {
   AwsSubCommand,
@@ -46,7 +52,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
           const response = await this.executeCollectCommand([key as SubCommands], parentOptions, options)
           this.printCollectResponse(response, key, parentOptions.output, parentOptions.outputFormat)
         })
-        .addHelpText('after', AwsCloudChiprCli.getFilterExample(key))
+        .addHelpText('after', getFilterExample(key))
     }
 
     command
@@ -73,7 +79,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
         .action(async (options) => {
           await this.executeCleanCommand([key as SubCommands], parentOptions, options)
         })
-        .addHelpText('after', AwsCloudChiprCli.getFilterExample(key))
+        .addHelpText('after', getFilterExample(key))
     }
 
     command
@@ -123,7 +129,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
       const subCommand = response.items[0].constructor.name.toLowerCase();
       ids[subCommand] = this.responseDecorator.getIds(response, subCommand)
     })
-    if (!found || (!options.yes && !(await PromptHelper.prompt('All resources listed above will be deleted. Are you sure you want to proceed? ')))) {
+    if (!found || (!options.yes && !(await confirm('All resources listed above will be deleted. Are you sure you want to proceed? ')))) {
       return
     }
     const spinner = ora('CloudChipr is now cleaning the resources. This might take some time...').start();
@@ -151,16 +157,16 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
       .build()
 
     if (options.profile !== undefined) {
-      EnvHelper.setEnvironmentVariable('AWS_PROFILE', options.profile)
+      setEnvironmentVariable('AWS_PROFILE', options.profile)
     }
 
-    if (!EnvHelper.getEnvironmentVariable('AWS_DEFAULT_REGION')) {
-      EnvHelper.setEnvironmentVariable('AWS_DEFAULT_REGION', this.AWS_DEFAULT_REGION)
+    if (!getEnvironmentVariable('AWS_DEFAULT_REGION')) {
+      setEnvironmentVariable('AWS_DEFAULT_REGION', this.AWS_DEFAULT_REGION)
     }
 
-    const custodianOrg = (options['accountId'] != undefined && (new Set(options['accountId'])).size) ? EnvHelper.getCustodianOrg(): undefined
+    const custodianOrg = (options['accountId'] != undefined && (new Set(options['accountId'])).size) ? getCustodianOrg(): undefined
 
-    const engineAdapter = new AWSShellEngineAdapter<T>(EnvHelper.getCustodian(), custodianOrg)
+    const engineAdapter = new AWSShellEngineAdapter<T>(getCustodian(), custodianOrg)
     return engineAdapter.execute(request)
   }
 
@@ -208,10 +214,6 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
     } else {
       OutputService.print(this.responseDecorator.decorateCleanFailure(ids), OutputFormats.ROW_DELETE)
     }
-  }
-
-  static getFilterExample (subcommand: string): string {
-    return `\n${chalk.yellow('Filter example (filter.yaml)')}:\n${FilterHelper.getDefaultFilter(subcommand)}`
   }
 
   static getProviderResourceFromString (target: string) {
