@@ -5,13 +5,13 @@ export class EnvHelper {
   static getCustodian (): string {
     const custodian: string = process.env.C8R_CUSTODIAN
     if (custodian === undefined) {
-      throw new CustodianError('Not provided')
+      throw new CustodianError('C8R_CUSTODIAN not provided')
     }
 
     try {
       fs.accessSync(custodian)
     } catch (err) {
-      throw new CustodianError('Not provided or is not executable')
+      throw new CustodianError('C8R_CUSTODIAN not provided or is not executable')
     }
 
     return custodian
@@ -20,19 +20,19 @@ export class EnvHelper {
   static getCustodianOrg (): string {
     const custodianOrg: string = process.env.C8R_CUSTODIAN_ORG
     if (custodianOrg === undefined) {
-      throw new CustodianOrgError('Not provided')
+      throw new CustodianOrgError('C8R_CUSTODIAN_ORG not provided')
     }
 
     try {
       fs.accessSync(custodianOrg)
     } catch (err) {
-      throw new CustodianOrgError('Not provided or is not executable')
+      throw new CustodianOrgError('C8R_CUSTODIAN_ORG not provided or is not executable')
     }
 
     return custodianOrg
   }
 
-  static setEnvironmentVariable (key: string, value: any): void{
+  static setEnvironmentVariable (key: string, value: any): void {
     process.env[key] = value
   }
 

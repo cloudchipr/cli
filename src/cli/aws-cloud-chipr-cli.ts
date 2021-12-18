@@ -1,8 +1,7 @@
 import { Command, Option, OptionValues } from 'commander'
 import ora from 'ora'
 import { Output, OutputFormats, SubCommands, SubCommandsDetail } from '../constants'
-import { EnvHelper, FilterHelper } from '../helpers'
-import { PromptHelper } from '../helpers/prompt-helper'
+import { EnvHelper, FilterHelper, PromptHelper } from '../helpers'
 import { OutputService } from '../services/output/output-service'
 import {
   AwsSubCommand,
@@ -46,7 +45,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
           const response = await this.executeCollectCommand([key as SubCommands], parentOptions, options)
           this.printCollectResponse(response, key, parentOptions.output, parentOptions.outputFormat)
         })
-        .addHelpText('after', AwsCloudChiprCli.getFilterExample(key))
+        .addHelpText('after', FilterHelper.getFilterExample(key))
     }
 
     command
@@ -73,7 +72,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
         .action(async (options) => {
           await this.executeCleanCommand([key as SubCommands], parentOptions, options)
         })
-        .addHelpText('after', AwsCloudChiprCli.getFilterExample(key))
+        .addHelpText('after', FilterHelper.getFilterExample(key))
     }
 
     command
@@ -97,7 +96,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
     try {
       const promises = []
       for (const subCommand of subCommands) {
-        const allOptions = Object.assign(parentOptions, { filter: options.filter || `./default-filters/${subCommand}.yaml` }) as OptionValues
+        const allOptions = Object.assign(parentOptions, { filter: options.filter || FilterHelper.getDefaultFilterPath(subCommand) }) as OptionValues
         const providerResource = AwsCloudChiprCli.getProviderResourceFromString(subCommand)
         promises.push(this.executeCommand<InstanceType<typeof providerResource>>(CloudChiprCommand.collect(), AwsSubCommand[subCommand](), allOptions))
       }
@@ -208,10 +207,6 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
     } else {
       OutputService.print(this.responseDecorator.decorateCleanFailure(ids), OutputFormats.ROW_DELETE)
     }
-  }
-
-  static getFilterExample (subcommand: string): string {
-    return `\n${chalk.yellow('Filter example (filter.yaml)')}:\n${FilterHelper.getDefaultFilter(subcommand)}`
   }
 
   static getProviderResourceFromString (target: string) {
