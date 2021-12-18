@@ -5,7 +5,7 @@ import { Command, Option } from 'commander'
 import { CloudProvider, Output, OutputFormats } from './constants'
 import CloudChiprCliProvider from './cli/cloud-chipr-cli-provider'
 import { LoggerHelper } from './helpers'
-require('dotenv').config()
+require('dotenv').config({path: `${__dirname}/../.env`})
 
 const command = new Command()
 command
@@ -20,7 +20,7 @@ command
 
 const collect = command
   .command('collect')
-  .description('Connects to the users\' cloud account(s) and collects resource information including a big variety of attributes and metadata about a given resource.\nThis data is meant to be filtered based on different criteria focused around identifying usage and reducing cloud cost by eliminating unused resources.')
+  .description('Connects to the user\'s cloud account(s) and collects resource information including a big variety of attributes and metadata about a given resource.\nThis data is meant to be filtered based on different criteria focused around identifying usage and reducing cloud cost by eliminating unused resources.')
 
 const clean = command
   .command('clean')
@@ -34,7 +34,7 @@ cloudChiprCli
 
 try {
   command.parseAsync(process.argv).catch(e => {
-    const filename = `./.c8r/logs/${(new Date()).toISOString().slice(0, 10)}.log`
+    const filename = `${__dirname}/../.c8r/logs/${(new Date()).toISOString().slice(0, 10)}.log`
     LoggerHelper.logFile(filename, e.message, e)
     if (command.getOptionValue('verbose') === true) {
       console.error(chalk.red(chalk.underline('Error:'), `Failed on executing command due to: ${e.message}. \nThe trace log can be found in ${filename} directory.`))
@@ -44,7 +44,7 @@ try {
     }
   })
 } catch (e) {
-  const filename = `./.c8r/logs/${(new Date()).toISOString().slice(0, 10)}.log`
+  const filename = `${__dirname}/../.c8r/logs/${(new Date()).toISOString().slice(0, 10)}.log`
   LoggerHelper.logFile(filename, e.message, e)
   console.error(chalk.red(chalk.underline('Error:'), `Failed on executing command due to: ${e.message}. \nThe trace log can be found in ${filename} directory.`))
 }
