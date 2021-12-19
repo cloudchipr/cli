@@ -1,8 +1,7 @@
-CloudChipr CLI
+# CloudChipr CLI
 
 ![docker build workflow](https://github.com/cloudchipr/cli/actions/workflows/docker-image.yml/badge.svg)
 
-=============
 <!-- overview -->
 ## Overview
 #### Cloudchipr(c8r) CLI is an open source tool that helps users easily identify and clean public cloud resources. 
