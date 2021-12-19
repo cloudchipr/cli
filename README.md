@@ -10,17 +10,9 @@ When executed, c8r will check users environment to identify AWS Access credentia
 
 <!-- quickstart -->
 ## Quick start using Docker
-1. Clone the repository and cd
-```shell
-cd cli
-```
-2. Build the docker image
-```shell
-docker build . -t c8r/cli
-```
-3. Run it
+1. Run with the `latest` docker image
 ```shell 
-docker run -v ~/.aws/credentials:/root/.aws/credentials -it c8r/cli c8r collect ebs
+docker run -it -v ~/.aws/credentials:/root/.aws/credentials cloudchipr/cli c8r collect ebs
 ```
 <!-- quickstartstop -->
 
@@ -109,18 +101,18 @@ Very simple, `clean` and `collect` subcommands have exactly the same filters, si
 * Set the following environment variables
 ```shell
 export C8R_CUSTODIAN=<<PATH_TO_C7N_Binary>>
-```
-```shell
 export C8R_CUSTODIAN_ORG=<<PATH_TO_C7N-ORG_Binary>>
 ```
+
 * Clone the repository and run
 ```shell
-cd cli && npm install && npm run build && npm link
-```
-If the output is `not found` try:
-```shell
+cd cli
 chmod +x lib/index.js
+npm install
+npm run build
+npm link
 ```
+
 <!-- setupstop -->
 
 <!-- development -->
