@@ -1,4 +1,7 @@
 CloudChipr CLI
+
+![docker build workflow](https://github.com/cloudchipr/cli/actions/workflows/docker-image.yml/badge.svg)
+
 =============
 <!-- overview -->
 ## Overview
