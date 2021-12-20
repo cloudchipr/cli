@@ -1,6 +1,6 @@
 # CloudChipr CLI
 
-![docker build workflow](https://github.com/cloudchipr/cli/actions/workflows/docker-image.yml/badge.svg)
+[![Build and Push a Docker Image](https://github.com/cloudchipr/cli/actions/workflows/docker-image.yml/badge.svg)](https://github.com/cloudchipr/cli/actions/workflows/docker-image.yml)
 
 <!-- overview -->
 ## Overview
