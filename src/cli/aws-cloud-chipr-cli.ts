@@ -18,7 +18,7 @@ import EngineRequestBuilderFactory from '../requests/engine-request-builder-fact
 
 export default class AwsCloudChiprCli implements CloudChiprCliInterface {
   private responseDecorator: ResponseDecorator
-  readonly AWS_DEFAULT_REGION = 'us-east-1';
+  readonly AWS_DEFAULT_REGION = 'us-east-1'
 
   constructor () {
     this.responseDecorator = new ResponseDecorator()
@@ -92,7 +92,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
   // }
 
   private async executeCollectCommand (subCommands: SubCommands[], parentOptions: OptionValues, options: OptionValues): Promise<Response<ProviderResource>[]> {
-    const spinner = ora('CloudChipr is now collecting data. This might take some time...').start();
+    const spinner = ora('CloudChipr is now collecting data. This might take some time...').start()
     try {
       const promises = []
       for (const subCommand of subCommands) {
@@ -119,13 +119,13 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
         return
       }
       found = true
-      const subCommand = response.items[0].constructor.name.toLowerCase();
+      const subCommand = response.items[0].constructor.name.toLowerCase()
       ids[subCommand] = this.responseDecorator.getIds(response, subCommand)
     })
     if (!found || (!options.yes && !(await PromptHelper.prompt('All resources listed above will be deleted. Are you sure you want to proceed? ')))) {
       return
     }
-    const spinner = ora('CloudChipr is now cleaning the resources. This might take some time...').start();
+    const spinner = ora('CloudChipr is now cleaning the resources. This might take some time...').start()
     try {
       const promises = []
       for (const key in ids) {
@@ -157,13 +157,13 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
       EnvHelper.setEnvironmentVariable('AWS_DEFAULT_REGION', this.AWS_DEFAULT_REGION)
     }
 
-    const custodianOrg = (options['accountId'] != undefined && (new Set(options['accountId'])).size) ? EnvHelper.getCustodianOrg(): undefined
+    const custodianOrg = (options.accountId !== undefined && (new Set(options.accountId)).size) ? EnvHelper.getCustodianOrg() : undefined
 
     const engineAdapter = new AWSShellEngineAdapter<T>(EnvHelper.getCustodian(), custodianOrg)
     return engineAdapter.execute(request)
   }
 
-  private printCollectResponse(responses: Response<ProviderResource>[], target: string, output?: string, outputFormat?: string, showCleanCommandSuggestion: boolean = true) {
+  private printCollectResponse (responses: Response<ProviderResource>[], target: string, output?: string, outputFormat?: string, showCleanCommandSuggestion: boolean = true) {
     let found = false
     let summaryData = []
     responses.forEach((response) => {
@@ -173,7 +173,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
       found = true
       if (output === Output.DETAILED || output === null) {
         OutputService.print(`${response.items[0].constructor.name.toUpperCase()} - Potential saving opportunities found ⬇️`, OutputFormats.TEXT, { type: 'success' })
-        OutputService.print(this.responseDecorator.decorate([response], Output.DETAILED), outputFormat, {showTopBorder: true, showBottomBorder: true})
+        OutputService.print(this.responseDecorator.decorate([response], Output.DETAILED), outputFormat, { showTopBorder: true, showBottomBorder: true })
       }
       if (output === Output.SUMMARIZED || output === null) {
         summaryData = [...summaryData, ...this.responseDecorator.decorate([response], Output.SUMMARIZED)]
@@ -185,11 +185,11 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
     if (found && showCleanCommandSuggestion) {
       OutputService.print(`Please run ${chalk.bgHex('#F7F7F7').hex('#D16464')('c8r clean [options] ' + target)} with the same filters if you wish to clean.`, OutputFormats.TEXT)
     } else if (!found) {
-      OutputService.print('We found no resources matching provided filters, please modify and try again!', OutputFormats.TEXT, {type: 'warning'})
+      OutputService.print('We found no resources matching provided filters, please modify and try again!', OutputFormats.TEXT, { type: 'warning' })
     }
   }
 
-  private printCleanResponse(responses: Response<ProviderResource>[], ids: object) {
+  private printCleanResponse (responses: Response<ProviderResource>[], ids: object) {
     let price = 0
     let found = false
     responses.forEach((response) => {
@@ -197,13 +197,13 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
         return
       }
       found = true
-      const subCommand = response.items[0].constructor.name.toLowerCase();
+      const subCommand = response.items[0].constructor.name.toLowerCase()
       const decoratedData = this.responseDecorator.decorateClean(response, ids[subCommand], subCommand)
       OutputService.print(decoratedData.data, OutputFormats.ROW_DELETE)
       price += decoratedData.price
     })
     if (found) {
-      OutputService.print(`All done, you just saved ${String(chalk.green(this.responseDecorator.formatPrice(price)))} per month!!!`, OutputFormats.TEXT, {type: 'superSuccess'})
+      OutputService.print(`All done, you just saved ${String(chalk.green(this.responseDecorator.formatPrice(price)))} per month!!!`, OutputFormats.TEXT, { type: 'superSuccess' })
     } else {
       OutputService.print(this.responseDecorator.decorateCleanFailure(ids), OutputFormats.ROW_DELETE)
     }

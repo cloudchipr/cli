@@ -19,7 +19,7 @@ export default class ResponseDecorator {
   }
 
   decorateCleanFailure (ids: object) {
-    let data = []
+    const data = []
     for (const subCommand in ids) {
       ids[subCommand].forEach((id) => {
         data.push(this.clean(subCommand, id, false))
@@ -77,9 +77,9 @@ export default class ResponseDecorator {
     return {
       'Instance ID': ec2.id,
       'Instance Type': ec2.type,
-      'CPU %': NumberConvertHelper.toFixed(ec2.cpu),
-      NetIn: SizeConvertHelper.fromBytes(ec2.networkIn),
-      NetOut: SizeConvertHelper.fromBytes(ec2.networkOut),
+      [`CPU % (${ec2.cpu.Type})`]: NumberConvertHelper.toFixed(ec2.cpu.Value),
+      [`NetIn (${ec2.networkIn.Type})`]: SizeConvertHelper.fromBytes(ec2.networkIn.Value),
+      [`NetOut (${ec2.networkOut.Type})`]: SizeConvertHelper.fromBytes(ec2.networkOut.Value),
       'Price Per Month': this.formatPrice(ec2.pricePerMonth),
       Age: DateTimeHelper.convertToWeeksDaysHours(ec2.age),
       'Name Tag': ec2.nameTag,
@@ -108,7 +108,7 @@ export default class ResponseDecorator {
   private ebs (ebs: Ebs) {
     return {
       'Volume ID': ebs.id,
-      'Type': ebs.type,
+      Type: ebs.type,
       State: ebs.state,
       Size: ebs.size,
       Age: DateTimeHelper.convertToWeeksDaysHours(ebs.age),
@@ -140,7 +140,7 @@ export default class ResponseDecorator {
     return {
       'DB ID': rds.id,
       'Instance Type': rds.instanceType,
-      'Average Connection': rds.averageConnections,
+      [`Database Connection (${rds.averageConnections.Type})`]: rds.averageConnections.Value,
       'Price Per Month': this.formatPrice(rds.pricePerMonth),
       'DB Type': rds.dbType,
       'Multi-AZ': rds.multiAZ ? 'Yes' : 'No',

@@ -4,13 +4,16 @@ and:
     value: 7
   - resource: "cpu"
     op: "LessThanEqualTo"
+    statistics: "Maximum"
     since: 1
     value: 5
   - resource: "network-in"
     op: "LessThanEqualTo"
+    statistics: "Maximum"
     since: 7
     value: 100000000
   - resource: "network-out"
     op: "LessThanEqualTo"
+    statistics: "Maximum"
     since: 7
     value: 100000000
