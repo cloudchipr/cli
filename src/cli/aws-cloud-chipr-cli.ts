@@ -51,7 +51,6 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
     command
       .command('all')
       .description('Collect app resources based on the specified filters')
-      .option('-f, --filter <type>', 'Filter')
       .action(async (options) => {
         const response = await this.executeCollectCommand(Object.values(SubCommands), parentOptions, options)
         this.printCollectResponse(response, 'all', parentOptions.output, parentOptions.outputFormat)
@@ -79,7 +78,6 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
       .command('all')
       .description('Terminate all resources from a cloud provider')
       .option('--yes', 'To terminate all resources specific information without confirmation')
-      .option('-f, --filter <type>', 'Filter')
       .action(async (options) => {
         await this.executeCleanCommand(Object.values(SubCommands), parentOptions, options)
       })
