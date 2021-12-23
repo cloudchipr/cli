@@ -5,15 +5,15 @@ and:
   - resource: "cpu"
     op: "LessThanEqualTo"
     statistics: "Maximum"
-    since: 1
-    value: 5
+    since: 7
+    value: 10
   - resource: "network-in"
     op: "LessThanEqualTo"
-    statistics: "Maximum"
+    statistics: "Sum"
     since: 7
-    value: 100000000
+    value: 1000000000
   - resource: "network-out"
     op: "LessThanEqualTo"
-    statistics: "Maximum"
+    statistics: "Sum"
     since: 7
-    value: 100000000
+    value: 1000000000
