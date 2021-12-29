@@ -1,5 +1,6 @@
 import { OutputFormats } from '../../constants'
 import { OutputJson } from './output-json'
+import { OutputRowFailure } from './output-row-failure'
 import { OutputYaml } from './output-yaml'
 import { OutputTable } from './output-table'
 import { OutputText } from './output-text'
@@ -24,6 +25,10 @@ export class OutputService {
       }
       case OutputFormats.ROW_DELETE: {
         output = new OutputRowDelete()
+        break
+      }
+      case OutputFormats.ROW_FAILURE: {
+        output = new OutputRowFailure()
         break
       }
       default: {

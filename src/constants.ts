@@ -13,6 +13,7 @@ export enum OutputFormats {
     TABLE = 'table',
     TEXT = 'text',
     ROW_DELETE = 'row_delete',
+    ROW_FAILURE = 'row_failure',
 }
 
 export enum SubCommands {

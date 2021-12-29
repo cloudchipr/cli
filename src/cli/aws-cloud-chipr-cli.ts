@@ -164,18 +164,21 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
   private printCollectResponse (responses: Response<ProviderResource>[], target: string, output?: string, outputFormat?: string, showCleanCommandSuggestion: boolean = true) {
     let found = false
     let summaryData = []
+    let failureData = []
     responses.forEach((response) => {
       if (response.count === 0) {
         return
       }
       found = true
+      const subcommand = response.items[0].constructor.name.toUpperCase()
       if (output === Output.DETAILED || output === null) {
-        OutputService.print(`${response.items[0].constructor.name.toUpperCase()} - Potential saving opportunities found ⬇️`, OutputFormats.TEXT, { type: 'success' })
+        OutputService.print(`${subcommand} - Potential saving opportunities found ⬇️`, OutputFormats.TEXT, { type: 'success' })
         OutputService.print(this.responseDecorator.decorate([response], Output.DETAILED), outputFormat, { showTopBorder: true, showBottomBorder: true })
       }
       if (output === Output.SUMMARIZED || output === null) {
         summaryData = [...summaryData, ...this.responseDecorator.decorate([response], Output.SUMMARIZED)]
       }
+      failureData = [...failureData, ...this.responseDecorator.decorateFailure(response, subcommand)]
     })
     if (summaryData.length > 0) {
       OutputService.print(this.responseDecorator.sortByPriceSummary(summaryData), outputFormat)
@@ -185,6 +188,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
     } else if (!found) {
       OutputService.print('We found no resources matching provided filters, please modify and try again!', OutputFormats.TEXT, { type: 'warning' })
     }
+    OutputService.print(failureData, OutputFormats.ROW_FAILURE)
   }
 
   private printCleanResponse (responses: Response<ProviderResource>[], ids: object) {
