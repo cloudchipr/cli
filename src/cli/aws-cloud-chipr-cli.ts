@@ -166,6 +166,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
     let summaryData = []
     let failureData = []
     responses.forEach((response) => {
+      failureData = [...failureData, ...this.responseDecorator.decorateFailure(response, '')]
       if (response.count === 0) {
         return
       }
@@ -178,7 +179,6 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
       if (output === Output.SUMMARIZED || output === null) {
         summaryData = [...summaryData, ...this.responseDecorator.decorate([response], Output.SUMMARIZED)]
       }
-      failureData = [...failureData, ...this.responseDecorator.decorateFailure(response, subcommand)]
     })
     if (summaryData.length > 0) {
       OutputService.print(this.responseDecorator.sortByPriceSummary(summaryData), outputFormat)
