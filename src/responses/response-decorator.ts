@@ -14,6 +14,12 @@ export default class ResponseDecorator {
     return data
   }
 
+  decorateFailure(resource: Response<ProviderResource>, subcommand: string): any[] {
+    return resource.failures.map((failure) => {
+      return Object.assign({subcommand: subcommand}, failure)
+    })
+  }
+
   decorateClean (resource: Response<ProviderResource>, requestedIds: string[], subcommand: string) {
     return this[`${subcommand}Clean`](resource, requestedIds)
   }
