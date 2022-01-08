@@ -1,7 +1,7 @@
 import { Command, Option, OptionValues } from 'commander'
 import ora from 'ora'
 import { Output, OutputFormats, SubCommands, SubCommandsDetail } from '../constants'
-import { EnvHelper, FilterHelper, PromptHelper } from '../helpers'
+import { EnvHelper, FilterHelper, OutputHelper, PromptHelper } from '../helpers'
 import { OutputService } from '../services/output/output-service'
 import {
   AwsSubCommand,
@@ -133,6 +133,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
       const cleanResponse = await Promise.all(promises)
       spinner.succeed()
       this.printCleanResponse(cleanResponse, ids)
+      OutputHelper.link('Star CloudChipr CLI on GitHub', 'https://github.com/cloudchipr/cli')
     } catch (e) {
       spinner.fail()
       throw e
