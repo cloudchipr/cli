@@ -24,7 +24,7 @@ export class OutputHelper {
     let message = typeof data === 'string' ? data : JSON.stringify(data)
     switch (type) {
       case 'superSuccess':
-        message = `🎉🎉🎉\u200B${chalk.hex(COLORS.GREEN)(message)}`
+        message = `🎉🎉🎉\u200B${message}`
         break
       case 'success':
         message = chalk.hex(COLORS.GREEN)(`●\u200B${message}`)
