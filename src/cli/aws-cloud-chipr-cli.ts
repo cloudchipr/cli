@@ -132,7 +132,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
       const cleanResponse = await Promise.all(promises)
       spinner.succeed()
       this.printCleanResponse(cleanResponse, ids)
-      OutputHelper.link('Star CloudChipr CLI on GitHub', 'https://github.com/cloudchipr/cli')
+      OutputHelper.link('Please Star us on Github', 'https://github.com/cloudchipr/cli')
     } catch (e) {
       spinner.fail()
       throw e
