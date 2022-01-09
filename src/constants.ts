@@ -69,4 +69,18 @@ export const SubCommandsDetail = {
   }
 } as const
 
-export const CleanChunkSize = 5
+export enum COLORS {
+  GREEN = '#358D35',
+  BLUE = '#03A9F4',
+  YELLOW = '#FFC107',
+  RED = '#CB3837',
+  CYAN = '#009688',
+  ORANGE = '#FF5722',
+  RAZZMATAZZ = '#E91E63',
+  ORCHID = '#9C27B0',
+  SURF = '#00BCD4',
+  PISTACHIO = '#93C47D',
+  WUZZY = '#D16464',
+  GREY = '#999999',
+  LIGHT_BLUE = '#6D9EEB',
+}

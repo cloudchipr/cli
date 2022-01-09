@@ -1,8 +1,7 @@
 import { Command, Option, OptionValues } from 'commander'
 import ora from 'ora'
-import { Output, OutputFormats, SubCommands, SubCommandsDetail } from '../constants'
+import { COLORS, Output, OutputFormats, SubCommands, SubCommandsDetail } from '../constants'
 import { EnvHelper, FilterHelper, OutputHelper, PromptHelper } from '../helpers'
-import { OutputService } from '../services/output/output-service'
 import {
   AwsSubCommand,
   AWSShellEngineAdapter,
@@ -171,20 +170,21 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
       }
       found = true
       if (output === Output.DETAILED || output === null) {
-        OutputService.print(`${response.items[0].constructor.name.toUpperCase()} - Potential saving opportunities found ⬇️`, OutputFormats.TEXT, { type: 'success' })
-        OutputService.print(this.responseDecorator.decorate([response], Output.DETAILED), outputFormat, { showTopBorder: true, showBottomBorder: true })
+        OutputHelper.text(`${response.items[0].constructor.name.toUpperCase()} - Potential saving opportunities found ⬇️`, 'info')
+        OutputHelper[outputFormat](this.responseDecorator.decorate([response], Output.DETAILED))
       }
       if (output === Output.SUMMARIZED || output === null) {
         summaryData = [...summaryData, ...this.responseDecorator.decorate([response], Output.SUMMARIZED)]
       }
     })
     if (summaryData.length > 0) {
-      OutputService.print(this.responseDecorator.sortByPriceSummary(summaryData), outputFormat)
+      OutputHelper.text('Overall summary ⬇️', 'info')
+      OutputHelper[outputFormat](this.responseDecorator.sortByPriceSummary(summaryData))
     }
     if (found && showCleanCommandSuggestion) {
-      OutputService.print(`Please run ${chalk.bgHex('#F7F7F7').hex('#D16464')('c8r clean [options] ' + target)} with the same filters if you wish to clean.`, OutputFormats.TEXT)
+      OutputHelper.text(`Please run ${chalk.underline.hex(COLORS.ORCHID)('c8r clean [options] ' + target)} with the same filters if you wish to clean.`)
     } else if (!found) {
-      OutputService.print('We found no resources matching provided filters, please modify and try again!', OutputFormats.TEXT, { type: 'warning' })
+      OutputHelper.text('We found no resources matching provided filters, please modify and try again!', 'warning')
     }
   }
 
@@ -198,13 +198,13 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
       found = true
       const subCommand = response.items[0].constructor.name.toLowerCase()
       const decoratedData = this.responseDecorator.decorateClean(response, ids[subCommand], subCommand)
-      OutputService.print(decoratedData.data, OutputFormats.ROW_DELETE)
+      OutputHelper.table(decoratedData.data, true)
       price += decoratedData.price
     })
     if (found) {
-      OutputService.print(`All done, you just saved ${String(chalk.green(this.responseDecorator.formatPrice(price)))} per month!!!`, OutputFormats.TEXT, { type: 'superSuccess' })
+      OutputHelper.text(`All done, you just saved ${String(chalk.green(this.responseDecorator.formatPrice(price)))} per month!!!`, 'superSuccess')
     } else {
-      OutputService.print(this.responseDecorator.decorateCleanFailure(ids), OutputFormats.ROW_DELETE)
+      OutputHelper.table(this.responseDecorator.decorateCleanFailure(ids), true)
     }
   }
 

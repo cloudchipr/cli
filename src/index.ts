@@ -4,7 +4,7 @@ import chalk from 'chalk'
 import { Command, Option } from 'commander'
 import { CloudProvider, Output, OutputFormats } from './constants'
 import CloudChiprCliProvider from './cli/cloud-chipr-cli-provider'
-import { LoggerHelper } from './helpers'
+import { LoggerHelper, OutputHelper } from './helpers'
 require('dotenv').config({path: `${__dirname}/../.env`})
 
 const command = new Command()
@@ -36,14 +36,14 @@ try {
     const filename = `${__dirname}/../.c8r/logs/${(new Date()).toISOString().slice(0, 10)}.log`
     LoggerHelper.logFile(filename, e.message, e)
     if (command.getOptionValue('verbose') === true) {
-      console.error(chalk.red(chalk.underline('Error:'), `Failed on executing command due to: ${e.message}. \nThe trace log can be found in ${filename} directory.`))
-      console.error(chalk.red(e.stack))
+      OutputHelper.text(`Error: Failed on executing command due to: ${e.message}. \nThe trace log can be found in ${filename} directory.`, 'failure')
+      OutputHelper.text(chalk.red(e.stack))
     } else {
-      console.error(chalk.red(chalk.underline('Error:'), 'Failed on executing command, please run c8r with --verbose flag and follow the trace log.'))
+      OutputHelper.text('Error: Failed on executing command, please run c8r with --verbose flag and follow the trace log.', 'failure')
     }
   })
 } catch (e) {
   const filename = `${__dirname}/../.c8r/logs/${(new Date()).toISOString().slice(0, 10)}.log`
   LoggerHelper.logFile(filename, e.message, e)
-  console.error(chalk.red(chalk.underline('Error:'), `Failed on executing command due to: ${e.message}. \nThe trace log can be found in ${filename} directory.`))
+  OutputHelper.text(`Error: Failed on executing command due to: ${e.message}. \nThe trace log can be found in ${filename} directory.`, 'failure')
 }
