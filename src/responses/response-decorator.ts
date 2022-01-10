@@ -32,7 +32,10 @@ export default class ResponseDecorator {
     return this[`${subcommand}GetIds`](resource)
   }
 
-  formatPrice (price: number): string {
+  formatPrice (price?: number): string {
+    if (price === undefined) {
+      return 'NaN'
+    }
     return '$' + price.toFixed(2)
   }
 
@@ -64,7 +67,7 @@ export default class ResponseDecorator {
   }
 
   private eachItemSummary (resource: Response<ProviderResource>) {
-    const totalPrice = resource.items.map(o => o.pricePerMonth).reduce((a, b) => a + b, 0)
+    const totalPrice = resource.items.map(o => o.pricePerMonth).reduce((a, b) => a !== undefined && b !== undefined ? a + b : 0, 0)
     return [
       {
         Service: resource.items[0].constructor.name.toUpperCase(),
