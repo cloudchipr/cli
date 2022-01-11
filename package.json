@@ -18,7 +18,7 @@
   "keywords": [],
   "license": "ISC",
   "dependencies": {
-    "@cloudchipr/cloudchipr-engine": "^0.0.59",
+    "@cloudchipr/cloudchipr-engine": "^0.0.60",
     "@types/cli-table": "^0.3.0",
     "@types/prettyjson": "^0.0.30",
     "chalk": "^4.1.2",
