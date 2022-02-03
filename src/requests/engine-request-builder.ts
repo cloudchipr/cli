@@ -4,9 +4,12 @@ import {
   SubCommandInterface
 } from '@cloudchipr/cloudchipr-engine'
 import { OptionValues } from 'commander'
-import { AllRegions } from '../constants'
+import { AllRegions, OutputDirectory } from '../constants'
+import moment from 'moment'
+import { v4 } from 'uuid'
 
 export default abstract class EngineRequestBuilder {
+  public static outputDirectory: string = `${OutputDirectory}/run/${moment().format('YYYY-MM-DD_HH-mm-ss')}_${v4()}`
   protected command: Command
   protected subCommand: SubCommandInterface
   protected options: OptionValues
@@ -41,7 +44,8 @@ export default abstract class EngineRequestBuilder {
       this.command,
       this.subCommand,
       this.buildParameter(this.options, this.getFilter()),
-      this.options.verbose === true
+      this.options.verbose === true,
+      EngineRequestBuilder.outputDirectory
     )
   }
 

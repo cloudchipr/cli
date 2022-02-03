@@ -2,9 +2,10 @@
 
 import chalk from 'chalk'
 import { Command, Option } from 'commander'
-import { CloudProvider, Output, OutputFormats } from './constants'
+import { CloudProvider, Output, OutputDirectory, OutputFormats } from './constants'
 import CloudChiprCliProvider from './cli/cloud-chipr-cli-provider'
 import { LoggerHelper, OutputHelper } from './helpers'
+import moment from 'moment'
 require('dotenv').config({path: `${__dirname}/../.env`})
 
 const command = new Command()
@@ -33,7 +34,7 @@ cloudChiprCli
 
 try {
   command.parseAsync(process.argv).catch(e => {
-    const filename = `${__dirname}/../.c8r/logs/${(new Date()).toISOString().slice(0, 10)}.log`
+    const filename = `${OutputDirectory}/logs/${moment().format('YYYY-MM-DD')}.log`
     LoggerHelper.logFile(filename, e.message, e)
     if (command.getOptionValue('verbose') === true) {
       OutputHelper.text(`Error: Failed on executing command due to: ${e.message}. \nThe trace log can be found in ${filename} directory.`, 'failure')
@@ -43,7 +44,7 @@ try {
     }
   })
 } catch (e) {
-  const filename = `${__dirname}/../.c8r/logs/${(new Date()).toISOString().slice(0, 10)}.log`
+  const filename = `${OutputDirectory}/logs/${moment().format('YYYY-MM-DD')}.log`
   LoggerHelper.logFile(filename, e.message, e)
   OutputHelper.text(`Error: Failed on executing command due to: ${e.message}. \nThe trace log can be found in ${filename} directory.`, 'failure')
 }
