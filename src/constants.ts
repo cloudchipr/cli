@@ -1,3 +1,5 @@
+export const OutputDirectory = `${__dirname}/../.c8r`
+
 export enum CloudProvider {
     AWS = 'aws',
 }
