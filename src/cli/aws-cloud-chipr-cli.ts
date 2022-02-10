@@ -1,6 +1,6 @@
 import { Command, Option, OptionValues } from 'commander'
 import ora from 'ora'
-import { COLORS, Output, OutputFormats, SubCommands, SubCommandsDetail } from '../constants'
+import { COLORS, Output, OutputFormats, AwsSubCommands, AwsSubCommandsDetail, CloudProvider } from '../constants'
 import { EnvHelper, FilterHelper, OutputHelper, PromptHelper } from '../helpers'
 import {
   AwsSubCommand,
@@ -35,23 +35,23 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
   customiseCollectCommand (command: Command): CloudChiprCliInterface {
     const parentOptions = command.parent.opts()
 
-    for (const key in SubCommandsDetail) {
+    for (const key in AwsSubCommandsDetail) {
       command
         .command(key)
-        .description(SubCommandsDetail[key].collectDescription)
+        .description(AwsSubCommandsDetail[key].collectDescription)
         .option('-f, --filter <type>', 'Filter')
         .action(async (options) => {
-          const response = await this.executeCollectCommand([key as SubCommands], parentOptions, options)
+          const response = await this.executeCollectCommand([key as AwsSubCommands], parentOptions, options)
           this.printCollectResponse(response, key, parentOptions.output, parentOptions.outputFormat)
         })
-        .addHelpText('after', FilterHelper.getFilterExample(key))
+        .addHelpText('after', FilterHelper.getFilterExample(CloudProvider.AWS, key))
     }
 
     command
       .command('all')
       .description('Collect app resources based on the specified filters')
       .action(async (options) => {
-        const response = await this.executeCollectCommand(Object.values(SubCommands), parentOptions, options)
+        const response = await this.executeCollectCommand(Object.values(AwsSubCommands), parentOptions, options)
         this.printCollectResponse(response, 'all', parentOptions.output, parentOptions.outputFormat)
       })
 
@@ -61,16 +61,16 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
   customiseCleanCommand (command: Command): CloudChiprCliInterface {
     const parentOptions = command.parent.opts()
 
-    for (const key in SubCommandsDetail) {
+    for (const key in AwsSubCommandsDetail) {
       command
         .command(key)
-        .description(SubCommandsDetail[key].cleanDescription)
+        .description(AwsSubCommandsDetail[key].cleanDescription)
         .option('--yes', `To terminate ${key.toUpperCase()} specific information without confirmation`)
         .option('-f, --filter <type>', 'Filter')
         .action(async (options) => {
-          await this.executeCleanCommand([key as SubCommands], parentOptions, options)
+          await this.executeCleanCommand([key as AwsSubCommands], parentOptions, options)
         })
-        .addHelpText('after', FilterHelper.getFilterExample(key))
+        .addHelpText('after', FilterHelper.getFilterExample(CloudProvider.AWS, key))
     }
 
     command
@@ -78,7 +78,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
       .description('Terminate all resources from a cloud provider')
       .option('--yes', 'To terminate all resources specific information without confirmation')
       .action(async (options) => {
-        await this.executeCleanCommand(Object.values(SubCommands), parentOptions, options)
+        await this.executeCleanCommand(Object.values(AwsSubCommands), parentOptions, options)
       })
 
     return this
@@ -88,12 +88,12 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
   //   return this
   // }
 
-  private async executeCollectCommand (subCommands: SubCommands[], parentOptions: OptionValues, options: OptionValues): Promise<Response<ProviderResource>[]> {
+  private async executeCollectCommand (subCommands: AwsSubCommands[], parentOptions: OptionValues, options: OptionValues): Promise<Response<ProviderResource>[]> {
     const spinner = ora('CloudChipr is now collecting data. This might take some time...').start()
     try {
       const promises = []
       for (const subCommand of subCommands) {
-        const allOptions = Object.assign(parentOptions, { filter: options.filter || FilterHelper.getDefaultFilterPath(subCommand) }) as OptionValues
+        const allOptions = Object.assign(parentOptions, { filter: options.filter || FilterHelper.getDefaultFilterPath(CloudProvider.AWS, subCommand) }) as OptionValues
         const providerResource = AwsCloudChiprCli.getProviderResourceFromString(subCommand)
         promises.push(this.executeCommand<InstanceType<typeof providerResource>>(CloudChiprCommand.collect(), AwsSubCommand[subCommand](), allOptions))
       }
@@ -106,7 +106,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
     }
   }
 
-  private async executeCleanCommand (subCommands: SubCommands[], parentOptions: OptionValues, options: OptionValues) {
+  private async executeCleanCommand (subCommands: AwsSubCommands[], parentOptions: OptionValues, options: OptionValues) {
     const collectResponse = await this.executeCollectCommand(subCommands, parentOptions, options)
     this.printCollectResponse(collectResponse, '', Output.DETAILED, OutputFormats.TABLE, false)
     const ids = {}
@@ -210,19 +210,19 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
 
   static getProviderResourceFromString (target: string) {
     switch (target) {
-      case SubCommands.EBS:
+      case AwsSubCommands.EBS:
         return Ebs
-      case SubCommands.EC2:
+      case AwsSubCommands.EC2:
         return Ec2
-      case SubCommands.ELB:
+      case AwsSubCommands.ELB:
         return Elb
-      case SubCommands.NLB:
+      case AwsSubCommands.NLB:
         return Nlb
-      case SubCommands.ALB:
+      case AwsSubCommands.ALB:
         return Alb
-      case SubCommands.EIP:
+      case AwsSubCommands.EIP:
         return Eip
-      case SubCommands.RDS:
+      case AwsSubCommands.RDS:
         return Rds
     }
   }
