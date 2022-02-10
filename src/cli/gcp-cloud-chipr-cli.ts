@@ -7,7 +7,6 @@ export default class GcpCloudChiprCli implements CloudChiprCliInterface {
   customiseCommand (command: Command): CloudChiprCliInterface {
     command
       .addOption(new Option('--region <string...>', 'Region, some description').default([]))
-      .addOption(new Option('--account-id <string...>', 'Account id, some description').default([]))
       .addOption(new Option('--project <profile>', 'Project, some description').env('PORT'))
 
     return this
