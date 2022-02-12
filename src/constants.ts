@@ -27,7 +27,7 @@ export enum SubCommands {
     RDS = 'rds',
 }
 
-export const AllRegions: Set<string> = new Set([
+export const AllRegions = [
   'us-east-2',
   'us-east-1',
   'us-west-1',
@@ -38,7 +38,7 @@ export const AllRegions: Set<string> = new Set([
   'eu-west-2',
   'eu-west-3',
   'sa-east-1'
-])
+]
 
 export const SubCommandsDetail = {
   [SubCommands.EBS]: {
