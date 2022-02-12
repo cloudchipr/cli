@@ -4,7 +4,7 @@ import {
   SubCommandInterface
 } from '@cloudchipr/cloudchipr-engine'
 import { OptionValues } from 'commander'
-import { AllRegions, OutputDirectory } from '../constants'
+import { OutputDirectory } from '../constants'
 import moment from 'moment'
 import { v4 } from 'uuid'
 
@@ -50,13 +50,8 @@ export default abstract class EngineRequestBuilder {
   }
 
   protected buildParameter (options: OptionValues, filter: FilterInterface): Parameter {
-    let regions : Set<string> = new Set(options.region)
-    if (regions.has('all')) {
-      regions = AllRegions
-      regions = AllRegions
-    }
     const accounts : Set<string> = new Set(options.accountId)
-    return new Parameter(filter, false, Array.from(regions), Array.from(accounts))
+    return new Parameter(filter, false, Array.from(new Set(options.region)), Array.from(accounts))
   }
 
   abstract getFilter (): FilterInterface

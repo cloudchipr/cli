@@ -1,6 +1,6 @@
 import { Command, Option, OptionValues } from 'commander'
 import ora from 'ora'
-import { COLORS, Output, OutputFormats, SubCommands, SubCommandsDetail } from '../constants'
+import { AllRegions, COLORS, Output, OutputFormats, SubCommands, SubCommandsDetail } from '../constants'
 import { EnvHelper, FilterHelper, OutputHelper, PromptHelper } from '../helpers'
 import {
   AwsSubCommand,
@@ -25,7 +25,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
 
   customiseCommand (command: Command): CloudChiprCliInterface {
     command
-      .addOption(new Option('--region <string...>', 'Region, default uses value of AWS_DEFAULT_REGION env variable').default([]))
+      .addOption(new Option('--region <string...>', 'Region, default uses all available regions').default(AllRegions).choices(AllRegions))
       .addOption(new Option('--account-id <string...>', 'Account id').default([]))
       .addOption(new Option('--profile <profile>', 'Profile, default uses value of AWS_PROFILE env variable'))
 
@@ -51,8 +51,9 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
       .command('all')
       .description('Collect app resources based on the specified filters')
       .action(async (options) => {
-        const response = await this.executeCollectCommand(Object.values(SubCommands), parentOptions, options)
-        this.printCollectResponse(response, 'all', parentOptions.output, parentOptions.outputFormat)
+        // const response = await this.executeCollectCommand(Object.values(SubCommands), parentOptions, options)
+        // this.printCollectResponse(response, 'all', parentOptions.output, parentOptions.outputFormat)
+        console.log(parentOptions.region)
       })
 
     return this
