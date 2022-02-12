@@ -51,9 +51,8 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
       .command('all')
       .description('Collect app resources based on the specified filters')
       .action(async (options) => {
-        // const response = await this.executeCollectCommand(Object.values(SubCommands), parentOptions, options)
-        // this.printCollectResponse(response, 'all', parentOptions.output, parentOptions.outputFormat)
-        console.log(parentOptions.region)
+        const response = await this.executeCollectCommand(Object.values(SubCommands), parentOptions, options)
+        this.printCollectResponse(response, 'all', parentOptions.output, parentOptions.outputFormat)
       })
 
     return this
