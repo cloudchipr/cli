@@ -16,6 +16,8 @@ When executed, c8r will check users environment to identify AWS Access credentia
 ```shell 
 docker run -it -v ~/.aws/credentials:/root/.aws/credentials cloudchipr/cli c8r collect all --verbose --region all
 ```
+
+![](https://raw.githubusercontent.com/cloudchipr/cli/b416ad0553f6ec2acf50124057715fb7d09836dc/docs/demo/c8r-demo.gif)
 <!-- quickstartstop -->
 
 <!-- resources -->

@@ -14,6 +14,8 @@ import CloudChiprCliInterface from './cloud-chipr-cli-interface'
 import chalk from 'chalk'
 import ResponseDecorator from '../responses/response-decorator'
 import EngineRequestBuilderFactory from '../requests/engine-request-builder-factory'
+import fs from 'fs'
+import EngineRequestBuilder from '../requests/engine-request-builder'
 
 export default class AwsCloudChiprCli implements CloudChiprCliInterface {
   private responseDecorator: ResponseDecorator
@@ -45,6 +47,11 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
           this.printCollectResponse(response, key, parentOptions.output, parentOptions.outputFormat)
         })
         .addHelpText('after', FilterHelper.getFilterExample(CloudProvider.AWS, key))
+        .hook('postAction', async () => {
+          if (parentOptions.verbose !== true) {
+            await fs.promises.rm(`${EngineRequestBuilder.outputDirectory}`, { recursive: true, force: true })
+          }
+        })
     }
 
     command
@@ -53,6 +60,11 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
       .action(async (options) => {
         const response = await this.executeCollectCommand(Object.values(AwsSubCommands), parentOptions, options)
         this.printCollectResponse(response, 'all', parentOptions.output, parentOptions.outputFormat)
+      })
+      .hook('postAction', async () => {
+        if (parentOptions.verbose !== true) {
+          await fs.promises.rm(`${EngineRequestBuilder.outputDirectory}`, { recursive: true, force: true })
+        }
       })
 
     return this
@@ -71,6 +83,11 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
           await this.executeCleanCommand([key as AwsSubCommands], parentOptions, options)
         })
         .addHelpText('after', FilterHelper.getFilterExample(CloudProvider.AWS, key))
+        .hook('postAction', async () => {
+          if (parentOptions.verbose !== true) {
+            await fs.promises.rm(`${EngineRequestBuilder.outputDirectory}`, { recursive: true, force: true })
+          }
+        })
     }
 
     command
@@ -79,6 +96,11 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
       .option('--yes', 'To terminate all resources specific information without confirmation')
       .action(async (options) => {
         await this.executeCleanCommand(Object.values(AwsSubCommands), parentOptions, options)
+      })
+      .hook('postAction', async () => {
+        if (parentOptions.verbose !== true) {
+          await fs.promises.rm(`${EngineRequestBuilder.outputDirectory}`, { recursive: true, force: true })
+        }
       })
 
     return this
