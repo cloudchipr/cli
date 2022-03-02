@@ -33,9 +33,7 @@ export enum GcpSubCommands {
   DISKS = 'disks',
   EIP = 'eip',
   CLOUD_SQL = 'cloud-sql',
-  LB_HTTP = 'lb-http',
-  LB_TCP = 'lb-tcp',
-  LB_UDP = 'lb-udp'
+  LB = 'lb'
 }
 
 export const AwsAllRegions: Set<string> = new Set([
@@ -104,18 +102,10 @@ export const GcpSubCommandsDetail = {
     collectDescription: 'Collect CloudSQL database specific information based on provided filters.',
     cleanDescription: 'Terminate CloudSQL database specific information based on provided filters.'
   },
-  [GcpSubCommands.LB_HTTP]: {
-    collectDescription: 'Collect LB_HTTP specific information based on provided filters.',
-    cleanDescription: 'Terminate LB_HTTP specific information based on provided filters.'
+  [GcpSubCommands.LB]: {
+    collectDescription: 'Collect LB specific information based on provided filters.',
+    cleanDescription: 'Terminate LB specific information based on provided filters.'
   },
-  [GcpSubCommands.LB_TCP]: {
-    collectDescription: 'Collect LB_TCP specific information based on provided filters.',
-    cleanDescription: 'Terminate LB_TCP specific information based on provided filters.'
-  },
-  [GcpSubCommands.LB_UDP]: {
-    collectDescription: 'Collect LB_UDP specific information based on provided filters.',
-    cleanDescription: 'Terminate LB_UDP specific information based on provided filters.'
-  }
 } as const
 
 export enum COLORS {
