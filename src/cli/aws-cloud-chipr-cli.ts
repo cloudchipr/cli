@@ -1,6 +1,6 @@
 import { Command, Option, OptionValues } from 'commander'
 import ora from 'ora'
-import { COLORS, Output, OutputFormats, SubCommands, SubCommandsDetail } from '../constants'
+import { Output, OutputFormats, AwsSubCommands, AwsSubCommandsDetail, CloudProvider } from '../constants'
 import { EnvHelper, FilterHelper, OutputHelper, PromptHelper } from '../helpers'
 import {
   AwsSubCommand,
@@ -11,19 +11,13 @@ import {
   Response, Ebs, Ec2, Elb, Nlb, Alb, Eip, Rds
 } from '@cloudchipr/cloudchipr-engine'
 import CloudChiprCliInterface from './cloud-chipr-cli-interface'
-import chalk from 'chalk'
-import ResponseDecorator from '../responses/response-decorator'
 import EngineRequestBuilderFactory from '../requests/engine-request-builder-factory'
 import fs from 'fs'
 import EngineRequestBuilder from '../requests/engine-request-builder'
+import CloudChiprCli from './cloud-chipr-cli'
 
-export default class AwsCloudChiprCli implements CloudChiprCliInterface {
-  private responseDecorator: ResponseDecorator
+export default class AwsCloudChiprCli extends CloudChiprCli implements CloudChiprCliInterface {
   readonly AWS_DEFAULT_REGION = 'us-east-1'
-
-  constructor () {
-    this.responseDecorator = new ResponseDecorator()
-  }
 
   customiseCommand (command: Command): CloudChiprCliInterface {
     command
@@ -37,16 +31,16 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
   customiseCollectCommand (command: Command): CloudChiprCliInterface {
     const parentOptions = command.parent.opts()
 
-    for (const key in SubCommandsDetail) {
+    for (const key in AwsSubCommandsDetail) {
       command
         .command(key)
-        .description(SubCommandsDetail[key].collectDescription)
+        .description(AwsSubCommandsDetail[key].collectDescription)
         .option('-f, --filter <type>', 'Filter')
         .action(async (options) => {
-          const response = await this.executeCollectCommand([key as SubCommands], parentOptions, options)
-          this.printCollectResponse(response, key, parentOptions.output, parentOptions.outputFormat)
+          const response = await this.executeCollectCommand([key as AwsSubCommands], parentOptions, options)
+          this.responsePrint.printCollectResponse(response, CloudProvider.AWS, key, parentOptions.output, parentOptions.outputFormat)
         })
-        .addHelpText('after', FilterHelper.getFilterExample(key))
+        .addHelpText('after', FilterHelper.getFilterExample(CloudProvider.AWS, key))
         .hook('postAction', async () => {
           if (parentOptions.verbose !== true) {
             await fs.promises.rm(`${EngineRequestBuilder.outputDirectory}`, { recursive: true, force: true })
@@ -58,8 +52,8 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
       .command('all')
       .description('Collect app resources based on the specified filters')
       .action(async (options) => {
-        const response = await this.executeCollectCommand(Object.values(SubCommands), parentOptions, options)
-        this.printCollectResponse(response, 'all', parentOptions.output, parentOptions.outputFormat)
+        const response = await this.executeCollectCommand(Object.values(AwsSubCommands), parentOptions, options)
+        this.responsePrint.printCollectResponse(response, CloudProvider.AWS, 'all', parentOptions.output, parentOptions.outputFormat)
       })
       .hook('postAction', async () => {
         if (parentOptions.verbose !== true) {
@@ -73,16 +67,16 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
   customiseCleanCommand (command: Command): CloudChiprCliInterface {
     const parentOptions = command.parent.opts()
 
-    for (const key in SubCommandsDetail) {
+    for (const key in AwsSubCommandsDetail) {
       command
         .command(key)
-        .description(SubCommandsDetail[key].cleanDescription)
+        .description(AwsSubCommandsDetail[key].cleanDescription)
         .option('--yes', `To terminate ${key.toUpperCase()} specific information without confirmation`)
         .option('-f, --filter <type>', 'Filter')
         .action(async (options) => {
-          await this.executeCleanCommand([key as SubCommands], parentOptions, options)
+          await this.executeCleanCommand([key as AwsSubCommands], parentOptions, options)
         })
-        .addHelpText('after', FilterHelper.getFilterExample(key))
+        .addHelpText('after', FilterHelper.getFilterExample(CloudProvider.AWS, key))
         .hook('postAction', async () => {
           if (parentOptions.verbose !== true) {
             await fs.promises.rm(`${EngineRequestBuilder.outputDirectory}`, { recursive: true, force: true })
@@ -95,7 +89,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
       .description('Terminate all resources from a cloud provider')
       .option('--yes', 'To terminate all resources specific information without confirmation')
       .action(async (options) => {
-        await this.executeCleanCommand(Object.values(SubCommands), parentOptions, options)
+        await this.executeCleanCommand(Object.values(AwsSubCommands), parentOptions, options)
       })
       .hook('postAction', async () => {
         if (parentOptions.verbose !== true) {
@@ -110,12 +104,12 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
   //   return this
   // }
 
-  private async executeCollectCommand (subCommands: SubCommands[], parentOptions: OptionValues, options: OptionValues): Promise<Response<ProviderResource>[]> {
+  private async executeCollectCommand (subCommands: AwsSubCommands[], parentOptions: OptionValues, options: OptionValues): Promise<Response<ProviderResource>[]> {
     const spinner = ora('CloudChipr is now collecting data. This might take some time...').start()
     try {
       const promises = []
       for (const subCommand of subCommands) {
-        const allOptions = Object.assign(parentOptions, { filter: options.filter || FilterHelper.getDefaultFilterPath(subCommand) }) as OptionValues
+        const allOptions = Object.assign(parentOptions, { filter: options.filter || FilterHelper.getDefaultFilterPath(CloudProvider.AWS, subCommand) }) as OptionValues
         const providerResource = AwsCloudChiprCli.getProviderResourceFromString(subCommand)
         promises.push(this.executeCommand<InstanceType<typeof providerResource>>(CloudChiprCommand.collect(), AwsSubCommand[subCommand](), allOptions))
       }
@@ -128,9 +122,9 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
     }
   }
 
-  private async executeCleanCommand (subCommands: SubCommands[], parentOptions: OptionValues, options: OptionValues) {
+  private async executeCleanCommand (subCommands: AwsSubCommands[], parentOptions: OptionValues, options: OptionValues) {
     const collectResponse = await this.executeCollectCommand(subCommands, parentOptions, options)
-    this.printCollectResponse(collectResponse, '', Output.DETAILED, OutputFormats.TABLE, false)
+    this.responsePrint.printCollectResponse(collectResponse, CloudProvider.AWS, '', Output.DETAILED, OutputFormats.TABLE, false)
     const ids = {}
     let found = false
     collectResponse.forEach((response) => {
@@ -153,7 +147,7 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
       }
       const cleanResponse = await Promise.all(promises)
       spinner.succeed()
-      this.printCleanResponse(cleanResponse, ids)
+      this.responsePrint.printCleanResponse(cleanResponse, ids)
       OutputHelper.link('Please Star us on Github', 'https://github.com/cloudchipr/cli')
     } catch (e) {
       spinner.fail()
@@ -183,68 +177,21 @@ export default class AwsCloudChiprCli implements CloudChiprCliInterface {
     return engineAdapter.execute(request)
   }
 
-  private printCollectResponse (responses: Response<ProviderResource>[], target: string, output?: string, outputFormat?: string, showCleanCommandSuggestion: boolean = true) {
-    let found = false
-    let summaryData = []
-    responses.forEach((response) => {
-      if (response.count === 0) {
-        return
-      }
-      found = true
-      if (output === Output.DETAILED || output === null) {
-        OutputHelper.text(`${response.items[0].constructor.name.toUpperCase()} - Potential saving opportunities found ⬇️`, 'info')
-        OutputHelper[outputFormat](this.responseDecorator.decorate([response], Output.DETAILED))
-      }
-      if (output === Output.SUMMARIZED || output === null) {
-        summaryData = [...summaryData, ...this.responseDecorator.decorate([response], Output.SUMMARIZED)]
-      }
-    })
-    if (summaryData.length > 0) {
-      OutputHelper.text('Overall summary ⬇️', 'info')
-      OutputHelper[outputFormat](this.responseDecorator.sortByPriceSummary(summaryData))
-    }
-    if (found && showCleanCommandSuggestion) {
-      OutputHelper.text(`Please run ${chalk.underline.hex(COLORS.ORCHID)('c8r clean [options] ' + target)} with the same filters if you wish to clean.`)
-    } else if (!found) {
-      OutputHelper.text('We found no resources matching provided filters, please modify and try again!', 'warning')
-    }
-  }
-
-  private printCleanResponse (responses: Response<ProviderResource>[], ids: object) {
-    let price = 0
-    let found = false
-    responses.forEach((response) => {
-      if (response.count === 0) {
-        return
-      }
-      found = true
-      const subCommand = response.items[0].constructor.name.toLowerCase()
-      const decoratedData = this.responseDecorator.decorateClean(response, ids[subCommand], subCommand)
-      OutputHelper.table(decoratedData.data, true)
-      price += decoratedData.price
-    })
-    if (found) {
-      OutputHelper.text(`All done, you just saved ${String(chalk.green(this.responseDecorator.formatPrice(price)))} per month!!!`, 'superSuccess')
-    } else {
-      OutputHelper.table(this.responseDecorator.decorateCleanFailure(ids), true)
-    }
-  }
-
   static getProviderResourceFromString (target: string) {
     switch (target) {
-      case SubCommands.EBS:
+      case AwsSubCommands.EBS:
         return Ebs
-      case SubCommands.EC2:
+      case AwsSubCommands.EC2:
         return Ec2
-      case SubCommands.ELB:
+      case AwsSubCommands.ELB:
         return Elb
-      case SubCommands.NLB:
+      case AwsSubCommands.NLB:
         return Nlb
-      case SubCommands.ALB:
+      case AwsSubCommands.ALB:
         return Alb
-      case SubCommands.EIP:
+      case AwsSubCommands.EIP:
         return Eip
-      case SubCommands.RDS:
+      case AwsSubCommands.RDS:
         return Rds
     }
   }

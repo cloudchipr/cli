@@ -2,15 +2,15 @@ import chalk from 'chalk'
 import { readFileSync } from 'fs'
 
 export class FilterHelper {
-  static getDefaultFilterPath (subcommand: string): string {
-    return `${__dirname}/../../default-filters/${subcommand}.yaml`
+  static getDefaultFilterPath (provider: string, subcommand: string): string {
+    return `${__dirname}/../../default-filters/${provider}/${subcommand}.yaml`
   }
 
-  static getDefaultFilter (subcommand: string): string {
-    return readFileSync(FilterHelper.getDefaultFilterPath(subcommand), 'utf8')
+  static getDefaultFilter (provider: string, subcommand: string): string {
+    return readFileSync(FilterHelper.getDefaultFilterPath(provider, subcommand), 'utf8')
   }
 
-  static getFilterExample (subcommand: string): string {
-    return `\n${chalk.yellow('Filter example (filter.yaml)')}:\n${FilterHelper.getDefaultFilter(subcommand)}`
+  static getFilterExample (provider: string, subcommand: string): string {
+    return `\n${chalk.yellow('Filter example (filter.yaml)')}:\n${FilterHelper.getDefaultFilter(provider, subcommand)}`
   }
 }

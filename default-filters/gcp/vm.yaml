@@ -1,0 +1,4 @@
+and:
+  - resource: "launch-time"
+    op: "LessThanEqualTo"
+    value: 7

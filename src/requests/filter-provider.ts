@@ -2,7 +2,7 @@ import { readFileSync } from 'fs'
 import yaml from 'yaml'
 import { FilterBuilder, FilterInterface, SubCommandInterface, FilterValidator } from '@cloudchipr/cloudchipr-engine'
 import { OptionValues } from 'commander'
-import { SubCommands } from '../constants'
+import { AwsSubCommands } from '../constants'
 
 export class FilterProvider {
   static getCollectFilter (options: OptionValues, subCommand: SubCommandInterface): FilterInterface {
@@ -16,21 +16,21 @@ export class FilterProvider {
     const builder = new FilterBuilder(new FilterValidator(subCommand))
     let resource: string
     switch (subCommand.getValue()) {
-      case SubCommands.EBS:
+      case AwsSubCommands.EBS:
         resource = 'volume-id'
         break
-      case SubCommands.EC2:
+      case AwsSubCommands.EC2:
         resource = 'instance-id'
         break
-      case SubCommands.RDS:
+      case AwsSubCommands.RDS:
         resource = 'db-instance-identifier'
         break
-      case SubCommands.EIP:
+      case AwsSubCommands.EIP:
         resource = 'public-ip'
         break
-      case SubCommands.ELB:
-      case SubCommands.NLB:
-      case SubCommands.ALB:
+      case AwsSubCommands.ELB:
+      case AwsSubCommands.NLB:
+      case AwsSubCommands.ALB:
         resource = 'load-balancer-name'
         break
       default:
