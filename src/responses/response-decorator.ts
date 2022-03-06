@@ -1,5 +1,5 @@
 import {
-  Ec2, Ebs, Elb, Nlb, Alb, Eip, Rds, ProviderResource, Response, GcpVm
+  Ec2, Ebs, Elb, Nlb, Alb, Eip, Rds, ProviderResource, Response, GcpVm, GcpDisks
 } from '@cloudchipr/cloudchipr-engine'
 import { Output } from '../constants'
 import { DateTimeHelper, NumberConvertHelper, SizeConvertHelper } from '../helpers'
@@ -34,7 +34,7 @@ export default class ResponseDecorator {
 
   formatPrice (price?: number): string {
     if (price === undefined) {
-      return 'NaN'
+      return 'N/A'
     }
     return '$' + price.toFixed(2)
   }
@@ -298,7 +298,21 @@ export default class ResponseDecorator {
       'Price Per Month': this.formatPrice(vm.pricePerMonth),
       Age: DateTimeHelper.convertToWeeksDaysHours(vm.age),
       Labels: vm.labels.map((label) => `${label.key}:${label.value}`).join(', '),
-      Region: vm.getRegionFromZone(),
+      Zone: vm.zone,
+      Project: 'N/A'
+    }
+  }
+
+  private gcpDisks (disks: GcpDisks) {
+    return {
+      'Disk Name': disks.name,
+      Type: disks.type,
+      Status: disks.status,
+      Size: SizeConvertHelper.fromBytes(disks.size),
+      Age: DateTimeHelper.convertToWeeksDaysHours(disks.age),
+      'Price Per Month': this.formatPrice(disks.pricePerMonth),
+      Labels: disks.labels.map((label) => `${label.key}:${label.value}`).join(', '),
+      Zone: disks.zone,
       Project: 'N/A'
     }
   }
