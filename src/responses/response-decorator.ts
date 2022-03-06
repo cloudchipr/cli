@@ -1,15 +1,15 @@
 import {
-  Ec2, Ebs, Elb, Nlb, Alb, Eip, Rds, ProviderResource, Response
+  Ec2, Ebs, Elb, Nlb, Alb, Eip, Rds, ProviderResource, Response, GcpVm
 } from '@cloudchipr/cloudchipr-engine'
 import { Output } from '../constants'
 import { DateTimeHelper, NumberConvertHelper, SizeConvertHelper } from '../helpers'
 
 export default class ResponseDecorator {
-  decorate (resources: Response<ProviderResource>[], output: string): any[] {
-    resources = this.removeEmptyResourcesAndSortByPrice(resources)
+  decorate (cloudProvider: string, resources: Response<ProviderResource>[], output: string): any[] {
+    resources = this[`${cloudProvider}RemoveEmptyResourcesAndSort`](resources)
     let data = []
     resources.forEach((resource: Response<ProviderResource>) => {
-      data = [...data, ...this.eachItem(resource, output)]
+      data = [...data, ...this.eachItem(cloudProvider, resource, output)]
     })
     return data
   }
@@ -43,7 +43,7 @@ export default class ResponseDecorator {
     return data.sort((a: any, b: any) => parseFloat(b['Cost Per Month'].slice(1)) - parseFloat(a['Cost Per Month'].slice(1)))
   }
 
-  private removeEmptyResourcesAndSortByPrice (resources: Array<Response<ProviderResource>>): Response<ProviderResource>[] {
+  private awsRemoveEmptyResourcesAndSort (resources: Array<Response<ProviderResource>>): Response<ProviderResource>[] {
     return resources.reduce((accumulator: Array<Response<ProviderResource>>, pilot: Response<ProviderResource>) => {
       if (pilot.count > 0) {
         pilot.items.sort((a: ProviderResource, b: ProviderResource) => a.c8rAccount.localeCompare(b.c8rAccount) || b.pricePerMonth - a.pricePerMonth)
@@ -53,20 +53,24 @@ export default class ResponseDecorator {
     }, [])
   }
 
-  private eachItem (resource: Response<ProviderResource>, output: string) {
+  private gcpRemoveEmptyResourcesAndSort (resources: Array<Response<ProviderResource>>): Response<ProviderResource>[] {
+    return resources
+  }
+
+  private eachItem (cloudProvider: string, resource: Response<ProviderResource>, output: string) {
     switch (output) {
       case Output.DETAILED:
-        return this.eachItemDetail(resource)
+        return this.eachItemDetail(cloudProvider, resource)
       case Output.SUMMARIZED:
-        return this.eachItemSummary(resource)
+        return this.eachItemSummary(cloudProvider, resource)
     }
   }
 
-  private eachItemDetail (resource: Response<ProviderResource>) {
-    return resource.items.map((item: ProviderResource) => this[item.constructor.name.toLowerCase()](item))
+  private eachItemDetail (cloudProvider:string, resource: Response<ProviderResource>) {
+    return resource.items.map((item: ProviderResource) => this[`${cloudProvider}${item.constructor.name}`](item))
   }
 
-  private eachItemSummary (resource: Response<ProviderResource>) {
+  private eachItemSummary (cloudProvider:string, resource: Response<ProviderResource>) {
     const totalPrice = resource.items.map(o => o.pricePerMonth).reduce((a, b) => a !== undefined && b !== undefined ? a + b : 0, 0)
     return [
       {
@@ -76,7 +80,7 @@ export default class ResponseDecorator {
     ]
   }
 
-  private ec2 (ec2: Ec2) {
+  private awsEc2 (ec2: Ec2) {
     return {
       'Instance ID': ec2.id,
       'Instance Type': ec2.type,
@@ -108,7 +112,7 @@ export default class ResponseDecorator {
     return resource.items.map((item: Ec2) => item.id)
   }
 
-  private ebs (ebs: Ebs) {
+  private awsEbs (ebs: Ebs) {
     return {
       'Volume ID': ebs.id,
       Type: ebs.type,
@@ -139,7 +143,7 @@ export default class ResponseDecorator {
     return resource.items.map((item: Ebs) => item.id)
   }
 
-  private rds (rds: Rds) {
+  private awsRds (rds: Rds) {
     return {
       'DB ID': rds.id,
       'Instance Type': rds.instanceType,
@@ -170,7 +174,7 @@ export default class ResponseDecorator {
     return resource.items.map((item: Rds) => item.id)
   }
 
-  private eip (eip: Eip) {
+  private awsEip (eip: Eip) {
     return {
       'IP Address': eip.ip,
       'Price Per Month': this.formatPrice(eip.pricePerMonth),
@@ -197,7 +201,7 @@ export default class ResponseDecorator {
     return resource.items.map((item: Eip) => item.ip)
   }
 
-  private elb (elb: Elb) {
+  private awsElb (elb: Elb) {
     return {
       'Load Balancer Name': elb.loadBalancerName,
       'DNS Name': elb.dnsName,
@@ -226,7 +230,7 @@ export default class ResponseDecorator {
     return resource.items.map((item: Elb) => item.loadBalancerName)
   }
 
-  private nlb (nlb: Nlb) {
+  private awsNlb (nlb: Nlb) {
     return {
       'Load Balancer Name': nlb.loadBalancerName,
       'DNS Name': nlb.dnsName,
@@ -255,7 +259,7 @@ export default class ResponseDecorator {
     return resource.items.map((item: Nlb) => item.loadBalancerName)
   }
 
-  private alb (alb: Alb) {
+  private awsAlb (alb: Alb) {
     return {
       'Load Balancer Name': alb.loadBalancerName,
       'DNS Name': alb.dnsName,
@@ -282,6 +286,21 @@ export default class ResponseDecorator {
 
   private albGetIds (resource: Response<ProviderResource>) {
     return resource.items.map((item: Alb) => item.loadBalancerName)
+  }
+
+  private gcpVm (vm: GcpVm) {
+    return {
+      'Instance Name': vm.name,
+      'Machine Type': vm.machineType,
+      'CPU % (MAX)': 'N/A',
+      'NetIn (SUM)': 'N/A',
+      'NetOut (SUM)': 'N/A',
+      'Price Per Month': this.formatPrice(vm.pricePerMonth),
+      Age: DateTimeHelper.convertToWeeksDaysHours(vm.age),
+      Labels: vm.labels.map((label) => `${label.key}:${label.value}`).join(', '),
+      Region: vm.getRegionFromZone(),
+      Project: 'pr'
+    }
   }
 
   private clean (subcommand: string, id: string, success: boolean) {

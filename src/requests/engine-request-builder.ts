@@ -4,7 +4,7 @@ import {
   SubCommandInterface
 } from '@cloudchipr/cloudchipr-engine'
 import { OptionValues } from 'commander'
-import { AwsAllRegions, OutputDirectory } from '../constants'
+import { AwsAllRegions, CloudProvider, GcpAllRegions, OutputDirectory } from '../constants'
 import moment from 'moment'
 import { v4 } from 'uuid'
 
@@ -52,8 +52,13 @@ export default abstract class EngineRequestBuilder {
   protected buildParameter (options: OptionValues, filter: FilterInterface): Parameter {
     let regions : Set<string> = new Set(options.region)
     if (regions.has('all')) {
-      regions = AwsAllRegions
-      regions = AwsAllRegions
+      switch (options.cloudProvider) {
+        case CloudProvider.GCP:
+          regions = GcpAllRegions
+          break
+        default:
+          regions = AwsAllRegions
+      }
     }
     const accounts : Set<string> = new Set(options.accountId)
     return new Parameter(filter, false, Array.from(regions), Array.from(accounts))

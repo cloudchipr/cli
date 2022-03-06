@@ -11,16 +11,17 @@ import {
   Response,
   GcpSubCommand
 } from '@cloudchipr/cloudchipr-engine'
-import { Disks } from '@cloudchipr/cloudchipr-engine/lib/domain/types/gcp/disks'
-import { Vm } from '@cloudchipr/cloudchipr-engine/lib/domain/types/gcp/vm'
 import { Command, Option, OptionValues } from 'commander'
 import ora from 'ora'
 import { CloudProvider, GcpSubCommands, GcpSubCommandsDetail } from '../constants'
-import {EnvHelper, FilterHelper, OutputHelper } from '../helpers'
+import { EnvHelper, FilterHelper, OutputHelper } from '../helpers'
 import EngineRequestBuilderFactory from '../requests/engine-request-builder-factory'
 import CloudChiprCliInterface from './cloud-chipr-cli-interface'
+import fs from 'fs'
+import EngineRequestBuilder from '../requests/engine-request-builder'
+import CloudChiprCli from './cloud-chipr-cli'
 
-export default class GcpCloudChiprCli implements CloudChiprCliInterface {
+export default class GcpCloudChiprCli extends CloudChiprCli implements CloudChiprCliInterface {
   customiseCommand (command: Command): CloudChiprCliInterface {
     command
       .addOption(new Option('--region <string...>', 'Region, some description').default([]))
@@ -39,9 +40,14 @@ export default class GcpCloudChiprCli implements CloudChiprCliInterface {
         .option('-f, --filter <type>', 'Filter')
         .action(async (options) => {
           const response = await this.executeCollectCommand([key as GcpSubCommands], parentOptions, options)
-          OutputHelper.text('Coming soon!', 'info')
+          this.responsePrint.printCollectResponse(response, CloudProvider.GCP, key, parentOptions.output, parentOptions.outputFormat)
         })
         .addHelpText('after', FilterHelper.getFilterExample(CloudProvider.GCP, key))
+        .hook('postAction', async () => {
+          if (parentOptions.verbose !== true) {
+            await fs.promises.rm(`${EngineRequestBuilder.outputDirectory}`, { recursive: true, force: true })
+          }
+        })
     }
 
     command
@@ -49,6 +55,11 @@ export default class GcpCloudChiprCli implements CloudChiprCliInterface {
       .description('Collect app resources based on the specified filters')
       .action(async (options) => {
         OutputHelper.text('Coming soon!', 'info')
+      })
+      .hook('postAction', async () => {
+        if (parentOptions.verbose !== true) {
+          await fs.promises.rm(`${EngineRequestBuilder.outputDirectory}`, { recursive: true, force: true })
+        }
       })
 
     return this
@@ -67,6 +78,11 @@ export default class GcpCloudChiprCli implements CloudChiprCliInterface {
           OutputHelper.text('Coming soon!', 'info')
         })
         .addHelpText('after', FilterHelper.getFilterExample(CloudProvider.GCP, key))
+        .hook('postAction', async () => {
+          if (parentOptions.verbose !== true) {
+            await fs.promises.rm(`${EngineRequestBuilder.outputDirectory}`, { recursive: true, force: true })
+          }
+        })
     }
 
     command
@@ -75,6 +91,11 @@ export default class GcpCloudChiprCli implements CloudChiprCliInterface {
       .option('--yes', 'To terminate all resources specific information without confirmation')
       .action(async (options) => {
         OutputHelper.text('Coming soon!', 'info')
+      })
+      .hook('postAction', async () => {
+        if (parentOptions.verbose !== true) {
+          await fs.promises.rm(`${EngineRequestBuilder.outputDirectory}`, { recursive: true, force: true })
+        }
       })
 
     return this
@@ -100,13 +121,11 @@ export default class GcpCloudChiprCli implements CloudChiprCliInterface {
 
   private async executeCommand<T> (command: CloudChiprCommand, subcommand: SubCommandInterface, options: OptionValues, ids: string[] = []): Promise<Response<T>> {
     const request = EngineRequestBuilderFactory
-        .getInstance(command)
-        .setSubCommand(subcommand)
-        .setOptions(options)
-        .setIds(ids)
-        .build()
-
-    console.log(request)
+      .getInstance(command)
+      .setSubCommand(subcommand)
+      .setOptions(options)
+      .setIds(ids)
+      .build()
 
     const custodianOrg = (options.accountId !== undefined && (new Set(options.accountId)).size) ? EnvHelper.getCustodianOrg() : undefined
 
