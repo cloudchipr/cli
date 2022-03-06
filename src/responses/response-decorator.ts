@@ -299,7 +299,7 @@ export default class ResponseDecorator {
       Age: DateTimeHelper.convertToWeeksDaysHours(vm.age),
       Labels: vm.labels.map((label) => `${label.key}:${label.value}`).join(', '),
       Region: vm.getRegionFromZone(),
-      Project: 'pr'
+      Project: 'N/A'
     }
   }
 
