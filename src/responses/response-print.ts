@@ -1,5 +1,5 @@
 import ResponseDecorator from './response-decorator'
-import { ProviderResource, Response } from '../../../engine'
+import { ProviderResource, Response } from '@cloudchipr/cloudchipr-engine'
 import { COLORS, Output } from '../constants'
 import { OutputHelper } from '../helpers'
 import chalk from 'chalk'
