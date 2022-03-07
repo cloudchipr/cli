@@ -32,7 +32,7 @@ export enum GcpSubCommands {
   VM = 'vm',
   DISKS = 'disks',
   EIP = 'eip',
-  CLOUD_SQL = 'cloud-sql',
+  SQL = 'sql',
   LB = 'lb'
 }
 
@@ -98,9 +98,9 @@ export const GcpSubCommandsDetail = {
     collectDescription: 'Collect EIP specific information based on provided filters.',
     cleanDescription: 'Terminate EIP specific information based on provided filters.'
   },
-  [GcpSubCommands.CLOUD_SQL]: {
-    collectDescription: 'Collect CloudSQL database specific information based on provided filters.',
-    cleanDescription: 'Terminate CloudSQL database specific information based on provided filters.'
+  [GcpSubCommands.SQL]: {
+    collectDescription: 'Collect SQL database specific information based on provided filters.',
+    cleanDescription: 'Terminate SQL database specific information based on provided filters.'
   },
   [GcpSubCommands.LB]: {
     collectDescription: 'Collect LB specific information based on provided filters.',

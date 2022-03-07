@@ -1,5 +1,5 @@
 import {
-  GcpCloudSql,
+  GcpSql,
   GcpDisks,
   GcpEip,
   GcpLb,
@@ -141,8 +141,8 @@ export default class GcpCloudChiprCli extends CloudChiprCli implements CloudChip
         return GcpDisks
       case GcpSubCommands.EIP:
         return GcpEip
-      case GcpSubCommands.CLOUD_SQL:
-        return GcpCloudSql
+      case GcpSubCommands.SQL:
+        return GcpSql
       case GcpSubCommands.LB:
         return GcpLb
     }

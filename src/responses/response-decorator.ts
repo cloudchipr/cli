@@ -1,5 +1,5 @@
 import {
-  Ec2, Ebs, Elb, Nlb, Alb, Eip, Rds, ProviderResource, Response, GcpVm, GcpDisks
+  Ec2, Ebs, Elb, Nlb, Alb, Eip, Rds, ProviderResource, Response, GcpVm, GcpDisks, GcpSql
 } from '@cloudchipr/cloudchipr-engine'
 import { Output } from '../constants'
 import { DateTimeHelper, NumberConvertHelper, SizeConvertHelper } from '../helpers'
@@ -314,6 +314,19 @@ export default class ResponseDecorator {
       Labels: disks.labels.map((label) => `${label.key}:${label.value}`).join(', '),
       Zone: disks.zone,
       Project: 'N/A'
+    }
+  }
+
+  private gcpSql (sql: GcpSql) {
+    return {
+      'Instance ID': sql.id,
+      'DB Type': sql.type,
+      'DB Connection (MAX)': 'N/A',
+      'Price Per Month': this.formatPrice(sql.pricePerMonth),
+      'Multi-AZ': sql.multiAz,
+      Labels: sql.labels.map((label) => `${label.key}:${label.value}`).join(', '),
+      Region: sql.region,
+      Project: sql.project
     }
   }
 
