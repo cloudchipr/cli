@@ -323,7 +323,7 @@ export default class ResponseDecorator {
       'DB Type': sql.type,
       'DB Connection (MAX)': 'N/A',
       'Price Per Month': this.formatPrice(sql.pricePerMonth),
-      'Multi-AZ': sql.multiAz,
+      'Multi-AZ': sql.multiAz ? 'Yes' : 'No',
       Labels: sql.labels.map((label) => `${label.key}:${label.value}`).join(', '),
       Region: sql.region,
       Project: sql.project
