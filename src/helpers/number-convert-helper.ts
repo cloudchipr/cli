@@ -1,5 +1,8 @@
 export class NumberConvertHelper {
-  static toFixed (value: number, decimals: number = 2): number {
+  static toFixed (value?: number, decimals: number = 2): number {
+    if (value === undefined) {
+      return 0
+    }
     if (decimals < 0) {
       return value
     }

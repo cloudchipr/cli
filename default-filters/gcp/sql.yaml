@@ -2,8 +2,8 @@ and:
   - resource: "launch-time"
     op: "GreaterThanEqualTo"
     value: 7
-#  - resource: "database-connections"
-#    op: "LessThanEqualTo"
-#    statistics: "Maximum"
-#    value: 1
-#    since: 7
+  - resource: "database-connections"
+    op: "LessThanEqualTo"
+    statistics: "Maximum"
+    value: 1
+    since: 7
