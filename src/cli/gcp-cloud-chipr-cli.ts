@@ -54,7 +54,8 @@ export default class GcpCloudChiprCli extends CloudChiprCli implements CloudChip
       .command('all')
       .description('Collect app resources based on the specified filters')
       .action(async (options) => {
-        OutputHelper.text('Coming soon!', 'info')
+        const response = await this.executeCollectCommand(Object.values(GcpSubCommands), parentOptions, options)
+        this.responsePrint.printCollectResponse(response, CloudProvider.GCP, 'all', parentOptions.output, parentOptions.outputFormat)
       })
       .hook('postAction', async () => {
         if (parentOptions.verbose !== true) {

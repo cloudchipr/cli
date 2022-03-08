@@ -1,5 +1,5 @@
 import {
-  Ec2, Ebs, Elb, Nlb, Alb, Eip, Rds, ProviderResource, Response, GcpVm, GcpDisks, GcpSql
+  Ec2, Ebs, Elb, Nlb, Alb, Eip, Rds, ProviderResource, Response, GcpVm, GcpDisks, GcpSql, GcpLb, GcpEip
 } from '@cloudchipr/cloudchipr-engine'
 import { Output } from '../constants'
 import { DateTimeHelper, NumberConvertHelper, SizeConvertHelper } from '../helpers'
@@ -327,6 +327,30 @@ export default class ResponseDecorator {
       Labels: sql.labels.map((label) => `${label.key}:${label.value}`).join(', '),
       Region: sql.region,
       Project: sql.project
+    }
+  }
+
+  private gcpLb (lb: GcpLb) {
+    return {
+      'Load Balancer Name': lb.name,
+      Type: lb.type,
+      Scope: lb.scope ?? 'N/A',
+      Age: DateTimeHelper.convertToWeeksDaysHours(lb.age),
+      'Price Per Month': this.formatPrice(lb.pricePerMonth),
+      Labels: lb.labels.map((label) => `${label.key}:${label.value}`).join(', '),
+      Region: lb.region ?? '',
+      Project: 'N/A'
+    }
+  }
+
+  private gcpEip (eip: GcpEip) {
+    return {
+      'IP Address': eip.ip,
+      Name: eip.name,
+      'Price Per Month': this.formatPrice(eip.pricePerMonth),
+      Labels: eip.labels.map((label) => `${label.key}:${label.value}`).join(', '),
+      Region: eip.region ?? '',
+      Project: 'N/A'
     }
   }
 
