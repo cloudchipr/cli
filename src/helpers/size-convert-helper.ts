@@ -1,6 +1,6 @@
 export class SizeConvertHelper {
-  static fromBytes (bytes: number, decimals: number = 2): string {
-    if (bytes === 0) {
+  static fromBytes (bytes?: number, decimals: number = 2): string {
+    if (bytes === undefined || bytes === 0) {
       return '0 Bytes'
     }
     const k = 1024

@@ -1,6 +1,6 @@
 and:
-#  - resource: "attachments"
-#    op: "IsEmpty"
+  - resource: "attachments"
+    op: "IsEmpty"
   - resource: "launch-time"
     op: "GreaterThanEqualTo"
-    value: 50
+    value: 0

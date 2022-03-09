@@ -292,9 +292,9 @@ export default class ResponseDecorator {
     return {
       'Instance Name': vm.name,
       'Machine Type': vm.machineType,
-      'CPU % (MAX)': 'N/A',
-      'NetIn (SUM)': 'N/A',
-      'NetOut (SUM)': 'N/A',
+      'CPU % (MAX)': NumberConvertHelper.toFixed(vm.cpu?.Value),
+      'NetIn (SUM)': SizeConvertHelper.fromBytes(vm.networkIn?.Value),
+      'NetOut (SUM)': SizeConvertHelper.fromBytes(vm.networkOut?.Value),
       'Price Per Month': this.formatPrice(vm.pricePerMonth),
       Age: DateTimeHelper.convertToWeeksDaysHours(vm.age),
       Labels: vm.labels.map((label) => `${label.key}:${label.value}`).join(', '),
