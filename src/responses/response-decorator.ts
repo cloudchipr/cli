@@ -292,9 +292,9 @@ export default class ResponseDecorator {
     return {
       'Instance Name': vm.name,
       'Machine Type': vm.machineType,
-      'CPU % (MAX)': NumberConvertHelper.toFixed(vm.cpu?.Value),
-      'NetIn (SUM)': SizeConvertHelper.fromBytes(vm.networkIn?.Value),
-      'NetOut (SUM)': SizeConvertHelper.fromBytes(vm.networkOut?.Value),
+      [`CPU % (${vm.cpu?.Type})`]: NumberConvertHelper.toFixed(vm.cpu?.Value),
+      [`NetIn (${vm.networkIn?.Type})`]: SizeConvertHelper.fromBytes(vm.networkIn?.Value),
+      [`NetOut (${vm.networkOut?.Type})`]: SizeConvertHelper.fromBytes(vm.networkOut?.Value),
       'Price Per Month': this.formatPrice(vm.pricePerMonth),
       Age: DateTimeHelper.convertToWeeksDaysHours(vm.age),
       Labels: vm.labels.map((label) => `${label.key}:${label.value}`).join(', '),
@@ -321,7 +321,7 @@ export default class ResponseDecorator {
     return {
       'Instance ID': sql.id,
       'DB Type': sql.type,
-      'DB Connection (MAX)': 'N/A',
+      [`Database Connection (${sql.connections?.Type})`]: sql.connections?.Value ?? 'N/A',
       'Price Per Month': this.formatPrice(sql.pricePerMonth),
       'Multi-AZ': sql.multiAz ? 'Yes' : 'No',
       Labels: sql.labels.map((label) => `${label.key}:${label.value}`).join(', '),
