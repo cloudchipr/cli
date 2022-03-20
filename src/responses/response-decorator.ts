@@ -334,7 +334,7 @@ export default class ResponseDecorator {
     return {
       'Load Balancer Name': lb.name,
       Type: lb.type,
-      Scope: lb.scope ?? 'N/A',
+      Global: lb.global ? 'Yes' : 'No',
       Age: DateTimeHelper.convertToWeeksDaysHours(lb.age),
       'Price Per Month': this.formatPrice(lb.pricePerMonth),
       Labels: lb.labels.map((label) => `${label.key}:${label.value}`).join(', '),
