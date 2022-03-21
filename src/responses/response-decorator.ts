@@ -299,7 +299,7 @@ export default class ResponseDecorator {
       Age: DateTimeHelper.convertToWeeksDaysHours(vm.age),
       Labels: vm.labels.map((label) => `${label.key}:${label.value}`).join(', '),
       Zone: vm.zone,
-      Project: 'N/A'
+      Project: vm.project
     }
   }
 
@@ -313,7 +313,7 @@ export default class ResponseDecorator {
       'Price Per Month': this.formatPrice(disks.pricePerMonth),
       Labels: disks.labels.map((label) => `${label.key}:${label.value}`).join(', '),
       Zone: disks.zone,
-      Project: 'N/A'
+      Project: disks.project
     }
   }
 
@@ -339,7 +339,7 @@ export default class ResponseDecorator {
       'Price Per Month': this.formatPrice(lb.pricePerMonth),
       Labels: lb.labels.map((label) => `${label.key}:${label.value}`).join(', '),
       Region: lb.region ?? '',
-      Project: 'N/A'
+      Project: lb.project
     }
   }
 
@@ -350,7 +350,7 @@ export default class ResponseDecorator {
       'Price Per Month': this.formatPrice(eip.pricePerMonth),
       Labels: eip.labels.map((label) => `${label.key}:${label.value}`).join(', '),
       Region: eip.region ?? '',
-      Project: 'N/A'
+      Project: eip.project
     }
   }
 
