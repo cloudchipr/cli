@@ -1,6 +1,3 @@
 and:
   - resource: "attachments"
     op: "IsEmpty"
-  - resource: "launch-time"
-    op: "GreaterThanEqualTo"
-    value: 0
