@@ -9,6 +9,7 @@ WORKDIR /src
 # Install Cloud Custodian
 RUN python3 -m venv custodian
 RUN . custodian/bin/activate && pip install c7n && pip install c7n-org
+RUN . custodian/bin/activate && pip install --upgrade pip && pip install c7n_gcp
 
 # SET CUSTODIAN envirnomet variables
 ENV C8R_CUSTODIAN="/src/custodian/bin/custodian"
