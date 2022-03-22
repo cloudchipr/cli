@@ -13,8 +13,8 @@ import {
 } from '@cloudchipr/cloudchipr-engine'
 import { Command, Option, OptionValues } from 'commander'
 import ora from 'ora'
-import { CloudProvider, GcpSubCommands, GcpSubCommandsDetail } from '../constants'
-import { EnvHelper, FilterHelper, OutputHelper } from '../helpers'
+import { CloudProvider, GcpSubCommands, GcpSubCommandsDetail, Output, OutputFormats } from '../constants'
+import { EnvHelper, FilterHelper, OutputHelper, PromptHelper } from '../helpers'
 import EngineRequestBuilderFactory from '../requests/engine-request-builder-factory'
 import CloudChiprCliInterface from './cloud-chipr-cli-interface'
 import fs from 'fs'
@@ -76,7 +76,7 @@ export default class GcpCloudChiprCli extends CloudChiprCli implements CloudChip
         .option('--yes', `To terminate ${key.toUpperCase()} specific information without confirmation`)
         .option('-f, --filter <type>', 'Filter')
         .action(async (options) => {
-          OutputHelper.text('Coming soon!', 'info')
+          await this.executeCleanCommand([key as GcpSubCommands], parentOptions, options)
         })
         .addHelpText('after', FilterHelper.getFilterExample(CloudProvider.GCP, key))
         .hook('postAction', async () => {
@@ -91,7 +91,7 @@ export default class GcpCloudChiprCli extends CloudChiprCli implements CloudChip
       .description('Terminate all resources from a cloud provider')
       .option('--yes', 'To terminate all resources specific information without confirmation')
       .action(async (options) => {
-        OutputHelper.text('Coming soon!', 'info')
+        await this.executeCleanCommand(Object.values(GcpSubCommands), parentOptions, options)
       })
       .hook('postAction', async () => {
         if (parentOptions.verbose !== true) {
@@ -114,6 +114,39 @@ export default class GcpCloudChiprCli extends CloudChiprCli implements CloudChip
       const response = await Promise.all(promises)
       spinner.succeed()
       return response
+    } catch (e) {
+      spinner.fail()
+      throw e
+    }
+  }
+
+  private async executeCleanCommand (subCommands: GcpSubCommands[], parentOptions: OptionValues, options: OptionValues) {
+    const collectResponse = await this.executeCollectCommand(subCommands, parentOptions, options)
+    this.responsePrint.printCollectResponse(collectResponse, CloudProvider.GCP, '', Output.DETAILED, OutputFormats.TABLE, false)
+    const ids = {}
+    let found = false
+    collectResponse.forEach((response) => {
+      if (response.count === 0) {
+        return
+      }
+      found = true
+      const subCommand = response.items[0].constructor.name
+      ids[subCommand.toLowerCase()] = this.responseDecorator.getIds(CloudProvider.GCP, response, subCommand)
+    })
+    if (!found || (!options.yes && !(await PromptHelper.prompt('All resources listed above will be deleted. Are you sure you want to proceed? ')))) {
+      return
+    }
+    const spinner = ora('CloudChipr is now cleaning the resources. This might take some time...').start()
+    try {
+      const promises = []
+      for (const key in ids) {
+        const providerResource = GcpCloudChiprCli.getProviderResourceFromString(key)
+        promises.push(this.executeCommand<InstanceType<typeof providerResource>>(CloudChiprCommand.clean(), GcpSubCommands[key](), parentOptions, ids[key]))
+      }
+      const cleanResponse = await Promise.all(promises)
+      spinner.succeed()
+      this.responsePrint.printCleanResponse(cleanResponse, ids)
+      OutputHelper.link('Please Star us on Github', 'https://github.com/cloudchipr/cli')
     } catch (e) {
       spinner.fail()
       throw e

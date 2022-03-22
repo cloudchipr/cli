@@ -28,8 +28,8 @@ export default class ResponseDecorator {
     return data
   }
 
-  getIds (resource: Response<ProviderResource>, subcommand: string) {
-    return this[`${subcommand}GetIds`](resource)
+  getIds (cloudProvider: string, resource: Response<ProviderResource>, subcommand: string) {
+    return this[`${cloudProvider}${subcommand}GetIds`](resource)
   }
 
   formatPrice (price?: number): string {
@@ -108,7 +108,7 @@ export default class ResponseDecorator {
     }
   }
 
-  private ec2GetIds (resource: Response<ProviderResource>) {
+  private awsEc2GetIds (resource: Response<ProviderResource>) {
     return resource.items.map((item: Ec2) => item.id)
   }
 
@@ -139,7 +139,7 @@ export default class ResponseDecorator {
     }
   }
 
-  private ebsGetIds (resource: Response<ProviderResource>) {
+  private awsEbsGetIds (resource: Response<ProviderResource>) {
     return resource.items.map((item: Ebs) => item.id)
   }
 
@@ -170,7 +170,7 @@ export default class ResponseDecorator {
     }
   }
 
-  private rdsGetIds (resource: Response<ProviderResource>) {
+  private awsRdsGetIds (resource: Response<ProviderResource>) {
     return resource.items.map((item: Rds) => item.id)
   }
 
@@ -197,7 +197,7 @@ export default class ResponseDecorator {
     }
   }
 
-  private eipGetIds (resource: Response<ProviderResource>) {
+  private awsEipGetIds (resource: Response<ProviderResource>) {
     return resource.items.map((item: Eip) => item.ip)
   }
 
@@ -226,7 +226,7 @@ export default class ResponseDecorator {
     }
   }
 
-  private elbGetIds (resource: Response<ProviderResource>) {
+  private awsElbGetIds (resource: Response<ProviderResource>) {
     return resource.items.map((item: Elb) => item.loadBalancerName)
   }
 
@@ -255,7 +255,7 @@ export default class ResponseDecorator {
     }
   }
 
-  private nlbGetIds (resource: Response<ProviderResource>) {
+  private awsNlbGetIds (resource: Response<ProviderResource>) {
     return resource.items.map((item: Nlb) => item.loadBalancerName)
   }
 
@@ -284,7 +284,7 @@ export default class ResponseDecorator {
     }
   }
 
-  private albGetIds (resource: Response<ProviderResource>) {
+  private awsAlbGetIds (resource: Response<ProviderResource>) {
     return resource.items.map((item: Alb) => item.loadBalancerName)
   }
 
@@ -303,6 +303,10 @@ export default class ResponseDecorator {
     }
   }
 
+  private gcpVmGetIds (resource: Response<any>) {
+    return resource.items.map((item: GcpVm) => item.name)
+  }
+
   private gcpDisks (disks: GcpDisks) {
     return {
       'Disk Name': disks.name,
@@ -315,6 +319,10 @@ export default class ResponseDecorator {
       Zone: disks.zone,
       Project: disks.project
     }
+  }
+
+  private gcpDisksGetIds (resource: Response<any>) {
+    return resource.items.map((item: GcpDisks) => item.name)
   }
 
   private gcpSql (sql: GcpSql) {
@@ -330,6 +338,10 @@ export default class ResponseDecorator {
     }
   }
 
+  private gcpSqlGetIds (resource: Response<any>) {
+    return resource.items.map((item: GcpSql) => item.id)
+  }
+
   private gcpLb (lb: GcpLb) {
     return {
       'Load Balancer Name': lb.name,
@@ -343,6 +355,10 @@ export default class ResponseDecorator {
     }
   }
 
+  private gcpLbGetIds (resource: Response<any>) {
+    return resource.items.map((item: GcpLb) => item.name)
+  }
+
   private gcpEip (eip: GcpEip) {
     return {
       'IP Address': eip.ip,
@@ -352,6 +368,10 @@ export default class ResponseDecorator {
       Region: eip.region ?? '',
       Project: eip.project
     }
+  }
+
+  private gcpEipGetIds (resource: Response<any>) {
+    return resource.items.map((item: GcpEip) => item.ip)
   }
 
   private clean (subcommand: string, id: string, success: boolean) {
