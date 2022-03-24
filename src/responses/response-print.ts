@@ -47,6 +47,7 @@ export default class ResponsePrint {
 
   printCleanResponse (
     responses: Response<ProviderResource>[],
+    cloudProvider: string,
     ids: object
   ): void {
     let price = 0
@@ -56,8 +57,8 @@ export default class ResponsePrint {
         return
       }
       found = true
-      const subCommand = response.items[0].constructor.name.toLowerCase()
-      const decoratedData = this.responseDecorator.decorateClean(response, ids[subCommand], subCommand)
+      const subCommand = response.items[0].constructor.name
+      const decoratedData = this.responseDecorator.decorateClean(cloudProvider, response, ids[subCommand.toLowerCase()], subCommand)
       OutputHelper.table(decoratedData.data, true)
       price += decoratedData.price
     })

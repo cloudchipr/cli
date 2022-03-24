@@ -14,8 +14,8 @@ export default class ResponseDecorator {
     return data
   }
 
-  decorateClean (resource: Response<ProviderResource>, requestedIds: string[], subcommand: string) {
-    return this[`${subcommand}Clean`](resource, requestedIds)
+  decorateClean (cloudProvider: string, resource: Response<ProviderResource>, requestedIds: string[], subcommand: string) {
+    return this[`${cloudProvider}${subcommand}Clean`](resource, requestedIds)
   }
 
   decorateCleanFailure (ids: object) {
@@ -54,7 +54,13 @@ export default class ResponseDecorator {
   }
 
   private gcpRemoveEmptyResourcesAndSort (resources: Array<Response<ProviderResource>>): Response<ProviderResource>[] {
-    return resources
+    return resources.reduce((accumulator: Array<Response<ProviderResource>>, pilot: Response<ProviderResource>) => {
+      if (pilot.count > 0) {
+        pilot.items.sort((a: ProviderResource, b: ProviderResource) => b.pricePerMonth - a.pricePerMonth)
+        accumulator.push(pilot)
+      }
+      return accumulator
+    }, [])
   }
 
   private eachItem (cloudProvider: string, resource: Response<ProviderResource>, output: string) {
@@ -95,7 +101,7 @@ export default class ResponseDecorator {
     }
   }
 
-  private ec2Clean (resource: Response<ProviderResource>, requestedIds: string[]) {
+  private awsEc2Clean (resource: Response<ProviderResource>, requestedIds: string[]) {
     let price: number = 0
     const succeededIds = resource.items.map((item: Ec2) => {
       price += item.pricePerMonth
@@ -126,7 +132,7 @@ export default class ResponseDecorator {
     }
   }
 
-  private ebsClean (resource: Response<ProviderResource>, requestedIds: string[]) {
+  private awsEbsClean (resource: Response<ProviderResource>, requestedIds: string[]) {
     let price: number = 0
     const succeededIds = resource.items.map((item: Ebs) => {
       price += item.pricePerMonth
@@ -157,7 +163,7 @@ export default class ResponseDecorator {
     }
   }
 
-  private rdsClean (resource: Response<ProviderResource>, requestedIds: string[]) {
+  private awsRdsClean (resource: Response<ProviderResource>, requestedIds: string[]) {
     let price: number = 0
     const succeededIds = resource.items.map((item: Rds) => {
       price += item.pricePerMonth
@@ -184,7 +190,7 @@ export default class ResponseDecorator {
     }
   }
 
-  private eipClean (resource: Response<ProviderResource>, requestedIds: string[]) {
+  private awsEipClean (resource: Response<ProviderResource>, requestedIds: string[]) {
     let price: number = 0
     const succeededIds = resource.items.map((item: Eip) => {
       price += item.pricePerMonth
@@ -213,7 +219,7 @@ export default class ResponseDecorator {
     }
   }
 
-  private elbClean (resource: Response<ProviderResource>, requestedIds: string[]) {
+  private awsElbClean (resource: Response<ProviderResource>, requestedIds: string[]) {
     let price: number = 0
     const succeededIds = resource.items.map((item: Elb) => {
       price += item.pricePerMonth
@@ -242,7 +248,7 @@ export default class ResponseDecorator {
     }
   }
 
-  private nlbClean (resource: Response<ProviderResource>, requestedIds: string[]) {
+  private awsNlbClean (resource: Response<ProviderResource>, requestedIds: string[]) {
     let price: number = 0
     const succeededIds = resource.items.map((item: Nlb) => {
       price += item.pricePerMonth
@@ -271,7 +277,7 @@ export default class ResponseDecorator {
     }
   }
 
-  private albClean (resource: Response<ProviderResource>, requestedIds: string[]) {
+  private awsAlbClean (resource: Response<ProviderResource>, requestedIds: string[]) {
     let price: number = 0
     const succeededIds = resource.items.map((item: Alb) => {
       price += item.pricePerMonth
@@ -299,7 +305,22 @@ export default class ResponseDecorator {
       Age: DateTimeHelper.convertToWeeksDaysHours(vm.age),
       Labels: vm.labels.map((label) => `${label.key}:${label.value}`).join(', '),
       Zone: vm.zone,
-      Project: vm.getOwner()
+      Project: vm.getOwner() || 'N/A'
+    }
+  }
+
+  private gcpVmClean (resource: Response<ProviderResource>, requestedIds: string[]) {
+    let price: number = 0
+    const succeededIds = resource.items.map((item: GcpVm) => {
+      if (item.pricePerMonth !== undefined) {
+        price += item.pricePerMonth
+      }
+      return item.name
+    })
+    const data = requestedIds.map((id: string) => this.clean('VM', id, succeededIds.includes(id)))
+    return {
+      data: data,
+      price: price
     }
   }
 
@@ -317,7 +338,22 @@ export default class ResponseDecorator {
       'Price Per Month': this.formatPrice(disks.pricePerMonth),
       Labels: disks.labels.map((label) => `${label.key}:${label.value}`).join(', '),
       Zone: disks.zone,
-      Project: disks.getOwner()
+      Project: disks.getOwner() || 'N/A'
+    }
+  }
+
+  private gcpDisksClean (resource: Response<ProviderResource>, requestedIds: string[]) {
+    let price: number = 0
+    const succeededIds = resource.items.map((item: GcpDisks) => {
+      if (item.pricePerMonth !== undefined) {
+        price += item.pricePerMonth
+      }
+      return item.name
+    })
+    const data = requestedIds.map((id: string) => this.clean('DISKS', id, succeededIds.includes(id)))
+    return {
+      data: data,
+      price: price
     }
   }
 
@@ -334,7 +370,22 @@ export default class ResponseDecorator {
       'Multi-AZ': sql.multiAz ? 'Yes' : 'No',
       Labels: sql.labels.map((label) => `${label.key}:${label.value}`).join(', '),
       Region: sql.getRegion(),
-      Project: sql.getOwner()
+      Project: sql.getOwner() || 'N/A'
+    }
+  }
+
+  private gcpSqlClean (resource: Response<ProviderResource>, requestedIds: string[]) {
+    let price: number = 0
+    const succeededIds = resource.items.map((item: GcpSql) => {
+      if (item.pricePerMonth !== undefined) {
+        price += item.pricePerMonth
+      }
+      return item.id
+    })
+    const data = requestedIds.map((id: string) => this.clean('SQL', id, succeededIds.includes(id)))
+    return {
+      data: data,
+      price: price
     }
   }
 
@@ -351,7 +402,22 @@ export default class ResponseDecorator {
       'Price Per Month': this.formatPrice(lb.pricePerMonth),
       Labels: lb.labels.map((label) => `${label.key}:${label.value}`).join(', '),
       Region: lb.getRegion(),
-      Project: lb.getOwner()
+      Project: lb.getOwner() || 'N/A'
+    }
+  }
+
+  private gcpLbClean (resource: Response<ProviderResource>, requestedIds: string[]) {
+    let price: number = 0
+    const succeededIds = resource.items.map((item: GcpLb) => {
+      if (item.pricePerMonth !== undefined) {
+        price += item.pricePerMonth
+      }
+      return item.name
+    })
+    const data = requestedIds.map((id: string) => this.clean('LB', id, succeededIds.includes(id)))
+    return {
+      data: data,
+      price: price
     }
   }
 
@@ -366,7 +432,22 @@ export default class ResponseDecorator {
       'Price Per Month': this.formatPrice(eip.pricePerMonth),
       Labels: eip.labels.map((label) => `${label.key}:${label.value}`).join(', '),
       Region: eip.getRegion(),
-      Project: eip.getOwner()
+      Project: eip.getOwner() || 'N/A'
+    }
+  }
+
+  private gcpEipClean (resource: Response<ProviderResource>, requestedIds: string[]) {
+    let price: number = 0
+    const succeededIds = resource.items.map((item: GcpEip) => {
+      if (item.pricePerMonth !== undefined) {
+        price += item.pricePerMonth
+      }
+      return item.ip
+    })
+    const data = requestedIds.map((id: string) => this.clean('EIP', id, succeededIds.includes(id)))
+    return {
+      data: data,
+      price: price
     }
   }
 

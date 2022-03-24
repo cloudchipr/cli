@@ -141,11 +141,11 @@ export default class GcpCloudChiprCli extends CloudChiprCli implements CloudChip
       const promises = []
       for (const key in ids) {
         const providerResource = GcpCloudChiprCli.getProviderResourceFromString(key)
-        promises.push(this.executeCommand<InstanceType<typeof providerResource>>(CloudChiprCommand.clean(), GcpSubCommands[key](), parentOptions, ids[key]))
+        promises.push(this.executeCommand<InstanceType<typeof providerResource>>(CloudChiprCommand.clean(), GcpSubCommand[key](), parentOptions, ids[key]))
       }
       const cleanResponse = await Promise.all(promises)
       spinner.succeed()
-      this.responsePrint.printCleanResponse(cleanResponse, ids)
+      this.responsePrint.printCleanResponse(cleanResponse, CloudProvider.GCP, ids)
       OutputHelper.link('Please Star us on Github', 'https://github.com/cloudchipr/cli')
     } catch (e) {
       spinner.fail()

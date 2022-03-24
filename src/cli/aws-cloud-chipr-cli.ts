@@ -147,7 +147,7 @@ export default class AwsCloudChiprCli extends CloudChiprCli implements CloudChip
       }
       const cleanResponse = await Promise.all(promises)
       spinner.succeed()
-      this.responsePrint.printCleanResponse(cleanResponse, ids)
+      this.responsePrint.printCleanResponse(cleanResponse, CloudProvider.AWS, ids)
       OutputHelper.link('Please Star us on Github', 'https://github.com/cloudchipr/cli')
     } catch (e) {
       spinner.fail()
