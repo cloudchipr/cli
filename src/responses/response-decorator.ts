@@ -46,7 +46,7 @@ export default class ResponseDecorator {
   private awsRemoveEmptyResourcesAndSort (resources: Array<Response<ProviderResource>>): Response<ProviderResource>[] {
     return resources.reduce((accumulator: Array<Response<ProviderResource>>, pilot: Response<ProviderResource>) => {
       if (pilot.count > 0) {
-        pilot.items.sort((a: ProviderResource, b: ProviderResource) => a.c8rAccount.localeCompare(b.c8rAccount) || b.pricePerMonth - a.pricePerMonth)
+        pilot.items.sort((a: ProviderResource, b: ProviderResource) => a.getOwner().localeCompare(b.getOwner()) || b.pricePerMonth - a.pricePerMonth)
         accumulator.push(pilot)
       }
       return accumulator
@@ -91,7 +91,7 @@ export default class ResponseDecorator {
       Age: DateTimeHelper.convertToWeeksDaysHours(ec2.age),
       'Name Tag': ec2.nameTag,
       Region: ec2.getRegion(),
-      Account: ec2.c8rAccount
+      Account: ec2.getOwner()
     }
   }
 
@@ -122,7 +122,7 @@ export default class ResponseDecorator {
       'Price Per Month': this.formatPrice(ebs.pricePerMonth),
       'Name Tag': ebs.nameTag,
       Region: ebs.getRegion(),
-      Account: ebs.c8rAccount
+      Account: ebs.getOwner()
     }
   }
 
@@ -153,7 +153,7 @@ export default class ResponseDecorator {
       'Multi-AZ': rds.multiAZ ? 'Yes' : 'No',
       'Name Tag': rds.nameTag,
       Region: rds.getRegion(),
-      Account: rds.c8rAccount
+      Account: rds.getOwner()
     }
   }
 
@@ -180,7 +180,7 @@ export default class ResponseDecorator {
       'Price Per Month': this.formatPrice(eip.pricePerMonth),
       'Name Tag': eip.nameTag,
       Region: eip.getRegion(),
-      Account: eip.c8rAccount
+      Account: eip.getOwner()
     }
   }
 
@@ -209,7 +209,7 @@ export default class ResponseDecorator {
       'Price Per Month': this.formatPrice(elb.pricePerMonth),
       'Name Tag': elb.nameTag,
       Region: elb.getRegion(),
-      Account: elb.c8rAccount
+      Account: elb.getOwner()
     }
   }
 
@@ -238,7 +238,7 @@ export default class ResponseDecorator {
       'Price Per Month': this.formatPrice(nlb.pricePerMonth),
       'Name Tag': nlb.nameTag,
       Region: nlb.getRegion(),
-      Account: nlb.c8rAccount
+      Account: nlb.getOwner()
     }
   }
 
@@ -267,7 +267,7 @@ export default class ResponseDecorator {
       'Price Per Month': this.formatPrice(alb.pricePerMonth),
       'Name Tag': alb.nameTag,
       Region: alb.getRegion(),
-      Account: alb.c8rAccount
+      Account: alb.getOwner()
     }
   }
 
@@ -299,7 +299,7 @@ export default class ResponseDecorator {
       Age: DateTimeHelper.convertToWeeksDaysHours(vm.age),
       Labels: vm.labels.map((label) => `${label.key}:${label.value}`).join(', '),
       Zone: vm.zone,
-      Project: vm.project
+      Project: vm.getOwner()
     }
   }
 
@@ -317,7 +317,7 @@ export default class ResponseDecorator {
       'Price Per Month': this.formatPrice(disks.pricePerMonth),
       Labels: disks.labels.map((label) => `${label.key}:${label.value}`).join(', '),
       Zone: disks.zone,
-      Project: disks.project
+      Project: disks.getOwner()
     }
   }
 
@@ -333,8 +333,8 @@ export default class ResponseDecorator {
       'Price Per Month': this.formatPrice(sql.pricePerMonth),
       'Multi-AZ': sql.multiAz ? 'Yes' : 'No',
       Labels: sql.labels.map((label) => `${label.key}:${label.value}`).join(', '),
-      Region: sql.region,
-      Project: sql.project
+      Region: sql.getRegion(),
+      Project: sql.getOwner()
     }
   }
 
@@ -350,8 +350,8 @@ export default class ResponseDecorator {
       Age: DateTimeHelper.convertToWeeksDaysHours(lb.age),
       'Price Per Month': this.formatPrice(lb.pricePerMonth),
       Labels: lb.labels.map((label) => `${label.key}:${label.value}`).join(', '),
-      Region: lb.region ?? '',
-      Project: lb.project
+      Region: lb.getRegion(),
+      Project: lb.getOwner()
     }
   }
 
@@ -365,8 +365,8 @@ export default class ResponseDecorator {
       Name: eip.name,
       'Price Per Month': this.formatPrice(eip.pricePerMonth),
       Labels: eip.labels.map((label) => `${label.key}:${label.value}`).join(', '),
-      Region: eip.region ?? '',
-      Project: eip.project
+      Region: eip.getRegion(),
+      Project: eip.getOwner()
     }
   }
 
