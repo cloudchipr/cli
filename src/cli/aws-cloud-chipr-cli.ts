@@ -132,8 +132,8 @@ export default class AwsCloudChiprCli extends CloudChiprCli implements CloudChip
         return
       }
       found = true
-      const subCommand = response.items[0].constructor.name.toLowerCase()
-      ids[subCommand] = this.responseDecorator.getIds(response, subCommand)
+      const subCommand = response.items[0].constructor.name
+      ids[subCommand.toLowerCase()] = this.responseDecorator.getIds(CloudProvider.AWS, response, subCommand)
     })
     if (!found || (!options.yes && !(await PromptHelper.prompt('All resources listed above will be deleted. Are you sure you want to proceed? ')))) {
       return
@@ -147,7 +147,7 @@ export default class AwsCloudChiprCli extends CloudChiprCli implements CloudChip
       }
       const cleanResponse = await Promise.all(promises)
       spinner.succeed()
-      this.responsePrint.printCleanResponse(cleanResponse, ids)
+      this.responsePrint.printCleanResponse(cleanResponse, CloudProvider.AWS, ids)
       OutputHelper.link('Please Star us on Github', 'https://github.com/cloudchipr/cli')
     } catch (e) {
       spinner.fail()
