@@ -76,7 +76,11 @@ export default class GcpCloudChiprCli extends CloudChiprCli implements CloudChip
         .option('--yes', `To terminate ${key.toUpperCase()} specific information without confirmation`)
         .option('-f, --filter <type>', 'Filter')
         .action(async (options) => {
-          await this.executeCleanCommand([key as GcpSubCommands], parentOptions, options)
+          if (key === GcpSubCommands.LB) { // temp excluding the LB resources
+            OutputHelper.text('Coming soon!', 'info')
+          } else {
+            await this.executeCleanCommand([key as GcpSubCommands], parentOptions, options)
+          }
         })
         .addHelpText('after', FilterHelper.getFilterExample(CloudProvider.GCP, key))
         .hook('postAction', async () => {
@@ -91,7 +95,7 @@ export default class GcpCloudChiprCli extends CloudChiprCli implements CloudChip
       .description('Terminate all resources from a cloud provider')
       .option('--yes', 'To terminate all resources specific information without confirmation')
       .action(async (options) => {
-        await this.executeCleanCommand(Object.values(GcpSubCommands), parentOptions, options)
+        await this.executeCleanCommand(Object.values(GcpSubCommands).filter(subcommand => subcommand !== GcpSubCommands.LB), parentOptions, options)
       })
       .hook('postAction', async () => {
         if (parentOptions.verbose !== true) {
