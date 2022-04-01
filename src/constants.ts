@@ -15,7 +15,6 @@ export enum OutputFormats {
     YAML = 'yaml',
     TABLE = 'table',
     TEXT = 'text',
-    ROW_DELETE = 'row_delete',
 }
 
 export enum AwsSubCommands {
