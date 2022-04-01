@@ -3,6 +3,7 @@ import { ProviderResource, Response } from '@cloudchipr/cloudchipr-engine'
 import { COLORS, Output } from '../constants'
 import { OutputHelper } from '../helpers'
 import chalk from 'chalk'
+import { ResponsePrintInterface } from './response-interface'
 
 export default class ResponsePrint {
   private responseDecorator: ResponseDecorator
@@ -14,10 +15,8 @@ export default class ResponsePrint {
   printCollectResponse (
     responses: Response<ProviderResource>[],
     cloudProvider: string,
-    subCommand: string,
-    output?: string,
-    outputFormat?: string,
-    showCleanCommandSuggestion: boolean = true
+    subCommand: string | null = null,
+    option: ResponsePrintInterface
   ): void {
     let found = false
     let summaryData = []
@@ -26,19 +25,19 @@ export default class ResponsePrint {
         return
       }
       found = true
-      if (output === Output.DETAILED || output === null) {
+      if (option.output === Output.DETAILED || option.output === null) {
         OutputHelper.text(`${response.items[0].constructor.name.toUpperCase()} - Potential saving opportunities found ⬇️`, 'info')
-        OutputHelper[outputFormat](this.responseDecorator.decorate(cloudProvider, [response], Output.DETAILED))
+        OutputHelper[option.outputFormat](this.responseDecorator.decorate(cloudProvider, [response], { output: Output.DETAILED, showLabels: option.showLabels }))
       }
-      if (output === Output.SUMMARIZED || output === null) {
-        summaryData = [...summaryData, ...this.responseDecorator.decorate(cloudProvider, [response], Output.SUMMARIZED)]
+      if (option.output === Output.SUMMARIZED || option.output === null) {
+        summaryData = [...summaryData, ...this.responseDecorator.decorate(cloudProvider, [response], { output: Output.SUMMARIZED, showLabels: option.showLabels })]
       }
     })
     if (summaryData.length > 0) {
       OutputHelper.text('Overall summary ⬇️', 'info')
-      OutputHelper[outputFormat](this.responseDecorator.sortByPriceSummary(summaryData))
+      OutputHelper[option.outputFormat](this.responseDecorator.sortByPriceSummary(summaryData))
     }
-    if (found && showCleanCommandSuggestion) {
+    if (found && !!subCommand) {
       OutputHelper.text(`Please run ${chalk.underline.hex(COLORS.ORCHID)('c8r clean [options] ' + subCommand)} with the same filters if you wish to clean.`)
     } else if (!found) {
       OutputHelper.text('We found no resources matching provided filters, please modify and try again!', 'warning')

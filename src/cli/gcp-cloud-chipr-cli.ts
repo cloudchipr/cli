@@ -24,8 +24,7 @@ import CloudChiprCli from './cloud-chipr-cli'
 export default class GcpCloudChiprCli extends CloudChiprCli implements CloudChiprCliInterface {
   customiseCommand (command: Command): CloudChiprCliInterface {
     command
-      .addOption(new Option('--region <string...>', 'Region, some description').default([]))
-      .addOption(new Option('--project <profile>', 'Project, some description').env('PORT'))
+      .addOption(new Option('--show-labels', 'Show labels').default(false))
 
     return this
   }
@@ -40,7 +39,7 @@ export default class GcpCloudChiprCli extends CloudChiprCli implements CloudChip
         .option('-f, --filter <type>', 'Filter')
         .action(async (options) => {
           const response = await this.executeCollectCommand([key as GcpSubCommands], parentOptions, options)
-          this.responsePrint.printCollectResponse(response, CloudProvider.GCP, key, parentOptions.output, parentOptions.outputFormat)
+          this.responsePrint.printCollectResponse(response, CloudProvider.GCP, key, { output: parentOptions.output, outputFormat: parentOptions.outputFormat, showLabels: parentOptions.showLabels })
         })
         .addHelpText('after', FilterHelper.getFilterExample(CloudProvider.GCP, key))
         .hook('postAction', async () => {
@@ -55,7 +54,7 @@ export default class GcpCloudChiprCli extends CloudChiprCli implements CloudChip
       .description('Collect app resources based on the specified filters')
       .action(async (options) => {
         const response = await this.executeCollectCommand(Object.values(GcpSubCommands), parentOptions, options)
-        this.responsePrint.printCollectResponse(response, CloudProvider.GCP, 'all', parentOptions.output, parentOptions.outputFormat)
+        this.responsePrint.printCollectResponse(response, CloudProvider.GCP, 'all', { output: parentOptions.output, outputFormat: parentOptions.outputFormat, showLabels: options.showLabels })
       })
       .hook('postAction', async () => {
         if (parentOptions.verbose !== true) {
@@ -126,7 +125,7 @@ export default class GcpCloudChiprCli extends CloudChiprCli implements CloudChip
 
   private async executeCleanCommand (subCommands: GcpSubCommands[], parentOptions: OptionValues, options: OptionValues) {
     const collectResponse = await this.executeCollectCommand(subCommands, parentOptions, options)
-    this.responsePrint.printCollectResponse(collectResponse, CloudProvider.GCP, '', Output.DETAILED, OutputFormats.TABLE, false)
+    this.responsePrint.printCollectResponse(collectResponse, CloudProvider.GCP, null, { output: Output.DETAILED, outputFormat: OutputFormats.TABLE })
     const ids = {}
     let found = false
     collectResponse.forEach((response) => {

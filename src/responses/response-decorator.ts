@@ -3,14 +3,21 @@ import {
 } from '@cloudchipr/cloudchipr-engine'
 import { Output } from '../constants'
 import { DateTimeHelper, NumberConvertHelper, SizeConvertHelper } from '../helpers'
+import { ResponseDecoratorInterface } from './response-interface'
 
 export default class ResponseDecorator {
-  decorate (cloudProvider: string, resources: Response<ProviderResource>[], output: string): any[] {
+  decorate (cloudProvider: string, resources: Response<ProviderResource>[], option: ResponseDecoratorInterface): any[] {
     resources = this[`${cloudProvider}RemoveEmptyResourcesAndSort`](resources)
     let data = []
     resources.forEach((resource: Response<ProviderResource>) => {
-      data = [...data, ...this.eachItem(cloudProvider, resource, output)]
+      data = [...data, ...this.eachItem(cloudProvider, resource, option.output)]
     })
+    if (!option.showLabels) {
+      return data.map((d) => {
+        delete d.Labels
+        return d
+      })
+    }
     return data
   }
 

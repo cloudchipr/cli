@@ -21,7 +21,7 @@ export default class AwsCloudChiprCli extends CloudChiprCli implements CloudChip
 
   customiseCommand (command: Command): CloudChiprCliInterface {
     command
-      .addOption(new Option('--region <string...>', 'Region, default uses value of AWS_DEFAULT_REGION env variable').default([]))
+      .addOption(new Option('--region <string...>', 'Region, by default it uses cloud specific environment variables for region').default([]))
       .addOption(new Option('--account-id <string...>', 'Account id').default([]))
       .addOption(new Option('--profile <profile>', 'Profile, default uses value of AWS_PROFILE env variable'))
 
@@ -38,7 +38,7 @@ export default class AwsCloudChiprCli extends CloudChiprCli implements CloudChip
         .option('-f, --filter <type>', 'Filter')
         .action(async (options) => {
           const response = await this.executeCollectCommand([key as AwsSubCommands], parentOptions, options)
-          this.responsePrint.printCollectResponse(response, CloudProvider.AWS, key, parentOptions.output, parentOptions.outputFormat)
+          this.responsePrint.printCollectResponse(response, CloudProvider.AWS, key, { output: parentOptions.output, outputFormat: parentOptions.outputFormat })
         })
         .addHelpText('after', FilterHelper.getFilterExample(CloudProvider.AWS, key))
         .hook('postAction', async () => {
@@ -53,7 +53,7 @@ export default class AwsCloudChiprCli extends CloudChiprCli implements CloudChip
       .description('Collect app resources based on the specified filters')
       .action(async (options) => {
         const response = await this.executeCollectCommand(Object.values(AwsSubCommands), parentOptions, options)
-        this.responsePrint.printCollectResponse(response, CloudProvider.AWS, 'all', parentOptions.output, parentOptions.outputFormat)
+        this.responsePrint.printCollectResponse(response, CloudProvider.AWS, 'all', { output: parentOptions.output, outputFormat: parentOptions.outputFormat })
       })
       .hook('postAction', async () => {
         if (parentOptions.verbose !== true) {
@@ -124,7 +124,7 @@ export default class AwsCloudChiprCli extends CloudChiprCli implements CloudChip
 
   private async executeCleanCommand (subCommands: AwsSubCommands[], parentOptions: OptionValues, options: OptionValues) {
     const collectResponse = await this.executeCollectCommand(subCommands, parentOptions, options)
-    this.responsePrint.printCollectResponse(collectResponse, CloudProvider.AWS, '', Output.DETAILED, OutputFormats.TABLE, false)
+    this.responsePrint.printCollectResponse(collectResponse, CloudProvider.AWS, null, { output: Output.DETAILED, outputFormat: OutputFormats.TABLE })
     const ids = {}
     let found = false
     collectResponse.forEach((response) => {
