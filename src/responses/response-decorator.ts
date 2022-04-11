@@ -408,7 +408,7 @@ export default class ResponseDecorator {
       Age: DateTimeHelper.convertToWeeksDaysHours(lb.age),
       'Price Per Month': this.formatPrice(lb.pricePerMonth),
       Labels: lb.labels.map((label) => `${label.key}:${label.value}`).join(', '),
-      Region: lb.getRegion(),
+      Region: lb.getRegion() || 'Global',
       Project: lb.getOwner() || 'N/A'
     }
   }
@@ -438,7 +438,7 @@ export default class ResponseDecorator {
       Name: eip.name,
       'Price Per Month': this.formatPrice(eip.pricePerMonth),
       Labels: eip.labels.map((label) => `${label.key}:${label.value}`).join(', '),
-      Region: eip.getRegion(),
+      Region: eip.getRegion() || 'Global',
       Project: eip.getOwner() || 'N/A'
     }
   }
