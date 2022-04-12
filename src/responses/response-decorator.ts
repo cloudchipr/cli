@@ -375,6 +375,9 @@ export default class ResponseDecorator {
       [`Database Connection (${sql.connections?.Type})`]: sql.connections?.Value ?? 'N/A',
       'Price Per Month': this.formatPrice(sql.pricePerMonth),
       'Multi-AZ': sql.multiAz ? 'Yes' : 'No',
+      vCPUs: sql.cpu,
+      Memory: (sql.ram / 1000).toFixed(2) + ' GB',
+      Storage: sql.storage + ' GB',
       Labels: sql.labels.map((label) => `${label.key}:${label.value}`).join(', '),
       Region: sql.getRegion(),
       Project: sql.getOwner() || 'N/A'
