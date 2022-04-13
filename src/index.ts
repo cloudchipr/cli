@@ -11,11 +11,48 @@ import {
 import CloudChiprCliProvider from './cli/cloud-chipr-cli-provider'
 import { LoggerHelper, OutputHelper } from './helpers'
 import moment from 'moment'
+import fs from 'fs'
+import ini from 'ini'
 require('dotenv').config({ path: `${__dirname}/../.env` })
 
+const configPath = './.c8r/c8r_config'
+let configs: {[k: string]: any} = {}
+try {
+  fs.accessSync('./.c8r')
+} catch (e) {
+  fs.mkdirSync('./.c8r')
+}
+try {
+  configs = ini.decode(fs.readFileSync(configPath, 'utf-8'))
+} catch (e) {}
+
 const command = new Command()
+command.name('c8r')
+
 command
-  .name('c8r')
+  .description('Configure')
+  .command('configure')
+  .addOption(new Option('--set-default-provider <default-provider>', 'Set default cloud provider').choices(Object.values(CloudProvider)).conflicts('list'))
+  .addOption(new Option('--list', 'List default configs'))
+  .action((options) => {
+    if (options.list) {
+      for (const config in configs) {
+        console.log(`[${config}]`)
+        for (const c in configs[config]) {
+          console.log(`${c} = ${configs[config][c]}`)
+        }
+      }
+    } else if (options.setDefaultProvider) {
+      if (!('default' in configs)) {
+        configs.default = {}
+      }
+      configs.default.cloud_provider = options.setDefaultProvider
+      fs.writeFileSync(configPath, ini.encode(configs))
+    }
+  })
+  .showSuggestionAfterError()
+
+command
   .description('Cloudchipr-cli (c8r) is a command line tool to help users collect, identify, filter and clean cloud resources in order to reduce resource waste and optimize cloud cost.')
   .addOption(new Option('--cloud-provider <cloud-provider>', 'Cloud provider').default(CloudProvider.AWS).choices(Object.values(CloudProvider)))
   .addOption(new Option('--verbose', 'Verbose'))
@@ -40,7 +77,7 @@ try {
       cloudProvider = process.argv[index + 1]
     }
   })
-  CloudChiprCliProvider.getProvider(cloudProvider ?? command.opts().cloudProvider)
+  CloudChiprCliProvider.getProvider(cloudProvider ?? configs.default?.cloud_provider ?? command.opts().cloudProvider)
     .customiseCommand(command)
     .customiseCollectCommand(collect)
     .customiseCleanCommand(clean)

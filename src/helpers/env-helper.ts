@@ -4,15 +4,15 @@ import { CustodianError, CustodianOrgError } from '../exceptions'
 export class EnvHelper {
   static getCustodian (): string {
     const custodian: string = process.env.C8R_CUSTODIAN
-    if (custodian === undefined) {
-      throw new CustodianError('C8R_CUSTODIAN not provided')
-    }
-
-    try {
-      fs.accessSync(custodian)
-    } catch (err) {
-      throw new CustodianError('C8R_CUSTODIAN not provided or is not executable')
-    }
+    // if (custodian === undefined) {
+    //   throw new CustodianError('C8R_CUSTODIAN not provided')
+    // }
+    //
+    // try {
+    //   fs.accessSync(custodian)
+    // } catch (err) {
+    //   throw new CustodianError('C8R_CUSTODIAN not provided or is not executable')
+    // }
 
     return custodian
   }

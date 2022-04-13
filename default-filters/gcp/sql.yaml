@@ -5,5 +5,5 @@ and:
   - resource: "database-connections"
     op: "LessThanEqualTo"
     statistics: "Maximum"
-    value: 1
+    value: 10
     since: 7
