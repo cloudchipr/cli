@@ -27,7 +27,7 @@
     "dotenv": "^10.0.0",
     "ini": "^3.0.0",
     "inquirer": "^8.1.3",
-    "moment": "^2.29.1",
+    "moment": "^2.29.2",
     "ora": "^5.4.1",
     "prettyjson": "^1.2.1",
     "terminal-link": "^2.1.1",
