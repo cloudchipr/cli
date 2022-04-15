@@ -112,7 +112,7 @@ For more details please check GCP authentication documentation [here](https://cl
 
 <!-- quickstart -->
 ### Quick start using Docker
-Once you are successfully authenticated with application-default login, run:
+Once you are successfully authenticated, run:
 
 ```shell 
 docker run -it --env GOOGLE_APPLICATION_CREDENTIALS=/root/.gcloud/gcloud-key.json --env CLOUDSDK_CORE_PROJECT=<Project_ID> -v $PWD/gcloud-key.json:/root/.gcloud/gcloud-key.json cloudchipr/cli c8r --cloud-provider gcp collect all --verbose
