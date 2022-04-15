@@ -160,9 +160,7 @@ export default class GcpCloudChiprCli extends CloudChiprCli implements CloudChip
       .setIds(ids)
       .build()
 
-    const custodianOrg = (options.accountId !== undefined && (new Set(options.accountId)).size) ? EnvHelper.getCustodianOrg() : undefined
-
-    const engineAdapter = new GcpShellEngineAdapter<T>(EnvHelper.getCustodian(), custodianOrg)
+    const engineAdapter = new GcpShellEngineAdapter<T>(EnvHelper.getCustodian())
     return engineAdapter.execute(request)
   }
 
