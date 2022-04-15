@@ -123,7 +123,7 @@ docker run -it --env GOOGLE_APPLICATION_CREDENTIALS=/root/.gcloud/gcloud-key.jso
 ### Currently supported GCP resource types
 * VM Instances
 * Disks 
-* SQL (MySQL and PostgreSQL)
+* Cloud SQL 
 * External IPs
 * Load Balancers
 <!-- gcp_resourcesstop -->
