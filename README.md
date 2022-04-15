@@ -106,8 +106,8 @@ Very simple, `clean` and `collect` subcommands have exactly the same filters, si
 
 <!-- gcp -->
 ## GCP
-When executed, c8r will check GOOGLE_APPLICATION_CREDENTIALS environment variable which should contain path to the service accounts credentials key file in json format. [Here](https://github.com/cloudchipr/cli#gcp-service-account-steps) are our recommended list of commands to create GCP service account, generate a key and create role bindings.
-For more details please check GCP authentication documentation [here](https://cloud.google.com/docs/authentication/getting-started). F
+When executed, c8r will check GOOGLE_APPLICATION_CREDENTIALS environment variable which should contain path to the service accounts credentials key file in json format. Please find our recommended list of commands to create GCP service account, generate a key and create role bindings at the bottom of this README.
+For more details please check GCP authentication documentation [here](https://cloud.google.com/docs/authentication/getting-started).
 <!-- gcpstop -->
 
 <!-- quickstart -->
