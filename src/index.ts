@@ -9,21 +9,21 @@ import {
   OutputFormats
 } from './constants'
 import CloudChiprCliProvider from './cli/cloud-chipr-cli-provider'
-import { LoggerHelper, OutputHelper } from './helpers'
+import { LoggerHelper, OutputHelper, PromptHelper } from './helpers'
 import moment from 'moment'
 import fs from 'fs'
 import ini from 'ini'
 require('dotenv').config({ path: `${__dirname}/../.env` })
 
-const configPath = './.c8r/c8r_config'
+const configPath = `${__dirname}/../.c8r`
 let configs: {[k: string]: any} = {}
 try {
-  fs.accessSync('./.c8r')
+  fs.accessSync(configPath)
 } catch (e) {
-  fs.mkdirSync('./.c8r')
+  fs.mkdirSync(configPath)
 }
 try {
-  configs = ini.decode(fs.readFileSync(configPath, 'utf-8'))
+  configs = ini.decode(fs.readFileSync(`${configPath}/c8r_config`, 'utf-8'))
 } catch (e) {}
 
 const command = new Command()
@@ -32,9 +32,8 @@ command.name('c8r')
 command
   .description('Configure')
   .command('configure')
-  .addOption(new Option('--set-default-provider <default-provider>', 'Set default cloud provider').choices(Object.values(CloudProvider)).conflicts('list'))
   .addOption(new Option('--list', 'List default configs'))
-  .action((options) => {
+  .action(async (options) => {
     if (options.list) {
       for (const config in configs) {
         console.log(`[${config}]`)
@@ -42,12 +41,17 @@ command
           console.log(`${c} = ${configs[config][c]}`)
         }
       }
-    } else if (options.setDefaultProvider) {
-      if (!('default' in configs)) {
-        configs.default = {}
+    } else {
+      const cloudProvider = await PromptHelper.promptToFill('C8R cloud provider:', configs?.default?.cloud_provider, Object.values(CloudProvider))
+      try {
+        if (!('default' in configs)) {
+          configs.default = {}
+        }
+        configs.default.cloud_provider = cloudProvider
+        fs.writeFileSync(`${configPath}/c8r_config`, ini.encode(configs))
+      } catch (e) {
+        console.log(e.message)
       }
-      configs.default.cloud_provider = options.setDefaultProvider
-      fs.writeFileSync(configPath, ini.encode(configs))
     }
   })
   .showSuggestionAfterError()
