@@ -305,6 +305,8 @@ export default class ResponseDecorator {
     return {
       'Instance Name': vm.name,
       'Machine Type': vm.machineType,
+      vCPUs: vm.vcpu ?? 'N/A',
+      Memory: vm.ram?.toFixed(2) + ' GB' ?? 'N/A',
       [`CPU % (${vm.cpu?.Type})`]: NumberConvertHelper.toFixed(vm.cpu?.Value),
       [`NetIn (${vm.networkIn?.Type})`]: SizeConvertHelper.fromBytes(vm.networkIn?.Value),
       [`NetOut (${vm.networkOut?.Type})`]: SizeConvertHelper.fromBytes(vm.networkOut?.Value),

@@ -15,15 +15,15 @@ import fs from 'fs'
 import ini from 'ini'
 require('dotenv').config({ path: `${__dirname}/../.env` })
 
-const configPath = './.c8r/c8r_config'
+const configPath = `${__dirname}/../.c8r`
 let configs: {[k: string]: any} = {}
 try {
-  fs.accessSync('./.c8r')
+  fs.accessSync(configPath)
 } catch (e) {
-  fs.mkdirSync('./.c8r')
+  fs.mkdirSync(configPath)
 }
 try {
-  configs = ini.decode(fs.readFileSync(configPath, 'utf-8'))
+  configs = ini.decode(fs.readFileSync(`${configPath}/c8r_config`, 'utf-8'))
 } catch (e) {}
 
 const command = new Command()
