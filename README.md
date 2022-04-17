@@ -106,7 +106,7 @@ Very simple, `clean` and `collect` subcommands have exactly the same filters, si
 
 <!-- gcp -->
 ## GCP
-When executed, c8r will check GOOGLE_APPLICATION_CREDENTIALS environment variable which should contain path to the service accounts credentials key file in json format. Please find our recommended list of commands to create GCP service account, generate a key and create role bindings at the bottom of this README.
+When executed, c8r will check GOOGLE_APPLICATION_CREDENTIALS environment variable which should contain path to the service accounts credentials key file in json format. Please find our recommended [list of commands](#gcp-service-account-steps) to create GCP service account, generate a key and create role bindings.
 For more details please check GCP authentication documentation [here](https://cloud.google.com/docs/authentication/getting-started).
 
 Alternatively, Application Default Credentials (ADC) method could be used, which will generate a json file in ```~/.config/gcloud/``` directory.
