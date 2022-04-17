@@ -108,14 +108,22 @@ Very simple, `clean` and `collect` subcommands have exactly the same filters, si
 ## GCP
 When executed, c8r will check GOOGLE_APPLICATION_CREDENTIALS environment variable which should contain path to the service accounts credentials key file in json format. Please find our recommended list of commands to create GCP service account, generate a key and create role bindings at the bottom of this README.
 For more details please check GCP authentication documentation [here](https://cloud.google.com/docs/authentication/getting-started).
+
+Alternatively, Application Default Credentials (ADC) method could be used, which will generate a json file in ```~/.config/gcloud/``` directory.
+```shell
+gcloud auth application-default login
+
+```
 <!-- gcpstop -->
 
 <!-- quickstart -->
 ### Quick start using Docker
-Once you are successfully authenticated, run:
+Once you are successfully authenticated with ADC, run:
 
 ```shell 
-docker run -it --env GOOGLE_APPLICATION_CREDENTIALS=/root/.gcloud/gcloud-key.json --env CLOUDSDK_CORE_PROJECT=<Project_ID> -v $PWD/gcloud-key.json:/root/.gcloud/gcloud-key.json cloudchipr/cli c8r --cloud-provider gcp collect all --verbose
+docker run -t --env GOOGLE_CLOUD_PROJECT=<Project_ID> \
+-v ~/.config/gcloud/application_default_credentials.json:/root/.config/gcloud/application_default_credentials.json \
+cloudchipr/cli c8r --cloud-provider gcp collect all --verbose
 ```
 <!-- quickstartstop -->
 
@@ -169,8 +177,25 @@ npm run build
 chmod +x lib/index.js
 npm link
 ```
-
 <!-- setupstop -->
+
+<!-- dockerless_usage -->
+By default c8r is configured to work with AWS
+
+```shell
+c8r collect ec2
+```
+In order to use GCP there is an additional option
+```shell
+c8r --cloud-provider gcp collect eip
+```
+or the default could provider could be switched
+```shell
+c8r configure --set-default-provider gcp
+c8r configure --list
+```
+
+<!-- dockerless_usagestop -->
 
 <!-- development -->
 ## Development
