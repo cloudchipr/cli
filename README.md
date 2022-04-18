@@ -140,8 +140,9 @@ cloudchipr/cli c8r --cloud-provider gcp collect all --verbose
 ### Usage Examples
 In order to configure gcp cloud provider as default please run:
 ```shell 
-c8r configure --set-default-provider gcp
+c8r configure
 ```
+then type `gcp`
 ##### Collect all disk volumes which are not attached to a VM instance.
 Create the filters file
 ```shell
@@ -191,7 +192,8 @@ c8r --cloud-provider gcp collect eip
 ```
 or the default could provider could be switched
 ```shell
-c8r configure --set-default-provider gcp
+c8r configure 
+C8R cloud provider: gcp # just type gcp here
 c8r configure --list
 ```
 
