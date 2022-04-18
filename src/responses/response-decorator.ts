@@ -464,7 +464,7 @@ export default class ResponseDecorator {
   }
 
   private gcpEipGetIds (resource: Response<any>) {
-    return resource.items.map((item: GcpEip) => item.ip)
+    return resource.items.filter((item: GcpEip) => item.getRegion() !== '').map((item: GcpEip) => item.ip)
   }
 
   private clean (subcommand: string, id: string, success: boolean) {
