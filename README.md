@@ -24,7 +24,7 @@ docker run -t -v ~/.aws/credentials:/root/.aws/credentials cloudchipr/cli c8r co
 <!-- awsstop -->
 <!-- gcp -->
 ### GCP
-When executed, c8r will check GOOGLE_APPLICATION_CREDENTIALS environment variable which should contain path to the service accounts credentials key file in json format. Please find our recommended [list of commands](#gcp-service-account-steps) to create GCP service account, generate a key and create role bindings.
+When executed, c8r will check GOOGLE_APPLICATION_CREDENTIALS environment variable which should contain path to the service accounts credentials key file in json format. Please find our recommended [list of commands](https://github.com/cloudchipr/cli/blob/main/docs/gcp_service_account.md) to create GCP service account, generate a key and create role bindings.
 For more details please check GCP authentication documentation [here](https://cloud.google.com/docs/authentication/getting-started).
 
 Alternatively, Application Default Credentials (ADC) method could be used, which will generate a json file in ```~/.config/gcloud/``` directory.
@@ -44,6 +44,8 @@ docker run -t --env GOOGLE_CLOUD_PROJECT=<PROJECT_ID> \
 
 
 ![](https://raw.githubusercontent.com/cloudchipr/cli/b416ad0553f6ec2acf50124057715fb7d09836dc/docs/demo/c8r-demo.gif)
+
+Please checkout more usage examples [here](https://github.com/cloudchipr/cli/blob/main/docs/usage_examples.md).
 <!-- quickstartstop -->
 
 <!-- resources -->
