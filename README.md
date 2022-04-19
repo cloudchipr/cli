@@ -35,9 +35,7 @@ gcloud auth application-default login
 Once you are successfully authenticated with ADC, run:
 
 ```shell 
-docker run -t --env GOOGLE_CLOUD_PROJECT=<PROJECT_ID> \
--v ~/.config/gcloud:/root/.config/gcloud cloudchipr/cli c8r \
---cloud-provider gcp collect all --verbose
+docker run -t --env GOOGLE_CLOUD_PROJECT=<PROJECT_ID> -v ~/.config/gcloud:/root/.config/gcloud cloudchipr/cli c8r --cloud-provider gcp collect all --verbose
 ```
 <!-- quickstartstop -->
 
