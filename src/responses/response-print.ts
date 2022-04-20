@@ -52,7 +52,7 @@ export default class ResponsePrint {
       })
     })
     if (!isSuccessful && !!subCommand) {
-      OutputHelper.text(`Alert: There was an error while collecting the data. The trace log can be found in ${logFilename} directory.`, 'warning')
+      OutputHelper.text(`There was an error while collecting resource information, some of the data may be incomplete or show N/A, more details - ${logFilename}`, 'warning')
     }
   }
 
