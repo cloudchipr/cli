@@ -1,9 +1,10 @@
 import ResponseDecorator from './response-decorator'
 import { ProviderResource, Response } from '@cloudchipr/cloudchipr-engine'
-import { COLORS, Output } from '../constants'
-import { OutputHelper } from '../helpers'
+import { COLORS, Output, OutputDirectory } from '../constants'
+import { LoggerHelper, OutputHelper } from '../helpers'
 import chalk from 'chalk'
 import { ResponsePrintInterface } from './response-interface'
+import moment from 'moment'
 
 export default class ResponsePrint {
   private responseDecorator: ResponseDecorator
@@ -41,6 +42,17 @@ export default class ResponsePrint {
       OutputHelper.text(`Please run ${chalk.underline.hex(COLORS.ORCHID)('c8r clean [options] ' + subCommand)} with the same filters if you wish to clean.`)
     } else if (!found) {
       OutputHelper.text('We found no resources matching provided filters, please modify and try again!', 'warning')
+    }
+    let isSuccessful: boolean = true
+    const logFilename = `${OutputDirectory}/logs/${moment().format('YYYY-MM-DD')}.log`
+    responses.forEach((response) => {
+      response.errors.forEach((error: any) => {
+        isSuccessful = false
+        LoggerHelper.logFile(logFilename, error.message, error)
+      })
+    })
+    if (!isSuccessful && !!subCommand) {
+      OutputHelper.text(`Alert: There was an error while collecting the data. The trace log can be found in ${logFilename} directory.`, 'warning')
     }
   }
 
