@@ -1,19 +1,19 @@
 and:
   - resource: "launch-time"
     op: "GreaterThanEqualTo"
-    value: 0
-#  - resource: "cpu"
-#    op: "LessThanEqualTo"
-#    statistics: "Maximum"
-#    since: 7
-#    value: 10
-#  - resource: "network-in"
-#    op: "LessThanEqualTo"
-#    statistics: "Sum"
-#    since: 7
-#    value: 1000000000
-#  - resource: "network-out"
-#    op: "LessThanEqualTo"
-#    statistics: "Sum"
-#    since: 7
-#    value: 1000000000
+    value: 7
+  - resource: "cpu"
+    op: "LessThanEqualTo"
+    statistics: "Maximum"
+    since: 7
+    value: 10
+  - resource: "network-in"
+    op: "LessThanEqualTo"
+    statistics: "Sum"
+    since: 7
+    value: 1000000000
+  - resource: "network-out"
+    op: "LessThanEqualTo"
+    statistics: "Sum"
+    since: 7
+    value: 1000000000
