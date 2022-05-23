@@ -19,7 +19,7 @@ When executed, c8r will check users environment to identify AWS Access credentia
 
 Run with the `latest` docker image
 ```shell 
-docker run -it -v ~/.aws/credentials:/root/.aws/credentials cloudchipr/cli:v0.0.1 c8r collect all --verbose --region all
+docker run -it -v ~/.aws/credentials:/root/.aws/credentials cloudchipr/cli:v0.0.2 c8r collect all --verbose --region all
 ```
 <!-- awsstop -->
 <!-- gcp -->
@@ -35,7 +35,7 @@ gcloud auth application-default login
 Once you are successfully authenticated with ADC, run:
 
 ```shell 
-docker run -it --env GOOGLE_CLOUD_PROJECT=<PROJECT_ID> -v ~/.config/gcloud:/root/.config/gcloud cloudchipr/cli:v0.0.1 c8r --cloud-provider gcp collect all --verbose
+docker run -it --env GOOGLE_CLOUD_PROJECT=<PROJECT_ID> -v ~/.config/gcloud:/root/.config/gcloud cloudchipr/cli:v0.0.2 c8r --cloud-provider gcp collect all --verbose
 ```
 <!-- quickstartstop -->
 
